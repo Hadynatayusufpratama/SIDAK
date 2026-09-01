@@ -13,62 +13,63 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex antialiased">
 
-    <!-- SIDEBAR NAVIGASI UTAMA (Identitas Warna BKSDA - Dark Forest Green) -->
-    <aside class="w-72 bg-[#003818] border-r border-emerald-900 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 shadow-2xl">
+    <!-- SIDEBAR NAVIGASI UTAMA (Presisi & Seragam) -->
+    <aside class="w-72 bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-900 border-r border-emerald-800/40 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 shadow-2xl z-40">
         <div>
             <!-- Header Brand BKSDA Sulteng -->
-            <div class="p-5 border-b border-emerald-900/80 bg-[#002e13] flex items-center gap-3.5">
-                <div class="w-11 h-11 bg-white p-1.5 rounded-xl shadow-md flex items-center justify-center shrink-0">
-                    <img src="{{ asset('images/logo-bksda.jpeg') }}" alt="Logo BKSDA" class="h-full w-auto object-contain" onerror="this.src='https://via.placeholder.com/50?text=BKSDA'">
+            <div class="p-5 border-b border-emerald-800/40 bg-emerald-950/60 flex items-center gap-3.5 backdrop-blur-md">
+                <div class="w-12 h-12 bg-white rounded-xl shadow-md flex items-center justify-center shrink-0 p-1.5 border border-white/20">
+                    <img src="{{ asset('images/logo-bksda.png') }}" alt="Logo BKSDA" class="w-full h-full object-contain scale-110" onerror="this.src='https://via.placeholder.com/50?text=BKSDA'">
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-sm tracking-wide text-white leading-tight">SIDAK BKSDA</h1>
-                    <p class="text-[11px] text-yellow-400 font-semibold tracking-wider">SULAWESI TENGAH</p>
+                    <h1 class="font-black text-sm tracking-wide text-white leading-tight">SIDAK BKSDA</h1>
+                    <p class="text-[11px] font-black text-amber-400 tracking-wider">SULAWESI TENGAH</p>
                 </div>
             </div>
-            
 
             <!-- Menu Navigasi -->
             <nav class="p-4 space-y-1.5 text-sm">
-                <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400/70">Main Menu</div>
+                <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400/80">Main Menu</div>
 
-             <a href="{{ route('konservasi.dashboard') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-emerald-100/70 hover:text-white hover:bg-emerald-900/50 transition">
-                <i class="fas fa-chart-pie w-5 text-emerald-400"></i>
-                <span>Dashboard Analytics</span>
-            </a>
-    
-                <a href="{{ route('konservasi.create') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-800 to-emerald-700 text-white font-bold shadow-md border border-emerald-500/30">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-file-pen w-5 text-yellow-400"></i>
-                        <span>Input Data Konservasi</span>
-                    </div>
+                <!-- Dashboard Analytics -->
+                <a href="{{ route('konservasi.dashboard') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.dashboard') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
+                    <i class="fas fa-chart-pie w-5 {{ request()->routeIs('konservasi.dashboard') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
+                    <span>Dashboard Analytics</span>
                 </a>
 
-                
-<a href="{{ route('konservasi.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-emerald-100 hover:bg-emerald-800/50 transition font-medium text-sm">
-    <i class="fas fa-database w-5 text-emerald-400"></i>
-    <span>Rekapitulasi Data</span>
-</a>
+                <!-- Input Data Konservasi (Aktif) -->
+                <a href="{{ route('konservasi.create') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.create') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
+                    <i class="fas fa-file-pen w-5 {{ request()->routeIs('konservasi.create') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
+                    <span>Input Data Konservasi</span>
+                </a>
 
-                <a href="{{ route('konservasi.peta') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-emerald-100/70 hover:text-white hover:bg-emerald-900/50 transition">
-                    <i class="fas fa-map-location-dot w-5 text-emerald-400"></i>
+                <!-- Rekapitulasi Data -->
+                <a href="{{ route('konservasi.index') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.index') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
+                    <i class="fas fa-database w-5 {{ request()->routeIs('konservasi.index') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
+                    <span>Rekapitulasi Data</span>
+                </a>
+
+                <!-- Peta GIS Kawasan -->
+                <a href="{{ route('konservasi.peta') }}" 
+                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.peta') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
+                    <i class="fas fa-map-location-dot w-5 {{ request()->routeIs('konservasi.peta') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
                     <span>Peta GIS Kawasan</span>
                 </a>
-
-                
-
             </nav>
         </div>
 
-        <!-- Footer Sidebar Status System -->
-        <div class="p-4 m-3 bg-[#002b12] border border-emerald-800/80 rounded-2xl">
-            <div class="flex items-center gap-3">
-                <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                <div class="text-xs">
-                    <p class="font-bold text-white">BKSDA SULTENG</p>
-                    <p class="text-[10px] text-emerald-300">Kementerian Kehutanan RI</p>
-                </div>
-            </div>
+        <!-- Tombol Logout & Footer Sidebar -->
+        <div class="p-4 border-t border-emerald-800/40 mt-auto bg-emerald-950/40">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 transition font-bold text-sm">
+                    <i class="fas fa-right-from-bracket w-5 text-rose-400"></i>
+                    <span>Keluar / Logout</span>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -87,7 +88,6 @@
                     <span class="text-[#005826] font-bold">Entry Data Konservasi</span>
                 </div>
             </div>
-            
 
             <!-- Profile & Quick Action Topbar -->
             <div class="flex items-center gap-4">
@@ -96,32 +96,29 @@
                     <span class="font-bold text-[#005826]">BALAI KSDA SULAWESI TENGAH</span>
                 </div>
                 <div class="flex items-center gap-3">
-    <!-- Inisial 2 Huruf Pertama dari Nama User -->
-    <div class="w-9 h-9 bg-emerald-800 text-white font-bold rounded-xl flex items-center justify-center text-xs shadow-md uppercase">
-        {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
-    </div>
-    <div class="text-left hidden sm:block">
-        <!-- Nama User yang Login -->
-        <p class="text-xs font-bold text-slate-800 leading-tight">
-            {{ Auth::user()->name ?? 'Administrator' }}
-        </p>
-        <!-- Email atau Role User -->
-        <p class="text-[10px] text-slate-500">
-            {{ Auth::user()->email ?? 'Petugas Operator' }}
-        </p>
-    </div>
-</div>
+                    <div class="w-9 h-9 bg-emerald-800 text-white font-bold rounded-xl flex items-center justify-center text-xs shadow-md uppercase">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
+                    </div>
+                    <div class="text-left hidden sm:block">
+                        <p class="text-xs font-bold text-slate-800 leading-tight">
+                            {{ Auth::user()->name ?? 'Administrator' }}
+                        </p>
+                        <p class="text-[10px] text-slate-500">
+                            {{ Auth::user()->email ?? 'Petugas Operator' }}
+                        </p>
+                    </div>
+                </div>
             </div>
         </header>
 
         <!-- KONTEN FORMULAR -->
         <main class="p-6 md:p-8 max-w-6xl mx-auto w-full space-y-6">
 
-            <!-- Banner Header Page (Identitas Khas BKSDA Green & Gold) -->
+            <!-- Banner Header Page -->
             <div class="bg-gradient-to-r from-[#00421c] via-[#005826] to-[#007031] text-white p-6 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl relative overflow-hidden border-b-4 border-yellow-500">
                 <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-yellow-400/10 rounded-full blur-2xl pointer-events-none"></div>
                 <div>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-yellow-400 text-emerald-950 font-black mb-2 shadow-sm">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-yellow-400 text-emerald-950 mb-2 shadow-sm">
                         <i class="fas fa-database"></i> Database SIDAK
                     </span>
                     <h1 class="text-2xl font-extrabold text-white tracking-tight">Formulir Entry Data Konservasi</h1>
@@ -232,16 +229,6 @@
                         </button>
                     </div>
                 </form>
-                <!-- Form Logout -->
-<form method="POST" action="{{ route('logout') }}" class="mt-auto pt-4">
-    @csrf
-    <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition-all duration-200 group">
-        <svg class="w-5 h-5 text-rose-400 group-hover:text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-        </svg>
-        <span>Keluar / Logout</span>
-    </button>
-</form>
             </div>
         </main>
     </div>
