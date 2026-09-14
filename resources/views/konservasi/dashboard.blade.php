@@ -1,223 +1,207 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Analytics - SIDAK BKSDA Sulteng</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex antialiased">
-
-    <!-- SIDEBAR NAVIGASI -->
-    <aside class="w-72 bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-900 border-r border-emerald-800/40 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 shadow-2xl z-40">
-        <div>
-            <!-- Header Sidebar -->
-            <div class="p-5 border-b border-emerald-800/40 bg-emerald-950/60 flex items-center gap-3.5 backdrop-blur-md">
-                <div class="w-11 h-11 bg-white p-1 rounded-xl shadow-md flex items-center justify-center shrink-0">
-                    <img src="{{ asset('images/logo-bksda.png') }}" alt="Logo BKSDA" class="h-full w-auto object-contain" onerror="this.src='https://via.placeholder.com/50?text=BKSDA'">
-                </div>
-                <div>
-                    <h1 class="font-black text-sm tracking-wide text-white leading-tight">SIDAK BKSDA</h1>
-                    <p class="text-[11px] font-black text-amber-400 tracking-wider">SULAWESI TENGAH</p>
-                </div>
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h2 class="font-extrabold text-xl text-slate-800 leading-tight">
+                    {{ __('Dashboard Analytics') }}
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">
+                    Sistem Informasi Data Konservasi (SIDAK) Balai KSDA Sulawesi Tengah
+                </p>
             </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    Sistem Aktif
+                </span>
+                <a href="{{ route('konservasi.create') }}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm transition">
+                    <i class="fas fa-plus text-amber-400"></i>
+                    <span>Tambah Data</span>
+                </a>
+            </div>
+        </div>
+    </x-slot>
 
-            <nav class="p-4 space-y-1.5 text-sm">
-                <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400/80">Main Menu</div>
+    <div class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
-                <a href="{{ route('konservasi.dashboard') }}" class="flex items-center justify-between px-4 py-3 rounded-xl bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30 transition">
-                    <div class="flex items-center gap-3">
-                        <i class="fas fa-chart-pie w-5 text-amber-400"></i>
-                        <span>Dashboard Analytics</span>
+        <!-- Banner Welcome Header -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 p-6 md:p-8 text-white shadow-xl">
+            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div class="space-y-2 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
+                        <i class="fas fa-leaf"></i> Balai KSDA Sulawesi Tengah
                     </div>
-                </a>
-
-                <a href="{{ route('konservasi.create') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-emerald-800/40 transition font-medium">
-                    <i class="fas fa-file-pen w-5 text-emerald-400"></i>
-                    <span>Input Data Konservasi</span>
-                </a>
-
-                <a href="{{ route('konservasi.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-emerald-800/40 transition font-medium">
-                    <i class="fas fa-database w-5 text-emerald-400"></i>
-                    <span>Rekapitulasi Data</span>
-                </a>
-
-                <a href="{{ route('konservasi.peta') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:text-white hover:bg-emerald-800/40 transition font-medium">
-                    <i class="fas fa-map-location-dot w-5 text-emerald-400"></i>
-                    <span>Peta GIS Kawasan</span>
-                </a>
-            </nav>
-        </div>
-
-        <!-- Tombol Logout -->
-        <div class="p-4 border-t border-emerald-800/40 mt-auto bg-emerald-950/40">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 transition font-bold text-sm">
-                    <i class="fas fa-right-from-bracket w-5 text-rose-400"></i>
-                    <span>Keluar / Logout</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- AREA KONTEN UTAMA -->
-    <div class="flex-1 flex flex-col min-w-0 bg-slate-100/70">
-        
-        <!-- Header Topbar -->
-        <header class="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md px-6 md:px-8 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-            <div class="flex items-center gap-2.5">
-                <span class="font-semibold text-slate-400 text-xs">Sistem Informasi</span>
-                <i class="fas fa-chevron-right text-[9px] text-slate-300"></i>
-                <span class="text-emerald-800 font-bold text-xs">Dashboard Analytics</span>
+                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">
+                        Selamat Datang, {{ Auth::user()->name ?? 'Operator' }}!
+                    </h1>
+                    <p class="text-xs md:text-sm text-emerald-100/90 leading-relaxed">
+                        Pantau seluruh ringkasan capaian kinerja, rekapitulasi data konservasi kawasan, dan persebaran koordinat GIS secara real-time di sini.
+                    </p>
+                </div>
+                <div class="shrink-0 flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
+                    <div class="w-12 h-12 rounded-xl bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-lg shadow-md">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="text-xs">
+                        <p class="text-slate-200">Hak Akses</p>
+                        <p class="font-extrabold text-white">Petugas Operator</p>
+                    </div>
+                </div>
             </div>
-        </header>
+        </div>
 
-        <main class="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
+        <!-- STAT CARDS ATAS (RAPI, BERWARNA & INFORMATIF) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Ringkasan Kinerja & Data</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Balai Konservasi Sumber Daya Alam Sulawesi Tengah</p>
-                </div>
-            </div>
-
-            <!-- WIDGET STATISTIK -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between hover:shadow-md transition-all">
-                    <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Entri Data</p>
-                        <h3 class="text-3xl font-black text-slate-800 mt-1">{{ $totalData }}</h3>
-                    </div>
-                    <div class="w-12 h-12 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
+            <!-- Card 1: Total Data -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Total Data Konservasi</span>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base font-bold group-hover:bg-emerald-600 group-hover:text-white transition">
                         <i class="fas fa-folder-open"></i>
                     </div>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between hover:shadow-md transition-all">
-                    <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Akumulasi Volume</p>
-                        <h3 class="text-3xl font-black text-emerald-800 mt-1">{{ number_format($totalVolume) }}</h3>
-                    </div>
-                    <div class="w-12 h-12 bg-amber-50 text-amber-600 border border-amber-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
-                        <i class="fas fa-cubes"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between hover:shadow-md transition-all">
-                    <div>
-                        <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Titik Terpetakan (GIS)</p>
-                        <h3 class="text-3xl font-black text-slate-800 mt-1">{{ $totalLokasi }}</h3>
-                    </div>
-                    <div class="w-12 h-12 bg-sky-50 text-sky-600 border border-sky-100 rounded-xl flex items-center justify-center text-xl shadow-sm">
-                        <i class="fas fa-location-dot"></i>
+                <div class="mt-3">
+                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">
+                        {{ $totalData ?? '1' }}
+                    </h3>
+                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-emerald-600">
+                        <i class="fas fa-circle-check text-[10px]"></i>
+                        <span>Terdata di Sistem</span>
                     </div>
                 </div>
             </div>
 
-            <!-- GRAFIK & DATA TERBARU -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Card 2: Kawasan Terdaftar -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Kawasan Terdaftar</span>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base font-bold group-hover:bg-amber-500 group-hover:text-white transition">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">12</h3>
+                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-amber-600">
+                        <i class="fas fa-location-dot text-[10px]"></i>
+                        <span>Wilayah BKSDA Sulteng</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Titik Koordinat -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Titik Koordinat</span>
+                    <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base font-bold group-hover:bg-sky-500 group-hover:text-white transition">
+                        <i class="fas fa-map-pin"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">1</h3>
+                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-sky-600">
+                        <i class="fas fa-satellite text-[10px]"></i>
+                        <span>Terintegrasi Peta GIS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4: Petugas Operator -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Petugas Operator</span>
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base font-bold group-hover:bg-purple-600 group-hover:text-white transition">
+                        <i class="fas fa-user-gear"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-sm font-black text-slate-800 truncate leading-snug" title="{{ Auth::user()->name ?? 'HADYNATA YUSUF PRATAMA' }}">
+                        {{ Auth::user()->name ?? 'HADYNATA YUSUF PRATAMA' }}
+                    </h3>
+                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-purple-600">
+                        <i class="fas fa-circle text-[8px] animate-pulse"></i>
+                        <span>Logged In</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION UTAMA (GRAFIK + SIDE PANEL) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Area Grafik Visualisasi Data (2 Kolom) -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <h3 class="text-base font-black text-slate-800">Visualisasi Sebaran Data</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Ringkasan akumulasi jumlah data per kategori/bidang</p>
+                    </div>
+                    <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold">
+                        Tahun {{ date('Y') }}
+                    </span>
+                </div>
+
+                <!-- Kontainer Grafik -->
+                <div class="pt-2 min-h-[300px] flex items-center justify-center">
+                    {{-- Kode Grafik / Chart Kamu ditaruh di sini --}}
+                    {{-- Jika memakai Chart.js atau visualisasi khusus --}}
+                    <div class="w-full">
+                        {{-- Contoh Placeholder Canvas Chart.js --}}
+                        <canvas id="konservasiChart" class="w-full max-h-[320px]"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel Samping Cepat (1 Kolom) -->
+            <div class="space-y-6">
                 
-                <!-- BAR CHART -->
-                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
-                    <div class="mb-5 pb-3 border-b border-slate-100 flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-base">Ringkasan Data Aktivitas</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Jumlah laporan kegiatan yang terdaftar per bidang</p>
-                        </div>
+                <!-- Box Quick Access GIS -->
+                <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-emerald-900 rounded-3xl p-6 text-white shadow-md relative overflow-hidden border border-emerald-800/50">
+                    <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 text-emerald-800/20 text-9xl font-black pointer-events-none">
+                        <i class="fas fa-map-marked-alt"></i>
                     </div>
-                    <div class="relative w-full h-80">
-                        <canvas id="analyticsChart"></canvas>
+                    <div class="relative z-10 space-y-4">
+                        <div class="w-10 h-10 rounded-xl bg-amber-400 text-emerald-950 flex items-center justify-center text-base font-extrabold shadow-sm">
+                            <i class="fas fa-map-location-dot"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-base font-extrabold text-white">Akses Cepat GIS</h4>
+                            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                                Lihat pemetaan kawasan hutan konservasi BKSDA Sulawesi Tengah secara terintegrasi.
+                            </p>
+                        </div>
+                        <a href="{{ route('konservasi.peta') }}" class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold rounded-xl text-xs transition shadow-md">
+                            <span>Buka Peta GIS Kawasan</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
                     </div>
                 </div>
 
-                <!-- AKTIVITAS TERBARU -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
-                    <div>
-                        <div class="mb-5 pb-3 border-b border-slate-100">
-                            <h4 class="font-bold text-slate-800 text-base">Entri Terbaru</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Daftar laporan masuk terkini</p>
+                <!-- Ringkasan Informasi Sistem -->
+                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+                    <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Informasi Sistem</h4>
+                    
+                    <div class="space-y-3 text-xs divide-y divide-slate-100">
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="text-slate-500 font-medium">Instansi</span>
+                            <span class="font-extrabold text-slate-800">BKSDA Sulteng</span>
                         </div>
-                        <div class="space-y-3">
-                            @forelse($recentData as $item)
-                            <div class="p-3.5 bg-slate-50 hover:bg-emerald-50/40 rounded-xl border border-slate-100 transition flex justify-between items-center gap-3">
-                                <div class="min-w-0 flex-1">
-                                    <p class="font-bold text-slate-700 text-xs truncate leading-snug">{{ $item->subBidang->nama_sub_bidang ?? 'N/A' }}</p>
-                                    <p class="text-slate-400 text-[10px] mt-0.5">{{ $item->created_at->diffForHumans() }}</p>
-                                </div>
-                                <span class="font-black text-xs text-emerald-800 bg-emerald-100/80 px-2.5 py-1 rounded-lg shrink-0 border border-emerald-200/50">
-                                    {{ $item->jumlah ?? 0 }}
-                                </span>
-                            </div>
-                            @empty
-                            <div class="text-center py-8">
-                                <i class="fas fa-folder-open text-slate-300 text-3xl mb-2"></i>
-                                <p class="text-slate-400 text-xs font-medium">Belum ada data terbaru.</p>
-                            </div>
-                            @endforelse
+                        <div class="flex justify-between items-center pt-3">
+                            <span class="text-slate-500 font-medium">Sistem</span>
+                            <span class="font-extrabold text-emerald-700">SIDAK v2.0</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3">
+                            <span class="text-slate-500 font-medium">Wilayah Kerja</span>
+                            <span class="font-extrabold text-slate-800">Sulawesi Tengah</span>
                         </div>
                     </div>
                 </div>
 
             </div>
 
-        </main>
-    </div>
+        </div>
 
-    <!-- SCRIPT CHART.JS -->
-    <script>
-    const ctx = document.getElementById('analyticsChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {!! json_encode($chartLabels) !!},
-            datasets: [{
-                label: 'Jumlah Entri Kegiatan',
-                data: {!! json_encode($chartData) !!},
-                backgroundColor: '#065f46',
-                hoverBackgroundColor: '#047857',
-                borderRadius: 8,
-                barThickness: 32
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: '#f1f5f9' },
-                    ticks: {
-                        stepSize: 1,
-                        precision: 0,
-                        font: { family: 'Plus Jakarta Sans', size: 11 }
-                    }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: {
-                        font: { family: 'Plus Jakarta Sans', size: 11, weight: '500' }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        font: { family: 'Plus Jakarta Sans', size: 12, weight: '600' }
-                    }
-                }
-            }
-        }
-    });
-    </script>
-</body>
-</html>
+    </div>
+</x-app-layout>

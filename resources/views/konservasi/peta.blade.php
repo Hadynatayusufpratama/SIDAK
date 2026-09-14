@@ -19,7 +19,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex antialiased">
 
-    <!-- SIDEBAR NAVIGASI UTAMA (Presisi & Seragam) -->
+    <!-- SIDEBAR NAVIGASI UTAMA -->
     <aside class="w-72 bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-900 border-r border-emerald-800/40 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 shadow-2xl z-40">
         <div>
             <!-- Header Brand BKSDA Sulteng -->
@@ -37,28 +37,24 @@
             <nav class="p-4 space-y-1.5 text-sm">
                 <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400/80">Main Menu</div>
 
-                <!-- Dashboard Analytics -->
                 <a href="{{ route('konservasi.dashboard') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.dashboard') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
                     <i class="fas fa-chart-pie w-5 {{ request()->routeIs('konservasi.dashboard') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
                     <span>Dashboard Analytics</span>
                 </a>
 
-                <!-- Input Data Konservasi -->
                 <a href="{{ route('konservasi.create') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.create') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
                     <i class="fas fa-file-pen w-5 {{ request()->routeIs('konservasi.create') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
                     <span>Input Data Konservasi</span>
                 </a>
 
-                <!-- Rekapitulasi Data -->
                 <a href="{{ route('konservasi.index') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.index') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
                     <i class="fas fa-database w-5 {{ request()->routeIs('konservasi.index') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
                     <span>Rekapitulasi Data</span>
                 </a>
 
-                <!-- Peta GIS Kawasan (Aktif) -->
                 <a href="{{ route('konservasi.peta') }}" 
                    class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.peta') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
                     <i class="fas fa-map-location-dot w-5 {{ request()->routeIs('konservasi.peta') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
@@ -67,7 +63,6 @@
             </nav>
         </div>
 
-        <!-- Tombol Logout & Footer Sidebar -->
         <div class="p-4 border-t border-emerald-800/40 mt-auto bg-emerald-950/40">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -95,7 +90,6 @@
                 </div>
             </div>
 
-            <!-- Profile & Badge Topbar -->
             <div class="flex items-center gap-4">
                 <div class="hidden lg:flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
                     <i class="fas fa-building-columns text-[#005826]"></i>
@@ -127,32 +121,92 @@
 
     <!-- Leaflet Map Script -->
     <script>
-        // Inisialisasi Peta Berpusat di Sulawesi Tengah
-        var map = L.map('map').setView([-0.8971, 119.8712], 7);
+        // 1. Inisialisasi Peta Fokus Langsung ke Sulawesi Tengah (Zoom Level 7)
+        var map = L.map('map', {
+            minZoom: 6,
+            maxZoom: 18
+        }).setView([-1.2, 120.8], 7);
 
-        // Tile Layer OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; BKSDA Sulawesi Tengah | OpenStreetMap'
-        }).addTo(map);
-
-        // Parsing Data Konservasi ke Marker Peta
-        var locations = @json($locations);
-
-        locations.forEach(function(item) {
-            if(item.latitude && item.longitude) {
-                var marker = L.marker([item.latitude, item.longitude]).addTo(map);
-                
-                var popupContent = `
-                    <div class="p-1">
-                        <strong class="text-xs text-[#005826] block">${item.sub_bidang ? item.sub_bidang.bidang.nama_bidang : ''}</strong>
-                        <h4 class="font-bold text-sm text-slate-800">${item.sub_bidang ? item.sub_bidang.nama_sub_bidang : ''}</h4>
-                        <p class="text-xs text-slate-600 mt-1">Volume: <strong>${item.jumlah ?? '-'}</strong></p>
-                        <p class="text-xs text-slate-500 mt-1">${item.keterangan ?? ''}</p>
-                    </div>
-                `;
-                marker.bindPopup(popupContent);
-            }
+        // 2. Basemap Satelite Esri & OpenStreetMap
+        var sateliteMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; BKSDA Sulawesi Tengah'
         });
+
+        var streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; BKSDA Sulawesi Tengah | OpenStreetMap'
+        });
+
+        // Set Default ke Peta Satelit
+        sateliteMap.addTo(map);
+
+        // Switcher Layer
+        var baseMaps = {
+            "Peta Satelit (Esri)": sateliteMap,
+            "Peta Jalan (OSM)": streetMap
+        };
+        L.control.layers(baseMaps).addTo(map);
+
+        // 3. MUAT GEOJSON KAWASAN KONSERVASI BKSDA SULTENG
+        fetch("{{ asset('Kawasan_Hutan_Konservasi_SIDAK_2.json') }}")
+            .then(response => response.json())
+            .then(data => {
+                var geojsonLayer = L.geoJSON(data, {
+                    style: function(feature) {
+                        return {
+                            color: "#22c55e",       // Batas Luar (Hijau Terang)
+                            weight: 2,
+                            opacity: 1,
+                            fillColor: "#16a34a",   // Isian Area Kawasan
+                            fillOpacity: 0.5
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            var namaKawasan = feature.properties.NAMOBJ || "Kawasan Konservasi";
+                            var fungsi = feature.properties.REMARK || "BKSDA Sulteng";
+                            var kabupaten = feature.properties.WADMKK || "-";
+
+                            layer.bindTooltip(namaKawasan, {
+                                permanent: false,
+                                direction: "center",
+                                className: "bg-emerald-900/90 text-white font-bold px-2 py-1 rounded text-xs border border-emerald-400"
+                            });
+
+                            layer.bindPopup(`
+                                <div class="p-1 min-w-[180px]">
+                                    <strong class="text-[10px] text-emerald-600 block uppercase tracking-wider font-extrabold">BKSDA SULAWESI TENGAH</strong>
+                                    <h4 class="font-bold text-sm text-slate-800 leading-snug mt-0.5">${namaKawasan}</h4>
+                                    <hr class="my-2 border-slate-200">
+                                    <p class="text-xs text-slate-600">Kabupaten/Kota: <strong>${kabupaten}</strong></p>
+                                    <p class="text-xs text-slate-500 mt-1">Fungsi: <span>${fungsi}</span></p>
+                                </div>
+                            `);
+                        }
+                    }
+                }).addTo(map);
+
+                // Auto zoom memuat seluruh wilayah kawasan
+                map.fitBounds(geojsonLayer.getBounds());
+            })
+            .catch(error => console.error("Error GeoJSON:", error));
+
+        // 4. Marker Lokasi Database
+        var locations = @json($locations);
+        if (Array.isArray(locations)) {
+            locations.forEach(function(item) {
+                if(item.latitude && item.longitude) {
+                    var marker = L.marker([item.latitude, item.longitude]).addTo(map);
+                    marker.bindPopup(`
+                        <div class="p-1">
+                            <strong class="text-xs text-[#005826] block">${item.sub_bidang ? item.sub_bidang.bidang.nama_bidang : ''}</strong>
+                            <h4 class="font-bold text-sm text-slate-800">${item.sub_bidang ? item.sub_bidang.nama_sub_bidang : ''}</h4>
+                            <p class="text-xs text-slate-600 mt-1">Volume: <strong>${item.jumlah ?? '-'}</strong></p>
+                            <p class="text-xs text-slate-500 mt-1">${item.keterangan ?? ''}</p>
+                        </div>
+                    `);
+                }
+            });
+        }
     </script>
 </body>
 </html>
