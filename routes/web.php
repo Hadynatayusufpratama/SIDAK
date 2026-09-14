@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KonservasiController;
 
-// Pengunjung langsung diarahkan ke halaman login
+// Pengunjung dialihkan ke Landing Page SIDAK BKSDA
 Route::get('/', function () {
-    return redirect()->route('login');
-});
+    return view('landing');
+})->name('landing');
 
 // ROUTE SIDAK BKSDA (Wajib Login)
 Route::middleware(['auth', 'verified'])->group(function () {

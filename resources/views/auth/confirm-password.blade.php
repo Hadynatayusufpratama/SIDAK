@@ -1,27 +1,25 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-    </div>
+<x-guest-layout :title="'Konfirmasi Password - SIDAK BKSDA Sulawesi Tengah'">
+
+    <span class="auth-badge"><span class="dot"></span> AREA AMAN</span>
+    <h1>Konfirmasi <em>password</em></h1>
+    <p class="sub">Ini adalah area sensitif, mohon masukkan password kamu lagi untuk melanjutkan.</p>
 
     <form method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password"
+                   placeholder="Masukkan password" required autofocus autocomplete="current-password">
+            @error('password')
+                <div class="err">{{ $message }}</div>
+            @enderror
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn-submit">
+            Konfirmasi
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
     </form>
+
 </x-guest-layout>
