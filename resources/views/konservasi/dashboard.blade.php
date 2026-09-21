@@ -1,207 +1,286 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-                <h2 class="font-extrabold text-xl text-slate-800 leading-tight">
-                    {{ __('Dashboard Analytics') }}
-                </h2>
-                <p class="text-xs text-slate-500 mt-1">
-                    Sistem Informasi Data Konservasi (SIDAK) Balai KSDA Sulawesi Tengah
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - SIDAK BKSDA Sulawesi Tengah</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            600: '#15803d',
+                            700: '#166534',
+                            800: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100/90 font-sans text-slate-800 antialiased min-h-screen relative">
+
+    <!-- BACKGROUND GLOBAL KAWASAN KONSERVASI DENGAN OPASITAS TIPIS -->
+    <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1920&auto=format&fit=crop" alt="Background Konservasi" class="w-full h-full object-cover opacity-15">
+        <div class="absolute inset-0 bg-slate-100/75 backdrop-blur-[2px]"></div>
+    </div>
+
+    <!-- NAVBAR UTAMA (ROUTE AKTIF & BISA DIKLIK) -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Title Instansi Menggunakan logo-icon.png -->
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-1.5 shadow-xs overflow-hidden">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-sm tracking-tight text-slate-900 leading-tight">SIDAK BKSDA SULTENG</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Sistem Informasi Data Konservasi</span>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi (Aktif & Bisa Diklik) -->
+            <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200">
+                <a href="{{ route('konservasi.dashboard') }}" class="px-4 py-2 rounded-lg text-xs font-semibold bg-white text-forest-700 shadow-xs">Dashboard</a>
+                <a href="{{ route('konservasi.index') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Rekapitulasi</a>
+                <a href="{{ route('konservasi.create') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Tambah Data</a>
+                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Peta GIS</a>
+            </nav>
+
+            <!-- Status & User Profile -->
+            <div class="flex items-center space-x-4">
+                <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Sistem Aktif
+                </span>
+                <div class="flex items-center space-x-2.5 border-l pl-4 border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-forest-700 text-white flex items-center justify-center font-bold text-xs shadow-sm">FA</div>
+                    <div class="hidden sm:block text-left">
+                        <p class="text-xs font-bold text-slate-800 leading-tight">fadil aja</p>
+                        <p class="text-[10px] text-slate-500">Operator</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+        <!-- HERO BANNER DENGAN BACKGROUND SATWA ENDEMIK & KAWASAN SULTENG -->
+        <div class="relative rounded-2xl overflow-hidden shadow-xl bg-slate-900 text-white min-h-[280px] flex flex-col justify-between p-8 border border-slate-800">
+            <!-- Background Image Menggunakan File Lokal Satwa Endemik (anoa, babirusa, maleo, tarsius, dll) -->
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('images/satwa-endemik-sulteng.jpg') }}" alt="Satwa Endemik & Kawasan Konservasi Sulawesi Tengah" class="w-full h-full object-cover opacity-50 transform hover:scale-105 transition duration-700" onerror="this.src='https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1600&auto=format&fit=crop'">
+                <div class="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-slate-950/40"></div>
+            </div>
+
+            <!-- Konten Banner -->
+            <div class="relative z-10 max-w-2xl">
+                <div class="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-medium mb-3 text-emerald-300 shadow-sm">
+                    <i class="fa-solid fa-tree"></i> <span>Kawasan Konservasi & Satwa Endemik Sulawesi Tengah</span>
+                </div>
+                <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Selamat Datang, fadil aja!</h2>
+                <p class="mt-2 text-sm text-slate-200 leading-relaxed">
+                    Pusat pemantauan data kawasan hutan, perlindungan satwa endemik (Anoa, Babirusa, Maleo, Tarsius, Rangkong, Buaya), serta pemetaan koordinat GIS wilayah kerja BKSDA Sulteng.
                 </p>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    Sistem Aktif
-                </span>
-                <a href="{{ route('konservasi.create') }}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm transition">
-                    <i class="fas fa-plus text-amber-400"></i>
-                    <span>Tambah Data</span>
-                </a>
-            </div>
-        </div>
-    </x-slot>
 
-    <div class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-
-        <!-- Banner Welcome Header -->
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 p-6 md:p-8 text-white shadow-xl">
-            <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div class="space-y-2 max-w-2xl">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
-                        <i class="fas fa-leaf"></i> Balai KSDA Sulawesi Tengah
-                    </div>
-                    <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">
-                        Selamat Datang, {{ Auth::user()->name ?? 'Operator' }}!
-                    </h1>
-                    <p class="text-xs md:text-sm text-emerald-100/90 leading-relaxed">
-                        Pantau seluruh ringkasan capaian kinerja, rekapitulasi data konservasi kawasan, dan persebaran koordinat GIS secara real-time di sini.
-                    </p>
+            <!-- Tombol Tambah Data & Badge Hak Akses di Banner -->
+            <div class="relative z-10 flex flex-wrap items-center justify-between gap-4 mt-6 pt-4 border-t border-white/15">
+                <div class="flex items-center space-x-2 text-xs text-slate-200">
+                    <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                    <span>Hak Akses: <strong class="text-white font-semibold">Petugas Operator Terverifikasi</strong></span>
                 </div>
-                <div class="shrink-0 flex items-center gap-3 bg-white/10 backdrop-blur-md p-3 rounded-2xl border border-white/10">
-                    <div class="w-12 h-12 rounded-xl bg-amber-400 text-emerald-950 flex items-center justify-center font-black text-lg shadow-md">
-                        <i class="fas fa-shield-halved"></i>
-                    </div>
-                    <div class="text-xs">
-                        <p class="text-slate-200">Hak Akses</p>
-                        <p class="font-extrabold text-white">Petugas Operator</p>
-                    </div>
+                <div>
+                    <a href="{{ route('konservasi.create') }}" class="inline-flex items-center justify-center px-4.5 py-2.5 rounded-xl text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 shadow-md transition">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Tambah Data Konservasi
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- STAT CARDS ATAS (RAPI, BERWARNA & INFORMATIF) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- GRID STATISTIK & LAPORAN -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
-            <!-- Card 1: Total Data -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Total Data Konservasi</span>
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base font-bold group-hover:bg-emerald-600 group-hover:text-white transition">
-                        <i class="fas fa-folder-open"></i>
+            <!-- Card 1 -->
+            <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                <div class="flex items-center justify-between text-slate-500 mb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Konservasi</span>
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100">
+                        <i class="fa-solid fa-database text-lg"></i>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">
-                        {{ $totalData ?? '1' }}
-                    </h3>
-                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-emerald-600">
-                        <i class="fas fa-circle-check text-[10px]"></i>
-                        <span>Terdata di Sistem</span>
-                    </div>
-                </div>
+                <h3 class="text-3xl font-extrabold text-slate-900">4,512</h3>
+                <p class="text-xs text-slate-500 mt-1 flex items-center">
+                    <span class="text-emerald-600 font-medium mr-1"><i class="fa-solid fa-arrow-trend-up"></i> +12%</span> Rekaman Data Satwa & Ekosistem
+                </p>
             </div>
 
-            <!-- Card 2: Kawasan Terdaftar -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Kawasan Terdaftar</span>
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base font-bold group-hover:bg-amber-500 group-hover:text-white transition">
-                        <i class="fas fa-tree"></i>
+            <!-- Card 2 -->
+            <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                <div class="flex items-center justify-between text-slate-500 mb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Kawasan Terdaftar</span>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100">
+                        <i class="fa-solid fa-tree text-lg"></i>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">12</h3>
-                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-amber-600">
-                        <i class="fas fa-location-dot text-[10px]"></i>
-                        <span>Wilayah BKSDA Sulteng</span>
-                    </div>
-                </div>
+                <h3 class="text-3xl font-extrabold text-slate-900">12</h3>
+                <p class="text-xs text-slate-500 mt-1">Total Area Terlindung: 1,250 Ha</p>
             </div>
 
-            <!-- Card 3: Titik Koordinat -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Titik Koordinat</span>
-                    <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center text-base font-bold group-hover:bg-sky-500 group-hover:text-white transition">
-                        <i class="fas fa-map-pin"></i>
+            <!-- Card 3 -->
+            <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                <div class="flex items-center justify-between text-slate-500 mb-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Titik Koordinat GIS</span>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                        <i class="fa-solid fa-satellite text-lg"></i>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">1</h3>
-                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-sky-600">
-                        <i class="fas fa-satellite text-[10px]"></i>
-                        <span>Terintegrasi Peta GIS</span>
-                    </div>
-                </div>
+                <h3 class="text-3xl font-extrabold text-slate-900">25</h3>
+                <p class="text-xs text-slate-500 mt-1">Pemantauan GIS Real-time Aktif</p>
             </div>
 
-            <!-- Card 4: Petugas Operator -->
-            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover:shadow-md transition group">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Petugas Operator</span>
-                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-base font-bold group-hover:bg-purple-600 group-hover:text-white transition">
-                        <i class="fas fa-user-gear"></i>
+            <!-- Card 4 (Aktivitas Lapangan) -->
+            <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Kegiatan Lapangan</span>
+                        <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center border border-rose-100">
+                            <i class="fa-solid fa-calendar-days text-sm"></i>
+                        </div>
                     </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Patroli Hutan & Maleo</h4>
+                    <p class="text-xs text-slate-500 mt-0.5">Status: <span class="text-emerald-600 font-semibold">Berjalan / Siaga</span></p>
                 </div>
-                <div class="mt-3">
-                    <h3 class="text-sm font-black text-slate-800 truncate leading-snug" title="{{ Auth::user()->name ?? 'HADYNATA YUSUF PRATAMA' }}">
-                        {{ Auth::user()->name ?? 'HADYNATA YUSUF PRATAMA' }}
-                    </h3>
-                    <div class="flex items-center gap-1.5 mt-2 text-xs font-bold text-purple-600">
-                        <i class="fas fa-circle text-[8px] animate-pulse"></i>
-                        <span>Logged In</span>
-                    </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span>3 Monitoring Aktif</span>
+                    <span class="font-medium text-forest-700">Hari Ini</span>
                 </div>
             </div>
 
         </div>
 
-        <!-- SECTION UTAMA (GRAFIK + SIDE PANEL) -->
+        <!-- SECTION BAWAH: VISUALISASI GRAFIK MODERN & PETA GIS INTERAKTIF -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- Area Grafik Visualisasi Data (2 Kolom) -->
-            <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div>
-                        <h3 class="text-base font-black text-slate-800">Visualisasi Sebaran Data</h3>
-                        <p class="text-xs text-slate-400 mt-0.5">Ringkasan akumulasi jumlah data per kategori/bidang</p>
-                    </div>
-                    <span class="px-3 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded-xl text-xs font-extrabold">
-                        Tahun {{ date('Y') }}
-                    </span>
-                </div>
-
-                <!-- Kontainer Grafik -->
-                <div class="pt-2 min-h-[300px] flex items-center justify-center">
-                    {{-- Kode Grafik / Chart Kamu ditaruh di sini --}}
-                    {{-- Jika memakai Chart.js atau visualisasi khusus --}}
-                    <div class="w-full">
-                        {{-- Contoh Placeholder Canvas Chart.js --}}
-                        <canvas id="konservasiChart" class="w-full max-h-[320px]"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Panel Samping Cepat (1 Kolom) -->
-            <div class="space-y-6">
-                
-                <!-- Box Quick Access GIS -->
-                <div class="bg-gradient-to-br from-slate-900 via-emerald-950 to-emerald-900 rounded-3xl p-6 text-white shadow-md relative overflow-hidden border border-emerald-800/50">
-                    <div class="absolute right-0 bottom-0 translate-x-4 translate-y-4 text-emerald-800/20 text-9xl font-black pointer-events-none">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <div class="relative z-10 space-y-4">
-                        <div class="w-10 h-10 rounded-xl bg-amber-400 text-emerald-950 flex items-center justify-center text-base font-extrabold shadow-sm">
-                            <i class="fas fa-map-location-dot"></i>
+            
+            <!-- Kolom Kiri: Visualisasi Grafik Sebaran Data (Modern & Interaktif) -->
+            <div class="lg:col-span-2 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-slate-900">Visualisasi Sebaran Data Konservasi</h3>
+                            <p class="text-xs text-slate-500">Akumulasi statistik populasi satwa endemik & luas kawasan hutan</p>
                         </div>
                         <div>
-                            <h4 class="text-base font-extrabold text-white">Akses Cepat GIS</h4>
-                            <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                                Lihat pemetaan kawasan hutan konservasi BKSDA Sulawesi Tengah secara terintegrasi.
-                            </p>
+                            <select class="text-xs border border-slate-300 rounded-xl px-3.5 py-2 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-forest-600 font-medium text-slate-700 shadow-xs">
+                                <option>Periode 2026 | Kategori Satwa & Hutan</option>
+                                <option>Periode 2025</option>
+                            </select>
                         </div>
-                        <a href="{{ route('konservasi.peta') }}" class="inline-flex items-center justify-center gap-2 w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold rounded-xl text-xs transition shadow-md">
-                            <span>Buka Peta GIS Kawasan</span>
-                            <i class="fas fa-arrow-right"></i>
-                        </a>
+                    </div>
+
+                    <!-- Modern Bar Chart dengan Efek Gradasi & Animasi -->
+                    <div class="h-64 flex items-end justify-between gap-3 pt-8 px-4 border-b border-slate-200 relative">
+                        <!-- Garis Grid Latar Belakang Grafik -->
+                        <div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-25">
+                            <div class="border-b border-dashed border-slate-300 w-full"></div>
+                            <div class="border-b border-dashed border-slate-300 w-full"></div>
+                            <div class="border-b border-dashed border-slate-300 w-full"></div>
+                            <div class="border-b border-dashed border-slate-300 w-full"></div>
+                        </div>
+
+                        <!-- Batang 1 -->
+                        <div class="w-full bg-gradient-to-t from-emerald-800 to-emerald-600 rounded-t-xl h-[65%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">1,420 Data</span>
+                        </div>
+                        <!-- Batang 2 -->
+                        <div class="w-full bg-gradient-to-t from-rose-500 to-rose-400 rounded-t-xl h-[80%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">1,850 Data</span>
+                        </div>
+                        <!-- Batang 3 -->
+                        <div class="w-full bg-gradient-to-t from-amber-500 to-amber-400 rounded-t-xl h-[45%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">920 Data</span>
+                        </div>
+                        <!-- Batang 4 -->
+                        <div class="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-xl h-[30%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">610 Data</span>
+                        </div>
+                        <!-- Batang 5 -->
+                        <div class="w-full bg-gradient-to-t from-emerald-700 to-teal-500 rounded-t-xl h-[90%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">2,100 Data</span>
+                        </div>
+                        <!-- Batang 6 -->
+                        <div class="w-full bg-gradient-to-t from-amber-700 to-amber-600 rounded-t-xl h-[40%] hover:scale-y-[1.03] transition-all duration-300 cursor-pointer relative group shadow-sm">
+                            <span class="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition shadow-md whitespace-nowrap z-20">850 Data</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Ringkasan Informasi Sistem -->
-                <div class="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-                    <h4 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider">Informasi Sistem</h4>
-                    
-                    <div class="space-y-3 text-xs divide-y divide-slate-100">
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="text-slate-500 font-medium">Instansi</span>
-                            <span class="font-extrabold text-slate-800">BKSDA Sulteng</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-3">
-                            <span class="text-slate-500 font-medium">Sistem</span>
-                            <span class="font-extrabold text-emerald-700">SIDAK v2.0</span>
-                        </div>
-                        <div class="flex justify-between items-center pt-3">
-                            <span class="text-slate-500 font-medium">Wilayah Kerja</span>
-                            <span class="font-extrabold text-slate-800">Sulawesi Tengah</span>
+                <!-- Legenda Grafik -->
+                <div class="flex flex-wrap items-center justify-center gap-6 mt-6 text-xs text-slate-700 font-medium">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-600 shadow-xs"></span>
+                        <span>Satwa Endemik (Anoa/Maleo)</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-400 shadow-xs"></span>
+                        <span>Ekosistem Pesisir & Rawa</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 shadow-xs"></span>
+                        <span>Hutan Lindung & Suaka</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Akses Cepat Peta GIS -->
+            <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-sm border border-slate-800 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20 pointer-events-none">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop" alt="GIS Map" class="w-full h-full object-cover">
+                </div>
+
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg text-white">Akses Cepat GIS</h3>
+                        <span class="px-2.5 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">Live Map</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Eksplorasi spasial wilayah konservasi, titik koordinat patroli, dan batas kawasan hutan di Sulawesi Tengah secara terintegrasi.
+                    </p>
+
+                    <div class="mt-4 bg-slate-800/80 backdrop-blur rounded-xl p-3 border border-slate-700 h-40 flex items-center justify-center relative shadow-inner">
+                        <div class="absolute text-center">
+                            <i class="fa-solid fa-map-location-dot text-3xl text-emerald-400 mb-2 animate-bounce"></i>
+                            <p class="text-xs font-semibold text-slate-200">Peta Spasial Sulteng Aktif</p>
+                            <p class="text-[10px] text-slate-400">Lore Lindu • Morowali • Tinombo</p>
                         </div>
                     </div>
                 </div>
 
+                <div class="relative z-10 mt-6">
+                    <a href="{{ route('konservasi.peta') }}" class="w-full py-2.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs text-center block transition shadow-md">
+                        Jelajahi Peta GIS Interaktif <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </a>
+                </div>
             </div>
 
         </div>
 
-    </div>
-</x-app-layout>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 border-t border-slate-200 bg-white/80 backdrop-blur-md py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 <strong>SIDAK BKSDA Sulawesi Tengah</strong>. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
