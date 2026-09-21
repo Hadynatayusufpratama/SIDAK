@@ -3,9 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta GIS Kawasan - SIDAK BKSDA Sulteng</title>
+    <title>Peta GIS Kawasan - SIDAK BKSDA Sulawesi Tengah</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: {
+                            600: '#15803d',
+                            700: '#166534',
+                            800: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Leaflet GIS Map CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,112 +31,105 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        #map { height: calc(100vh - 140px); width: 100%; border-radius: 1rem; }
+        #map { height: 680px; width: 100%; border-radius: 1rem; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 min-h-screen flex antialiased">
+<body class="bg-slate-100/90 font-sans text-slate-800 antialiased min-h-screen relative">
 
-    <!-- SIDEBAR NAVIGASI UTAMA -->
-    <aside class="w-72 bg-gradient-to-b from-emerald-950 via-emerald-900 to-slate-900 border-r border-emerald-800/40 flex flex-col justify-between shrink-0 hidden md:flex min-h-screen sticky top-0 shadow-2xl z-40">
-        <div>
-            <!-- Header Brand BKSDA Sulteng -->
-            <div class="p-5 border-b border-emerald-800/40 bg-emerald-950/60 flex items-center gap-3.5 backdrop-blur-md">
-                <div class="w-12 h-12 bg-white rounded-xl shadow-md flex items-center justify-center shrink-0 p-1.5 border border-white/20">
-                    <img src="{{ asset('images/logo-bksda.jpeg') }}" alt="Logo BKSDA" class="w-full h-full object-contain scale-110" onerror="this.src='https://via.placeholder.com/50?text=BKSDA'">
-                </div>
-                <div>
-                    <h1 class="font-black text-sm tracking-wide text-white leading-tight">SIDAK BKSDA</h1>
-                    <p class="text-[11px] font-black text-amber-400 tracking-wider">SULAWESI TENGAH</p>
-                </div>
-            </div>
-
-            <!-- Menu Navigasi -->
-            <nav class="p-4 space-y-1.5 text-sm">
-                <div class="px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-emerald-400/80">Main Menu</div>
-
-                <a href="{{ route('konservasi.dashboard') }}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.dashboard') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
-                    <i class="fas fa-chart-pie w-5 {{ request()->routeIs('konservasi.dashboard') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
-                    <span>Dashboard Analytics</span>
-                </a>
-
-                <a href="{{ route('konservasi.create') }}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.create') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
-                    <i class="fas fa-file-pen w-5 {{ request()->routeIs('konservasi.create') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
-                    <span>Input Data Konservasi</span>
-                </a>
-
-                <a href="{{ route('konservasi.index') }}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.index') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
-                    <i class="fas fa-database w-5 {{ request()->routeIs('konservasi.index') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
-                    <span>Rekapitulasi Data</span>
-                </a>
-
-                <a href="{{ route('konservasi.peta') }}" 
-                   class="flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium {{ request()->routeIs('konservasi.peta') ? 'bg-emerald-800 text-white font-bold shadow-lg shadow-emerald-950/40 border border-emerald-600/30' : 'text-slate-300 hover:text-white hover:bg-emerald-800/40' }}">
-                    <i class="fas fa-map-location-dot w-5 {{ request()->routeIs('konservasi.peta') ? 'text-amber-400' : 'text-emerald-400' }}"></i>
-                    <span>Peta GIS Kawasan</span>
-                </a>
-            </nav>
-        </div>
-
-        <div class="p-4 border-t border-emerald-800/40 mt-auto bg-emerald-950/40">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-300 hover:text-white hover:bg-rose-600/20 transition font-bold text-sm">
-                    <i class="fas fa-right-from-bracket w-5 text-rose-400"></i>
-                    <span>Keluar / Logout</span>
-                </button>
-            </form>
-        </div>
-    </aside>
-
-    <!-- AREA KONTEN UTAMA -->
-    <div class="flex-1 flex flex-col min-w-0 bg-slate-100">
-
-        <!-- TOPBAR NAVBAR -->
-        <header class="h-16 border-b border-emerald-900/10 bg-white/90 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-            <div class="flex items-center gap-3">
-                <button class="md:hidden text-emerald-900 hover:text-emerald-700 text-lg">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="hidden sm:flex items-center gap-2 text-xs text-slate-500">
-                    <span class="font-medium text-slate-600">Sistem Informasi</span>
-                    <i class="fas fa-chevron-right text-[10px] text-slate-400"></i>
-                    <span class="text-[#005826] font-bold">Peta GIS Sebaran Kawasan</span>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="hidden lg:flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
-                    <i class="fas fa-building-columns text-[#005826]"></i>
-                    <span class="font-bold text-[#005826]">BALAI KSDA SULAWESI TENGAH</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-emerald-800 text-white font-bold rounded-xl flex items-center justify-center text-xs shadow-md uppercase">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
-                    </div>
-                    <div class="text-left hidden sm:block">
-                        <p class="text-xs font-bold text-slate-800 leading-tight">
-                            {{ Auth::user()->name ?? 'Administrator' }}
-                        </p>
-                        <p class="text-[10px] text-slate-500">
-                            {{ Auth::user()->email ?? 'Petugas Operator' }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- KONTEN PETA GIS -->
-        <main class="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-4">
-            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-lg">
-                <div id="map" class="shadow-inner"></div>
-            </div>
-        </main>
+    <!-- BACKGROUND GLOBAL KAWASAN KONSERVASI DENGAN OPASITAS TIPIS -->
+    <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1920&auto=format&fit=crop" alt="Background Konservasi" class="w-full h-full object-cover opacity-15">
+        <div class="absolute inset-0 bg-slate-100/75 backdrop-blur-[2px]"></div>
     </div>
 
-    <!-- Leaflet Map Script -->
+    <!-- NAVBAR UTAMA (SERAGAM DENGAN DASHBOARD, REKAPITULASI, & INPUT DATA) -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Title Instansi -->
+            <div class="flex items-center space-x-3">
+                <div class="w-11 h-11 rounded-xl bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-1.5 shadow-xs overflow-hidden">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/50?text=SIDAK';">
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-sm tracking-tight text-slate-900 leading-tight">SIDAK BKSDA SULTENG</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Sistem Informasi Data Konservasi</span>
+                </div>
+            </div>
+
+            <!-- Menu Navigasi (Menu Peta GIS Aktif) -->
+            <nav class="hidden md:flex items-center space-x-1 bg-slate-100/80 p-1.5 rounded-xl border border-slate-200">
+                <a href="{{ route('konservasi.dashboard') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
+                <a href="{{ route('konservasi.index') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Rekapitulasi</a>
+                <a href="{{ route('konservasi.create') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Tambah Data</a>
+                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-semibold bg-white text-forest-700 shadow-xs">Peta GIS</a>
+            </nav>
+
+            <!-- Status & User Profile (Dinamis) -->
+            <div class="flex items-center space-x-4">
+                <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Sistem Aktif
+                </span>
+                <div class="flex items-center space-x-2.5 border-l pl-4 border-slate-200">
+                    <div class="w-9 h-9 rounded-full bg-forest-700 text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'User', 0, 2)) }}
+                    </div>
+                    <div class="hidden sm:block text-left">
+                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name ?? 'Pengguna' }}</p>
+                        <p class="text-[10px] text-slate-500">{{ Auth::user()->role ?? 'Operator' }}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+        <!-- HEADER BANNER & RINGKASAN SEBARAN -->
+        <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold text-forest-700 uppercase tracking-wider bg-emerald-100/70 px-2.5 py-0.5 rounded-md">GIS Spasial</span>
+                    <span class="text-xs text-slate-400">&bull;</span>
+                    <span class="text-xs text-slate-500">Sulawesi Tengah</span>
+                </div>
+                <h2 class="font-extrabold text-2xl text-slate-900 tracking-tight">
+                    Peta GIS Sebaran Kawasan Conservasi
+                </h2>
+                <p class="text-xs text-slate-500 mt-1">
+                    Visualisasi batas interaktif kawasan hutan konservasi dan titik pemantauan Balai KSDA Sulawesi Tengah
+                </p>
+            </div>
+
+            <!-- Legenda Ringkas -->
+            <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                    <span class="w-3.5 h-3.5 rounded-sm bg-emerald-500/60 border border-emerald-600"></span>
+                    <span>Poligon Kawasan</span>
+                </div>
+                <div class="h-4 w-[1px] bg-slate-300"></div>
+                <div class="flex items-center gap-2 text-xs font-medium text-slate-700">
+                    <i class="fa-solid fa-location-dot text-rose-500"></i>
+                    <span>Titik Koordinat</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTAINER PETA GIS LEAFLET -->
+        <div class="bg-white/90 backdrop-blur-md p-4 md:p-5 rounded-2xl border border-slate-200/80 shadow-sm relative">
+            <div id="map" class="shadow-inner rounded-xl z-10"></div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-12 border-t border-slate-200 bg-white/80 backdrop-blur-md py-6 text-center text-xs text-slate-500">
+        <p>&copy; 2026 <strong>SIDAK BKSDA Sulawesi Tengah</strong>. All rights reserved.</p>
+    </footer>
+
+    <!-- Leaflet Map Logic -->
     <script>
         // 1. Inisialisasi Peta Fokus Langsung ke Sulawesi Tengah (Zoom Level 7)
         var map = L.map('map', {
@@ -169,12 +179,12 @@
                             layer.bindTooltip(namaKawasan, {
                                 permanent: false,
                                 direction: "center",
-                                className: "bg-emerald-900/90 text-white font-bold px-2 py-1 rounded text-xs border border-emerald-400"
+                                className: "bg-forest-800 text-white font-bold px-2.5 py-1 rounded-lg text-xs border border-forest-600 shadow-md"
                             });
 
                             layer.bindPopup(`
                                 <div class="p-1 min-w-[180px]">
-                                    <strong class="text-[10px] text-emerald-600 block uppercase tracking-wider font-extrabold">BKSDA SULAWESI TENGAH</strong>
+                                    <strong class="text-[10px] text-forest-700 block uppercase tracking-wider font-extrabold">BKSDA SULAWESI TENGAH</strong>
                                     <h4 class="font-bold text-sm text-slate-800 leading-snug mt-0.5">${namaKawasan}</h4>
                                     <hr class="my-2 border-slate-200">
                                     <p class="text-xs text-slate-600">Kabupaten/Kota: <strong>${kabupaten}</strong></p>
@@ -191,14 +201,14 @@
             .catch(error => console.error("Error GeoJSON:", error));
 
         // 4. Marker Lokasi Database
-        var locations = @json($locations);
+        var locations = <?php echo json_encode($locations ?? []); ?>;
         if (Array.isArray(locations)) {
             locations.forEach(function(item) {
                 if(item.latitude && item.longitude) {
                     var marker = L.marker([item.latitude, item.longitude]).addTo(map);
                     marker.bindPopup(`
                         <div class="p-1">
-                            <strong class="text-xs text-[#005826] block">${item.sub_bidang ? item.sub_bidang.bidang.nama_bidang : ''}</strong>
+                            <strong class="text-xs text-forest-700 block">${item.sub_bidang && item.sub_bidang.bidang ? item.sub_bidang.bidang.nama_bidang : ''}</strong>
                             <h4 class="font-bold text-sm text-slate-800">${item.sub_bidang ? item.sub_bidang.nama_sub_bidang : ''}</h4>
                             <p class="text-xs text-slate-600 mt-1">Volume: <strong>${item.jumlah ?? '-'}</strong></p>
                             <p class="text-xs text-slate-500 mt-1">${item.keterangan ?? ''}</p>

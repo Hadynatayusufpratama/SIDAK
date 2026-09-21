@@ -30,5 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/get-sub-bidang/{bidang_id}', [KonservasiController::class, 'getSubBidang']);
 });
 
+Route::get('/konservasi/export-pdf', [KonservasiController::class, 'exportPdf'])->name('konservasi.export.pdf');
+Route::get('/konservasi/export-excel', [KonservasiController::class, 'exportExcel'])->name('konservasi.export.excel');
 // Panggil file route autentikasi dari Breeze
 require __DIR__.'/auth.php';
