@@ -43,7 +43,7 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="font-bold text-sm tracking-tight text-slate-900 leading-tight">SIDAK BKSDA SULTENG</span>
-                    <span class="text-[11px] text-slate-500 font-medium">Sistem Informasi Data Konservasi</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Sistem Input data konservasi</span>
                 </div>
             </div>
 

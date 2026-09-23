@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KonservasiController;
+use App\Http\Controllers\RekapController;
+
+Route::get('/sub-bidang/{kode}', [RekapController::class, 'index'])->name('rekap.index');
 
 // Pengunjung dialihkan ke Landing Page SIDAK BKSDA
 Route::get('/', function () {
@@ -15,7 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/konservasi', [KonservasiController::class, 'index'])->name('konservasi.index');
     Route::get('/konservasi/create', [KonservasiController::class, 'create'])->name('konservasi.create');
+    
+    // ROUTE STORE (Disesuaikan agar mendukung nama 'sub-bidang.store' dan 'konservasi.store')
     Route::post('/konservasi', [KonservasiController::class, 'store'])->name('konservasi.store');
+    Route::post('/sub-bidang/store', [KonservasiController::class, 'store'])->name('sub-bidang.store');
     
     // ROUTE TAMBAHAN UNTUK EDIT & UPDATE DATA
     Route::get('/konservasi/{id}/edit', [KonservasiController::class, 'edit'])->name('konservasi.edit');
@@ -32,5 +38,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/konservasi/export-pdf', [KonservasiController::class, 'exportPdf'])->name('konservasi.export.pdf');
 Route::get('/konservasi/export-excel', [KonservasiController::class, 'exportExcel'])->name('konservasi.export.excel');
+
 // Panggil file route autentikasi dari Breeze
 require __DIR__.'/auth.php';

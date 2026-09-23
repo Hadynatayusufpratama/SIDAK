@@ -22,17 +22,29 @@
                     </x-nav-link>
                     @endif
 
-                    @if(Route::has('konservasi.index'))
-                    <x-nav-link :href="route('konservasi.index')" :active="request()->routeIs('konservasi.index')" class="text-xs font-bold transition">
-                        <i class="fas fa-database mr-2 text-emerald-600"></i> {{ __('Rekapitulasi') }}
-                    </x-nav-link>
-                    @endif
+                    <!-- Dropdown Sub-Bidang / Rekapitulasi -->
+                    <div class="relative" x-data="{ openSub: false }">
+                        <button @click="openSub = !openSub" @click.away="openSub = false" class="inline-flex items-center px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-800 focus:outline-none transition">
+                            <i class="fas fa-database mr-2 text-emerald-600"></i>
+                            <span>Rekap Sub-Bidang</span>
+                            <svg class="ml-1 h-4 w-4 fill-current text-slate-400" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
 
-                    @if(Route::has('konservasi.create'))
-                    <x-nav-link :href="route('konservasi.create')" :active="request()->routeIs('konservasi.create')" class="text-xs font-bold transition">
-                        <i class="fas fa-file-pen mr-2 text-emerald-600"></i> {{ __('Tambah Data') }}
-                    </x-nav-link>
-                    @endif
+                        <div x-show="openSub" x-transition class="absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white border border-slate-100 py-2 z-50">
+                            <div class="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pilih Sub-Bidang</div>
+                            <a href="{{ route('rekap.index', 'A01') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.01 Kawasan Konservasi
+                            </a>
+                            <a href="{{ route('rekap.index', 'A02') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.02 Perencanaan Pengelolaan
+                            </a>
+                            <a href="{{ route('rekap.index', 'A03') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.03 Monitoring Batas
+                            </a>
+                        </div>
+                    </div>
 
                     @if(Route::has('konservasi.peta'))
                     <x-nav-link :href="route('konservasi.peta')" :active="request()->routeIs('konservasi.peta')" class="text-xs font-bold transition">
@@ -48,9 +60,9 @@
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-2 px-3 py-2 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-slate-50 hover:bg-slate-100 focus:outline-none transition duration-150">
                             <div class="w-6 h-6 rounded-lg bg-emerald-800 text-white font-bold flex items-center justify-center text-[10px] uppercase">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
+                                {{ strtoupper(substr(Auth::user()?->name ?? 'AD', 0, 2)) }}
                             </div>
-                            <div>{{ Auth::user()->name }}</div>
+                            <div>{{ Auth::user()?->name ?? 'Guest' }}</div>
 
                             <svg class="fill-current h-4 w-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -59,21 +71,27 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        @if(Route::has('profile.edit'))
-                        <x-dropdown-link :href="route('profile.edit')" class="text-xs font-semibold">
-                            <i class="fas fa-user-gear mr-2 text-slate-400"></i> {{ __('Profile Pengguna') }}
-                        </x-dropdown-link>
-                        @endif
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault(); this.closest('form').submit();"
-                                    class="text-xs font-semibold text-rose-600 hover:text-rose-700">
-                                <i class="fas fa-right-from-bracket mr-2 text-rose-500"></i> {{ __('Keluar / Log Out') }}
+                        @auth
+                            @if(Route::has('profile.edit'))
+                            <x-dropdown-link :href="route('profile.edit')" class="text-xs font-semibold">
+                                <i class="fas fa-user-gear mr-2 text-slate-400"></i> {{ __('Profile Pengguna') }}
                             </x-dropdown-link>
-                        </form>
+                            @endif
+
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault(); this.closest('form').submit();"
+                                        class="text-xs font-semibold text-rose-600 hover:text-rose-700">
+                                    <i class="fas fa-right-from-bracket mr-2 text-rose-500"></i> {{ __('Keluar / Log Out') }}
+                                </x-dropdown-link>
+                            </form>
+                        @else
+                            <x-dropdown-link :href="route('login')" class="text-xs font-semibold text-emerald-600">
+                                <i class="fas fa-right-to-bracket mr-2 text-emerald-500"></i> {{ __('Masuk / Login') }}
+                            </x-dropdown-link>
+                        @endauth
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -99,17 +117,19 @@
             </x-responsive-nav-link>
             @endif
 
-            @if(Route::has('konservasi.index'))
-            <x-responsive-nav-link :href="route('konservasi.index')" :active="request()->routeIs('konservasi.index')" class="rounded-xl">
-                <i class="fas fa-database mr-2 text-emerald-600"></i> {{ __('Rekapitulasi Data') }}
-            </x-responsive-nav-link>
-            @endif
-
-            @if(Route::has('konservasi.create'))
-            <x-responsive-nav-link :href="route('konservasi.create')" :active="request()->routeIs('konservasi.create')" class="rounded-xl">
-                <i class="fas fa-file-pen mr-2 text-emerald-600"></i> {{ __('Tambah Data') }}
-            </x-responsive-nav-link>
-            @endif
+            <!-- Menu Sub-Bidang Mobile -->
+            <div class="pt-2 pb-1 border-t border-slate-100">
+                <div class="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rekap Sub-Bidang</div>
+                <x-responsive-nav-link :href="route('rekap.index', 'A01')" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.01 Kawasan Konservasi
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', 'A02')" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.02 Perencanaan Pengelolaan
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', 'A03')" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.03 Monitoring Batas
+                </x-responsive-nav-link>
+            </div>
 
             @if(Route::has('konservasi.peta'))
             <x-responsive-nav-link :href="route('konservasi.peta')" :active="request()->routeIs('konservasi.peta')" class="rounded-xl">
@@ -120,32 +140,41 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-3 border-t border-slate-100 bg-slate-50/50">
-            <div class="px-6 flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-xl bg-emerald-800 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'AD', 0, 2)) }}
+            @auth
+                <div class="px-6 flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-800 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm text-slate-800">{{ Auth::user()->name }}</div>
+                        <div class="font-medium text-xs text-slate-500">{{ Auth::user()->email }}</div>
+                    </div>
                 </div>
-                <div>
-                    <div class="font-bold text-sm text-slate-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-xs text-slate-500">{{ Auth::user()->email }}</div>
-                </div>
-            </div>
 
-            <div class="space-y-1 px-4">
-                @if(Route::has('profile.edit'))
-                <x-responsive-nav-link :href="route('profile.edit')" class="rounded-xl">
-                    <i class="fas fa-user-gear mr-2 text-slate-400"></i> {{ __('Profile Pengguna') }}
-                </x-responsive-nav-link>
-                @endif
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();"
-                            class="rounded-xl text-rose-600">
-                        <i class="fas fa-right-from-bracket mr-2 text-rose-500"></i> {{ __('Keluar / Log Out') }}
+                <div class="space-y-1 px-4">
+                    @if(Route::has('profile.edit'))
+                    <x-responsive-nav-link :href="route('profile.edit')" class="rounded-xl">
+                        <i class="fas fa-user-gear mr-2 text-slate-400"></i> {{ __('Profile Pengguna') }}
                     </x-responsive-nav-link>
-                </form>
-            </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-responsive-nav-link :href="route('logout')"
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                class="rounded-xl text-rose-600">
+                            <i class="fas fa-right-from-bracket mr-2 text-rose-500"></i> {{ __('Keluar / Log Out') }}
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
+            @else
+                <div class="px-6 mb-3">
+                    <div class="font-bold text-sm text-slate-800">Tamu / Guest</div>
+                    <a href="{{ route('login') }}" class="inline-block mt-2 text-xs font-bold text-emerald-700 hover:underline">
+                        Klik di sini untuk Login
+                    </a>
+                </div>
+            @endauth
         </div>
     </div>
 </nav>
