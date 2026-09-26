@@ -234,6 +234,33 @@
   .gallery-head h2{ font-size:30px; letter-spacing:-0.015em; }
   .gallery-head p{ font-size:14.5px; color:var(--ink-600); max-width:420px; }
   .gallery-grid{ display:grid; grid-template-columns:repeat(4,1fr); grid-auto-rows:190px; gap:14px; }
+  .kw-carousel-wrap{ position:relative; display:flex; align-items:center; gap:10px; padding:0 32px; }
+  .kw-carousel{
+    display:flex; gap:14px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+    padding:4px 0 14px; -webkit-overflow-scrolling:touch; cursor:grab;
+  }
+  .kw-carousel.dragging{ cursor:grabbing; scroll-snap-type:none; }
+  .kw-carousel::-webkit-scrollbar{ height:6px; }
+  .kw-carousel::-webkit-scrollbar-thumb{ background:var(--line); border-radius:99px; }
+  .kw-card{
+    position:relative; flex:0 0 auto; width:300px; height:230px; border-radius:16px; overflow:hidden;
+    scroll-snap-align:start;
+  }
+  .kw-card img{ width:100%; height:100%; object-fit:cover; pointer-events:none; user-select:none; }
+  .kw-overlay{
+    position:absolute; inset:0; background:linear-gradient(to top, rgba(7,22,15,0.9) 0%, rgba(7,22,15,0.05) 55%);
+    display:flex; flex-direction:column; justify-content:flex-end; padding:16px;
+  }
+  .kw-overlay .tag{ font-size:10px; font-weight:700; letter-spacing:.04em; color:var(--gold-300); margin-bottom:4px; display:block; }
+  .kw-overlay h4{ color:var(--cream); font-size:13.5px; font-weight:600; margin:0; line-height:1.35; }
+  .kw-overlay p{ color:rgba(246,244,236,0.65); font-size:11px; margin-top:3px; }
+  .kw-nav{
+    flex-shrink:0; width:38px; height:38px; border-radius:50%; background:#fff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-900);
+    box-shadow:0 8px 18px -10px rgba(16,32,26,0.3); transition:background .15s ease;
+  }
+  .kw-nav:hover{ background:var(--paper); }
+  .satwa-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
   .g-item{
     position:relative; border-radius:16px; overflow:hidden; cursor:pointer;
   }
@@ -307,6 +334,10 @@
     .stats-band{ grid-template-columns:1fr; gap:28px; text-align:center; }
     .gallery-grid{ grid-template-columns:repeat(2,1fr); grid-auto-rows:160px; }
     .g-item.wide{ grid-column:span 2; grid-row:span 1; }
+    .kw-carousel-wrap{ padding:0 12px; }
+    .kw-card{ width:220px; height:180px; }
+    .kw-nav{ display:none; }
+    .satwa-grid{ grid-template-columns:repeat(2,1fr); }
     .foot-grid{ grid-template-columns:1fr 1fr; }
   }
 </style>
@@ -327,7 +358,8 @@
     <div class="nav-links">
       <a href="#fitur">Fitur</a>
       <a href="#cara-kerja">Cara kerja</a>
-      <a href="#kawasan">Kawasan &amp; satwa</a>
+      <a href="#kawasan">Kawasan konservasi</a>
+      <a href="#satwa">Satwa dilindungi</a>
     </div>
     <div class="nav-actions">
       @auth
@@ -438,64 +470,107 @@
   <div class="wrap">
     <div class="gallery-head">
       <div>
-        <span class="eyebrow on-light">Kawasan &amp; satwa endemik</span>
-        <h2 style="margin-top:14px;">Kekayaan hayati yang kami jaga</h2>
+        <span class="eyebrow on-light">Kawasan konservasi</span>
+        <h2 style="margin-top:14px;">18 kawasan yang kami jaga</h2>
       </div>
-      <p>Sebagian kawasan dan satwa endemik Sulawesi yang datanya tercatat dan dipantau melalui SIDAK.</p>
+      <p>Cagar Alam, Suaka Margasatwa, Taman Wisata Alam, dan Taman Buru di bawah pengelolaan BKSDA Sulawesi Tengah.</p>
     </div>
-    <div class="gallery-grid">
-      <div class="g-item wide">
-        <img src="{{ asset('images/wera.jpg') }}" alt="Air terjun di Taman Wisata Alam Wera, Sulawesi Tengah">
-        <div class="g-overlay">
-          <div>
-            <span class="tag">KAWASAN KONSERVASI</span>
-            <h4>Taman Wisata Alam Wera</h4>
-            <p>Desa Balumpewa, Kabupaten Sigi</p>
+  </div>
+
+  <div class="kw-carousel-wrap">
+    <button class="kw-nav kw-nav-prev" aria-label="Geser ke kiri">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="kw-carousel" id="kw-carousel">
+      @php
+        $kawasanList = [
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Morowali', 'file' => 'ca-morowali.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Gunung Dako', 'file' => 'ca-gunungdako.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Tanjung Api', 'file' => 'ca-tanjungapi.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Gunung Sojol', 'file' => 'ca-gunungsojol.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Pangi Binangga', 'file' => 'ca-pangi.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Gunung Tinombala', 'file' => 'ca-gunungtinombala.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Pati Pati', 'file' => 'ca-patipati.jpg'],
+          ['tipe' => 'CAGAR ALAM', 'nama' => 'Cagar Alam Pamona', 'file' => 'ca-pamona.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Bakiriang', 'file' => 'sm-bakiriang.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Pulau Dolangan', 'file' => 'sm-dolangan.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Lombuyan', 'file' => 'sm-lombuyan.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Pulau Pasoso', 'file' => 'sm-pasoso.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Pinjan Tanjung Matop', 'file' => 'sm-pinjammatop.jpg'],
+          ['tipe' => 'SUAKA MARGASATWA', 'nama' => 'Suaka Margasatwa Santigi', 'file' => 'sm-santigi.jpg'],
+          ['tipe' => 'TAMAN WISATA ALAM', 'nama' => 'Taman Wisata Alam Wera', 'lokasi' => 'Kabupaten Sigi', 'file' => 'twa-wera.jpg'],
+          ['tipe' => 'TAMAN WISATA ALAM', 'nama' => 'Taman Wisata Alam Bancea', 'lokasi' => 'Kabupaten Morowali Utara', 'file' => 'twa-bancea.jpg'],
+          ['tipe' => 'TAMAN WISATA ALAM', 'nama' => 'Taman Wisata Alam Pulau Tokobae', 'file' => 'twa-takobae.jpg'],
+          ['tipe' => 'TAMAN BURU', 'nama' => 'Taman Buru Landusa Tomata', 'lokasi' => 'Kabupaten Morowali', 'file' => 'tb-landusatomata.jpg'],
+        ];
+      @endphp
+      @foreach($kawasanList as $k)
+        <div class="kw-card">
+          <img src="{{ asset('images/kawasan/'.$k['file']) }}" alt="{{ $k['nama'] }}">
+          <div class="kw-overlay">
+            <span class="tag">{{ $k['tipe'] }}</span>
+            <h4>{{ $k['nama'] }}</h4>
+            @if(isset($k['lokasi']))
+              <p>{{ $k['lokasi'] }}</p>
+            @endif
           </div>
         </div>
+      @endforeach
+    </div>
+    <button class="kw-nav kw-nav-next" aria-label="Geser ke kanan">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="wrap">
+    <p style="font-size:11.5px; color:var(--ink-400); margin-top:14px;">Foto: dokumentasi Balai KSDA Sulawesi Tengah.</p>
+  </div>
+</section>
+
+<section id="satwa" style="padding-top:0;">
+  <div class="wrap">
+    <div class="gallery-head">
+      <div>
+        <span class="eyebrow on-light">Satwa dilindungi</span>
+        <h2 style="margin-top:14px;">8 satwa endemik yang kami lindungi</h2>
       </div>
-      <div class="g-item">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lowland%20anoa.jpg" alt="Anoa, hewan endemik Sulawesi">
-        <div class="g-overlay">
-          <div>
-            <span class="tag">SATWA ENDEMIK</span>
-            <h4>Anoa</h4>
-            <p>Bubalus depressicornis</p>
-          </div>
-        </div>
+      <p>Sebagian satwa dilindungi Sulawesi Tengah yang datanya tercatat dan dipantau melalui SIDAK.</p>
+    </div>
+
+    <div class="satwa-grid">
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Macrocephalon%20maleo%20-%20Muara%20Pusian%20(2).JPG" alt="Burung Maleo, satwa dilindungi Sulawesi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Burung Maleo</h4><p>Macrocephalon maleo</p></div></div>
       </div>
-      <div class="g-item">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Spectral%20Tarsier%20Tarsius%20tarsier%20(7911549768).jpg" alt="Tarsius, hewan endemik Sulawesi">
-        <div class="g-overlay">
-          <div>
-            <span class="tag">SATWA ENDEMIK</span>
-            <h4>Tarsius</h4>
-            <p>Tarsius tarsier</p>
-          </div>
-        </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lowland%20anoa.jpg" alt="Anoa, satwa dilindungi Sulawesi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Anoa</h4><p>Bubalus depressicornis</p></div></div>
       </div>
-      <div class="g-item">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Macrocephalon%20maleo%20-%20Muara%20Pusian%20(2).JPG" alt="Burung maleo, hewan endemik Sulawesi">
-        <div class="g-overlay">
-          <div>
-            <span class="tag">SATWA ENDEMIK</span>
-            <h4>Maleo</h4>
-            <p>Macrocephalon maleo</p>
-          </div>
-        </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Babirusa%20berkelahi%20-%20edited.jpg" alt="Babirusa, satwa dilindungi Sulawesi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Babirusa</h4><p>Babyrousa celebensis</p></div></div>
       </div>
-      <div class="g-item">
-        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Babirusa%20berkelahi%20-%20edited.jpg" alt="Babirusa, hewan endemik Sulawesi">
-        <div class="g-overlay">
-          <div>
-            <span class="tag">SATWA ENDEMIK</span>
-            <h4>Babirusa</h4>
-            <p>Babyrousa celebensis</p>
-          </div>
-        </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Spectral%20Tarsier%20Tarsius%20tarsier%20(7911549768).jpg" alt="Tarsius, satwa dilindungi Sulawesi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Tarsius</h4><p>Tarsius tarsier</p></div></div>
+      </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Sulawesi%20crested%20macaque.jpg" alt="Monyet Hitam Sulawesi, satwa dilindungi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Monyet Hitam Sulawesi</h4><p>Macaca nigra</p></div></div>
+      </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ailurops%20ursinus%20(4).JPG" alt="Kuskus Beruang Sulawesi, satwa dilindungi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Kuskus Beruang Sulawesi</h4><p>Ailurops ursinus</p></div></div>
+      </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Macrogalidia%20musschenbroekii.jpg" alt="Musang Sulawesi, satwa dilindungi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Musang Sulawesi</h4><p>Macrogalidia musschenbroekii</p></div></div>
+      </div>
+      <div class="g-item" style="height:220px;">
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Saltwater%20Crocodile%20(Crocodylus%20porosus)%20(10106331165).jpg" alt="Buaya, satwa dilindungi Sulawesi">
+        <div class="g-overlay"><div><span class="tag">SATWA DILINDUNGI</span><h4>Buaya</h4><p>Crocodylus porosus</p></div></div>
       </div>
     </div>
-    <p style="font-size:11.5px; color:var(--ink-400); margin-top:14px;">Foto TWA Wera: dokumentasi Balai KSDA Sulawesi Tengah. Foto satwa endemik: Wikimedia Commons (CC BY-SA)</p>
+    <p style="font-size:11.5px; color:var(--ink-400); margin-top:14px;">Foto satwa: Wikimedia Commons (CC BY-SA) </p>
   </div>
 </section>
 
@@ -541,7 +616,8 @@
         <h5>Navigasi</h5>
         <a href="#fitur">Fitur</a>
         <a href="#cara-kerja">Cara kerja</a>
-        <a href="#kawasan">Kawasan &amp; satwa</a>
+        <a href="#kawasan">Kawasan konservasi</a>
+        <a href="#satwa">Satwa dilindungi</a>
       </div>
       <div class="foot-col">
         <h5>Instansi</h5>
@@ -617,6 +693,35 @@
     });
   }, { threshold: 0.4 });
   counters.forEach(c => io.observe(c));
+
+  // kawasan carousel: tombol geser + drag scroll pakai mouse
+  (function(){
+    const track = document.getElementById('kw-carousel');
+    if(!track) return;
+    const prevBtn = document.querySelector('.kw-nav-prev');
+    const nextBtn = document.querySelector('.kw-nav-next');
+    const scrollAmount = () => track.querySelector('.kw-card')?.offsetWidth + 14 || 300;
+
+    prevBtn?.addEventListener('click', () => track.scrollBy({ left: -scrollAmount(), behavior: 'smooth' }));
+    nextBtn?.addEventListener('click', () => track.scrollBy({ left: scrollAmount(), behavior: 'smooth' }));
+
+    let isDown = false, startX = 0, scrollLeft = 0;
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      track.classList.add('dragging');
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+    });
+    ['mouseleave', 'mouseup'].forEach(evt => {
+      track.addEventListener(evt, () => { isDown = false; track.classList.remove('dragging'); });
+    });
+    track.addEventListener('mousemove', (e) => {
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      track.scrollLeft = scrollLeft - (x - startX) * 1.4;
+    });
+  })();
 </script>
 </body>
 </html>
