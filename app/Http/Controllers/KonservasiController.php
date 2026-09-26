@@ -143,7 +143,30 @@ class KonservasiController extends Controller
     public function create()
     {
         $bidang = Bidang::all();
-        return view('konservasi.create', compact('bidang'));
+        $kawasanKonservasi = collect([
+            'TWA Wera',
+            'SM Tanjung Santigi',
+            'CA Tanjung Api',
+            'TWA Pulau Tokobae',
+            'TWA Pulau Pasoso',
+            'SM Pulau Dolangan',
+            'SM Pinjan Tanjung Matop',
+            'SM Pati-Pati',
+            'CA Pangi Binangga',
+            'CA Pamona',
+            'CA Morowali',
+            'SM Lombuyan',
+            'TB Landusa Tomata',
+            'CA Gunung Tinombala',
+            'CA Gunung Sojol',
+            'CA Gunung Dako',
+            'TWA Bancea',
+            'SM Bakiriang',
+        ])->map(fn ($nama) => [
+            'nama' => $nama . ' (Satker: Balai KSDA Sulawesi Tengah)',
+        ])->all();
+
+        return view('konservasi.create', compact('bidang', 'kawasanKonservasi'));
     }
 
     public function getSubBidang($bidang_id)
@@ -168,11 +191,66 @@ class KonservasiController extends Controller
             'shapefile_ekosistem_zip'   => 'nullable|mimes:zip|max:10240',
             'file_sk_zonasi'            => 'nullable|mimes:pdf|max:2048',
             'shapefile_zonasi_zip'      => 'nullable|mimes:zip|max:10240',
+            'dokumen_d03'               => 'nullable|mimes:pdf|max:10240',
+            'shapefile_d03'             => 'nullable|mimes:zip|max:10240',
         ]);
 
         $details = [];
         $tahun = $request->tahun ?? $request->tahun_rpjp ?? $request->tahun_monitoring ?? $request->tahun_evaluasi ?? $request->tahun_ekosistem ?? $request->tahun_zonasi ?? date('Y');
         $jumlah = 0;
+
+        // SUB-BIDANG: Pengunjung Kawasan Konservasi (D.01)
+        if ($request->filled('kawasan_nama_d01')) {
+            $details[] = "Kawasan Pengunjung: " . $request->kawasan_nama_d01;
+            $kategoriPengunjung = [
+                'penelitian' => 'Penelitian & Pengembangan',
+                'pendidikan' => 'Pendidikan & Ilmu Pengetahuan',
+                'foto_video' => 'Pengambilan Foto & Video',
+                'wisata_alam' => 'Wisata Alam',
+                'lain_lain' => 'Lain-lain',
+            ];
+
+            foreach ($kategoriPengunjung as $kodeKategori => $labelKategori) {
+                $dalamNegeri = (int) $request->input($kodeKategori . '_dalam_negeri', 0);
+                $luarNegeri = (int) $request->input($kodeKategori . '_luar_negeri', 0);
+                $jumlah += $dalamNegeri + $luarNegeri;
+                $details[] = "[$labelKategori] Dalam Negeri: $dalamNegeri, Luar Negeri: $luarNegeri orang";
+            }
+        }
+
+        // SUB-BIDANG: PNBP Wisata Alam di Kawasan Konservasi (D.02)
+        if ($request->filled('kawasan_nama_d02')) {
+            $details[] = "Kawasan PNBP Wisata Alam: " . $request->kawasan_nama_d02;
+            foreach ($request->all() as $field => $value) {
+                if (!str_starts_with($field, 'd02_') || $value === null || $value === '') {
+                    continue;
+                }
+
+                if (str_ends_with($field, '_jumlah') && is_numeric($value)) {
+                    $jumlah += (int) $value;
+                }
+
+                if ($value !== '0' && !str_ends_with($field, '_keterangan')) {
+                    $details[] = strtoupper(str_replace('_', ' ', $field)) . ": " . $value;
+                } elseif (str_ends_with($field, '_keterangan') && trim((string) $value) !== '') {
+                    $details[] = "Keterangan " . str_replace('_', ' ', $field) . ": " . $value;
+                }
+            }
+        }
+
+        // SUB-BIDANG: Desain Tapak Pemanfaatan Jasa Lingkungan Wisata Alam (D.03)
+        if ($request->filled('kawasan_nama_d03')) {
+            $details[] = "Kawasan Desain Tapak: " . $request->kawasan_nama_d03;
+            if ($request->ada_pengesahan_d03 === 'ya') {
+                $details[] = "[Desain Tapak] Zonasi/Blok: " . ($request->zonasi_blok_d03 ?? '-') . ", Bidang/Seksi: " . ($request->bidang_seksi_d03 ?? '-');
+                $details[] = "[Desain Tapak] No SK: " . ($request->nomor_dokumen_d03 ?? '-') . ", Tanggal: " . ($request->tanggal_pengesahan_d03 ?? '-') . ", Judul: " . ($request->judul_sk_d03 ?? '-') . ", Luas: " . ($request->luas_zona_d03 ?? '0') . " Ha";
+                if ($request->filled('keterangan_d03')) {
+                    $details[] = "[Desain Tapak] Keterangan: " . $request->keterangan_d03;
+                }
+            } elseif ($request->ada_pengesahan_d03 === 'tidak') {
+                $details[] = '[Desain Tapak] Status: Tidak ada (Nihil)';
+            }
+        }
 
         // 1. SUB-BIDANG: Kawasan Konservasi (A.01)
         if ($request->filled('kawasan_nama')) {
@@ -254,6 +332,8 @@ class KonservasiController extends Controller
             'shapefile_ekosistem_zip'   => 'shapefiles',
             'file_sk_zonasi'            => 'dokumen_zonasi',
             'shapefile_zonasi_zip'      => 'shapefiles',
+            'dokumen_d03'               => 'dokumen_desain_tapak',
+            'shapefile_d03'             => 'shapefiles',
         ];
 
         foreach ($fileInputs as $inputName => $folderPath) {

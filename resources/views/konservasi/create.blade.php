@@ -8,6 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js untuk Form Dinamis Conditional -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>[x-cloak] { display: none !important; }</style>
     <script>
         tailwind.config = {
             theme: {
@@ -26,7 +30,7 @@
     <!-- FontAwesome untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100/90 font-sans text-slate-800 antialiased min-h-screen relative">
+<body class="bg-slate-100/90 text-slate-800 antialiased min-h-screen flex flex-col relative" style="font-family: 'Plus Jakarta Sans', sans-serif;">
 
     <!-- BACKGROUND GLOBAL KAWASAN KONSERVASI -->
     <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
@@ -77,7 +81,7 @@
     </header>
 
     <!-- MAIN CONTENT CONTAINER -->
-    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 flex-1">
 
         <!-- HEADER BANNER & TOMBOL KEMBALI -->
         <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -123,7 +127,14 @@
                  ketersediaanEvaluasi: 'ya',
                  ketersediaanEkosistem: 'ya',
                  ketersediaanZonasi: 'sudah',
+                 adaPengesahanD03: '',
                  adaKegiatanB01: 'ya',
+                 adaDataOdtwaBaru: '',
+                 adaPenerbitanIzinPbp: '',
+                 adaSaranaPrasaranaD07: '',
+                 dataTersediaD08: '',
+                 adaPotensiAirD09: '',
+                 dataTersediaD10D16: '',
                  palBaik: 0,
                  palRusak: 0,
                  palHilang: 0,
@@ -170,7 +181,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 1: A.01 / Kawasan Konservasi                      -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.01'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.01'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -178,10 +189,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -192,24 +202,9 @@
                         </label>
                         <select name="kawasan_nama" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -379,7 +374,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 2: A.02 / Perencanaan Pengelolaan Kawasan        -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.02'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.02'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -387,10 +382,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun_rpjp" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -401,24 +395,9 @@
                         </label>
                         <select name="kawasan_nama_rpjp" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -479,7 +458,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 3: A.03 / Monitoring Batas Kawasan Konservasi      -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.03'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.03'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -487,10 +466,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun_monitoring" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -501,24 +479,9 @@
                         </label>
                         <select name="kawasan_nama_monitoring" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -650,7 +613,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 4: A.04 / Evaluasi Kesesuaian Fungsi             -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.04'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.04'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -658,10 +621,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun_evaluasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -672,24 +634,9 @@
                         </label>
                         <select name="kawasan_nama_evaluasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -753,7 +700,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 5: A.05 / Ekosistem Kawasan                       -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.05'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.05'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -761,10 +708,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun_ekosistem" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -775,24 +721,9 @@
                         </label>
                         <select name="kawasan_nama_ekosistem" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -835,7 +766,7 @@
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 6: A.06 / Penataan Zonasi/Blok                    -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'A.06'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'A.06'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN -->
                     <div>
@@ -843,10 +774,9 @@
                             Tahun: <span class="text-rose-500">*</span>
                         </label>
                         <select name="tahun_zonasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
                         </select>
                     </div>
 
@@ -857,24 +787,9 @@
                         </label>
                         <select name="kawasan_nama_zonasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -944,10 +859,1225 @@
 
                 </div>
 
+                <!-- FORM DINAMIS SUB-BIDANG D.01: Pengunjung Kawasan Konservasi -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.01'" x-transition class="space-y-6 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                            <select name="tahun" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                @for ($year = 2026; $year >= 1945; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Periode Bulan: <span class="text-rose-500">*</span></label>
+                            <select name="bulan" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                <option value="">Pilih periode</option>
+                                @for ($month = 1; $month <= 12; $month++)
+                                    <option value="{{ $month }}">{{ DateTime::createFromFormat('!m', $month)->format('F') }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                        <select name="kawasan_nama_d01" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @php
+                        $kategoriPengunjung = [
+                            'penelitian' => 'Penelitian & Pengembangan',
+                            'pendidikan' => 'Pendidikan & Ilmu Pengetahuan',
+                            'foto_video' => 'Pengambilan Foto & Video',
+                            'wisata_alam' => 'Wisata Alam',
+                            'lain_lain' => 'Lain-lain (Keagamaan/Kunjungan Kedinasan)',
+                        ];
+                    @endphp
+                    @foreach ($kategoriPengunjung as $kodeKategori => $labelKategori)
+                        <fieldset class="p-5 bg-slate-50/80 border border-slate-200 rounded-2xl shadow-sm">
+                            <legend class="px-2 text-xs font-extrabold text-slate-800 uppercase tracking-wider">{{ $labelKategori }}</legend>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach (['dalam_negeri' => 'Dalam Negeri', 'luar_negeri' => 'Luar Negeri'] as $wilayah => $labelWilayah)
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">{{ $labelWilayah }}: <span class="text-rose-500">*</span></label>
+                                        <div class="flex">
+                                            <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-l-lg text-xs text-slate-500">Jumlah</span>
+                                            <input type="number" min="0" name="{{ $kodeKategori }}_{{ $wilayah }}" value="0" class="w-full min-w-0 p-2.5 border-y border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none" required>
+                                            <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-lg text-xs text-slate-500">Orang</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </fieldset>
+                    @endforeach
+
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.02: PNBP Wisata Alam -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.02'" x-transition class="space-y-6 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                            <select name="tahun" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                @for ($year = 2026; $year >= 1945; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Periode Bulan: <span class="text-rose-500">*</span></label>
+                            <select name="bulan" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                <option value="">Pilih periode</option>
+                                @for ($month = 1; $month <= 12; $month++)
+                                    <option value="{{ $month }}">{{ DateTime::createFromFormat('!m', $month)->format('F') }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                        <select name="kawasan_nama_d02" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    @php
+                        $kelompokPnbp = [
+                            ['judul' => 'TIKET MASUK PENGUNJUNG', 'items' => [
+                                ['kode' => 'dalam_negeri_hari_kerja', 'nama' => 'Dalam Negeri (Hari Kerja)', 'unit' => 'Orang'],
+                                ['kode' => 'luar_negeri_hari_kerja', 'nama' => 'Luar Negeri (Hari Kerja)', 'unit' => 'Orang'],
+                                ['kode' => 'pelajar_hari_kerja', 'nama' => 'Pelajar/Mahasiswa (Hari Kerja)', 'unit' => 'Orang'],
+                                ['kode' => 'dalam_negeri_hari_libur', 'nama' => 'Dalam Negeri (Hari Libur/Cuti Bersama/Hari Raya)', 'unit' => 'Orang'],
+                                ['kode' => 'pelajar_hari_libur', 'nama' => 'Pelajar/Mahasiswa (Hari Libur/Cuti Bersama/Hari Raya)', 'unit' => 'Orang'],
+                            ]],
+                            ['judul' => 'TIKET MASUK KENDARAAN DARAT', 'items' => [
+                                ['kode' => 'roda_2', 'nama' => 'Roda 2', 'unit' => 'Unit'],
+                                ['kode' => 'roda_4', 'nama' => 'Roda 4', 'unit' => 'Unit'],
+                                ['kode' => 'roda_6', 'nama' => 'Roda 6 atau Lebih', 'unit' => 'Unit'],
+                                ['kode' => 'sepeda', 'nama' => 'Sepeda', 'unit' => 'Unit'],
+                                ['kode' => 'kuda', 'nama' => 'Kuda', 'unit' => 'Ekor'],
+                            ]],
+                            ['judul' => 'TIKET MASUK KENDARAAN AIR', 'items' => [
+                                ['kode' => 'kapal_40_100', 'nama' => 'Kapal Motor 40 s.d. 100 PK', 'unit' => 'Unit'],
+                                ['kode' => 'kapal_101_500', 'nama' => 'Kapal Motor 101 s.d. 500 PK', 'unit' => 'Unit'],
+                                ['kode' => 'kapal_diatas_500', 'nama' => 'Kapal Motor diatas 500 PK', 'unit' => 'Unit'],
+                                ['kode' => 'kapal_pesiar', 'nama' => 'Kapal Pesiar/Cruiser Ship', 'unit' => 'Unit'],
+                            ]],
+                            ['judul' => 'TIKET MASUK KENDARAAN TRANSPORTASI KHUSUS', 'items' => [
+                                ['kode' => 'transportasi_khusus', 'nama' => 'Transportasi Khusus', 'unit' => 'Unit'],
+                            ]],
+                            ['judul' => 'KEGIATAN WISATA ALAM', 'items' => [
+                                ['kode' => 'berkemah', 'nama' => 'Berkemah', 'unit' => 'Orang'],
+                                ['kode' => 'mendaki', 'nama' => 'Mendaki Gunung (Hiking-Climbing)', 'unit' => 'Orang'],
+                                ['kode' => 'gua', 'nama' => 'Penelusuran Gua (Caving)', 'unit' => 'Orang'],
+                                ['kode' => 'memancing', 'nama' => 'Memancing (Sport Fishing)', 'unit' => 'Orang'],
+                                ['kode' => 'menyelam', 'nama' => 'Menyelam (Scuba Diving)', 'unit' => 'Orang'],
+                                ['kode' => 'arung_jeram', 'nama' => 'Arung Jeram (Tubbing)', 'unit' => 'Orang'],
+                                ['kode' => 'paralayang', 'nama' => 'Paralayang', 'unit' => 'Orang'],
+                                ['kode' => 'balon_udara', 'nama' => 'Balon Udara', 'unit' => 'Orang'],
+                            ]],
+                        ];
+                    @endphp
+
+                    @foreach ($kelompokPnbp as $kelompok)
+                        <section class="space-y-4">
+                            <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider">{{ $kelompok['judul'] }}</h4>
+                            @foreach ($kelompok['items'] as $item)
+                                <fieldset class="p-5 bg-slate-50/80 border border-slate-200 rounded-2xl shadow-sm">
+                                    <legend class="px-2 text-xs font-extrabold text-slate-800 uppercase">{{ $item['nama'] }}</legend>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah PNBP:</label>
+                                            <div class="flex">
+                                                <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-l-lg text-xs text-slate-500">Rp</span>
+                                                <input type="number" min="0" name="d02_{{ $item['kode'] }}_pnbp" value="0" class="w-full min-w-0 p-2.5 border-y border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-lg text-xs text-slate-500">,00</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah {{ $item['unit'] }}:</label>
+                                            <div class="flex">
+                                                <input type="number" min="0" name="d02_{{ $item['kode'] }}_jumlah" value="0" class="w-full min-w-0 p-2.5 border border-slate-300 rounded-l-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-lg text-xs text-slate-500">{{ $item['unit'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            @endforeach
+                        </section>
+                    @endforeach
+
+                    @php
+                        $kegiatanPnbp = [
+                            [
+                                'judul' => 'PENGAMBILAN GAMBAR KOMERSIL',
+                                'items' => [
+                                    ['kode' => 'videografi_komersil', 'nama' => 'VIDEOGRAFI YANG DIPERGUNAKAN UNTUK IKLAN PRODUK/IKLAN JASA/VIDEO CLIP/FILM/DRAMA/SINETRON/FTV/WEB DRAMA/REALITY SHOW DAN SEJENISNYA'],
+                                    ['kode' => 'fotografi_komersil', 'nama' => 'FOTOGRAFI YANG DIPERGUNAKAN UNTUK PAKET WISATA/MAJALAH/IKLAN PRODUK/IKLAN JASA DAN SEJENISNYA'],
+                                ],
+                            ],
+                            ['judul' => 'VIDEO DAN FOTO PREWEDDING', 'items' => [['kode' => 'video_foto_pre_wedding', 'nama' => 'VIDEO DAN FOTO PREWEDDING']]],
+                            ['judul' => 'KEGIATAN PENGGUNAAN/MENERBANGKAN DRONE', 'items' => [['kode' => 'penggunaan_drone', 'nama' => 'PENGGUNAAN/MENERBANGKAN DRONE']]],
+                            ['judul' => 'PENGGUNAAN FASILITAS UNTUK KEGIATAN WISATA', 'items' => [['kode' => 'penggunaan_fasilitas_wisata', 'nama' => 'PENGGUNAAN FASILITAS UNTUK KEGIATAN WISATA']]],
+                            ['judul' => 'DENDA PENGUNJUNG DAN KENDARAAN ILEGAL/TIDAK MEMILIKI TIKET MASUK', 'items' => [['kode' => 'denda_pengunjung_kendaraan', 'nama' => 'PENUNJANG DALAM NEGERI DAN LUAR NEGERI']]],
+                        ];
+                    @endphp
+
+                    @foreach ($kegiatanPnbp as $kelompok)
+                        <section class="space-y-4">
+                            <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider">{{ $kelompok['judul'] }}</h4>
+                            @foreach ($kelompok['items'] as $item)
+                                <fieldset class="p-5 bg-slate-50/80 border border-slate-200 rounded-2xl shadow-sm">
+                                    <legend class="px-2 text-xs font-extrabold text-slate-800 uppercase">{{ $item['nama'] }}</legend>
+                                    @foreach (['dalam_negeri' => 'DALAM NEGERI', 'luar_negeri' => 'LUAR NEGERI'] as $kodeWilayah => $namaWilayah)
+                                        @if (!$loop->first)
+                                            <div class="border-t border-slate-200 my-5"></div>
+                                        @endif
+                                        <div class="space-y-3">
+                                            <h5 class="text-xs font-extrabold text-slate-800 uppercase">{{ $namaWilayah }}</h5>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah PNBP:</label>
+                                                    <div class="flex">
+                                                        <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-l-lg text-xs text-slate-500">Rp</span>
+                                                        <input type="number" min="0" name="d02_{{ $item['kode'] }}_{{ $kodeWilayah }}_pnbp" value="0" class="w-full p-2.5 border-y border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                        <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-lg text-xs text-slate-500">,00</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Unit:</label>
+                                                    <div class="flex">
+                                                        <input type="number" min="0" name="d02_{{ $item['kode'] }}_{{ $kodeWilayah }}_jumlah" value="0" class="w-full p-2.5 border border-slate-300 rounded-l-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                                        <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-lg text-xs text-slate-500">Orang</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                                <textarea name="d02_{{ $item['kode'] }}_{{ $kodeWilayah }}_keterangan" rows="3" placeholder="Masukkan keterangan" class="w-full p-3 bg-white border border-slate-300 rounded-lg text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </fieldset>
+                            @endforeach
+                        </section>
+                    @endforeach
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.03: Desain Tapak -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.03'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tahun: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="tahun" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Kawasan Konservasi: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="kawasan_nama_d03" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Pengesahan / Perubahan Desain Tapak pada periode tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih tidak ada jika tidak ada pengesahan / perubahan desain tapak</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_pengesahan_d03" value="ya" x-model="adaPengesahanD03" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, ada</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_pengesahan_d03" value="tidak" x-model="adaPengesahanD03" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaPengesahanD03 === 'ya'" x-transition class="mt-4 p-5 bg-slate-50/80 border border-slate-200 rounded-2xl space-y-4">
+                            <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2">DETAIL PENGESAHAN / PERUBAHAN DESAIN TAPAK</h4>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Zonasi/Blok: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="zonasi_blok_d03" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Bidang/Seksi Pengelolaan Wilayah: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="bidang_seksi_d03" placeholder="Lokasi Bidang/Seksi Pengelolaan Wilayah" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs placeholder:text-slate-300 focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nomor SK: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nomor_dokumen_d03" placeholder="Nomor surat keputusan" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs placeholder:text-slate-300 focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal SK: <span class="text-rose-500">*</span></label>
+                                    <input type="date" name="tanggal_pengesahan_d03" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Judul SK: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="judul_sk_d03" placeholder="Judul/perihal surat keputusan" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-xl text-xs placeholder:text-slate-300 focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Luas Zona/Blok Pemanfaatan: <span class="text-rose-500">*</span></label>
+                                <div class="flex">
+                                    <input type="number" min="0" step="0.01" name="luas_zona_d03" x-bind:required="adaPengesahanD03 === 'ya'" class="w-full p-2.5 bg-white border border-slate-300 rounded-l-xl text-xs focus:ring-2 focus:ring-forest-600 focus:outline-none">
+                                    <span class="px-3 py-2.5 bg-slate-100 border border-slate-300 rounded-r-xl text-xs text-slate-500">Ha</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Dokumen (format pdf &amp; maks. 10 mb):</label>
+                                <input type="file" name="dokumen_d03" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-300 bg-white rounded-xl">
+                            </div>
+                            <div class="p-5 bg-white border border-slate-200 rounded-2xl space-y-2">
+                                <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2">LOKASI GEOGRAFIS DESAIN TAPAK</h4>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Unggah Polygon Area (shapefile):</label>
+                                <p class="text-[11px] text-slate-500 mb-2">ESRI shapefile terdiri dari file dengan ekstensi .shp, .dbf, .prj, .shx, dan .cpg yang dikompres menjadi ekstensi .Zip</p>
+                                <p class="text-[11px] text-slate-500 mb-2">Atribut yang wajib tersedia yaitu REG_KK, JNS_RUANG, LUAS.</p>
+                                <input type="file" name="shapefile_d03" accept=".zip" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-300 bg-white rounded-xl">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Komentar:</label>
+                                <textarea name="komentar_d03" rows="3" placeholder="Tuliskan komentar atau catatan tambahan" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.04: Potensi Wisata Alam Kawasan Konservasi -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.04'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tahun: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="tahun_d04" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Kawasan Konservasi: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="kawasan_nama_d04" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Data Potensi Wisata Alam yang belum terdaftar?</label>
+                                <p class="text-[11px] text-slate-500">Pilih ya jika terdapat ODTWA baru yang belum terdaftar</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_data_odtwa_baru" value="ya" x-model="adaDataOdtwaBaru" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, data ODTWA baru</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_data_odtwa_baru" value="tidak" x-model="adaDataOdtwaBaru" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaDataOdtwaBaru === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama ODTWA: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nama_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" placeholder="Masukkan nama ODTWA" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jenis ODTWA: <span class="text-rose-500">*</span></label>
+                                    <select name="jenis_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        <option value="">Pilih jenis odtwa</option>
+                                        <option value="Flora dan Fauna">Flora dan Fauna</option>
+                                        <option value="Gejala Alam">Gejala Alam</option>
+                                        <option value="Keindahan Alam">Keindahan Alam</option>
+                                        <option value="Keunikan">Keunikan</option>
+                                        <option value="Panorama">Panorama</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                                <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI TITIK GEOGRAFIS ODTWA (XY): <span class="text-rose-500">*</span></h4>
+                                <div class="rounded-2xl overflow-hidden border border-slate-300 bg-cover bg-center h-64 relative" style="background-image: linear-gradient(180deg, rgba(7,21,39,0.35), rgba(7,21,39,0.55)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80');">
+                                    <div class="absolute top-3 right-3 w-3 h-3 rounded-full bg-white shadow-md border border-slate-400"></div>
+                                    <div class="absolute bottom-5 right-5 bg-white/80 border border-slate-300 text-[10px] font-bold text-slate-700 px-3 py-1 rounded-md shadow-sm">500 km</div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Longitude: <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <span class="px-3 text-xs font-semibold text-slate-500">X</span>
+                                        <input type="text" name="longitude_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" placeholder="101.2323452" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Latitude: <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <span class="px-3 text-xs font-semibold text-slate-500">Y</span>
+                                        <input type="text" name="latitude_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" placeholder="1.234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label>
+                                    <select name="zona_blok_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        <option value="">Pilih zona/blok</option>
+                                        <option value="Inti">Inti</option>
+                                        <option value="Rimba">Rimba</option>
+                                        <option value="Pemanfaatan">Pemanfaatan</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Daya Dukung &amp; Daya Tampung: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="daya_dukung_odtwa" x-bind:required="adaDataOdtwaBaru === 'ya'" placeholder="Masukkan daya dukung dan daya tampung" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Foto ODTWA (JPG/PNG):</label>
+                                <p class="text-[11px] text-slate-500 mb-2">Ukuran maksimal 1 Mb</p>
+                                <input type="file" name="foto_odtwa" accept="image/png,image/jpeg" class="w-full max-w-md h-12 rounded-xl border border-slate-300 bg-slate-50 text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                <textarea name="keterangan_odtwa" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.05: Pemanfaatan Jasa Lingkungan PBP -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.05'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tahun: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="tahun_d05" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Kawasan Konservasi: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="kawasan_nama_d05" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Penerbitan Izin Pemanfaatan Jasa Lingkungan PBP pada periode tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih ya jika ada penerbitan izin pemanfaatan jasa lingkungan</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_penerbitan_izin_pbp" value="ya" x-model="adaPenerbitanIzinPbp" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, ada</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_penerbitan_izin_pbp" value="tidak" x-model="adaPenerbitanIzinPbp" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaPenerbitanIzinPbp === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Wilayah/Area Kerja Penyedia Jasa: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="wilayah_area_kerja_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan wilayah/area kerja penyedia jasa.." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Provinsi: <span class="text-rose-500">*</span></label>
+                                <select name="provinsi_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                    <option value="">Pilih provinsi</option>
+                                    <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-2">Jenis Perizinan:</label>
+                                <div class="space-y-3">
+                                    @foreach (['Penyediaan Informasi Wisata', 'Penyediaan Jasa Pramuwisata', 'Penyediaan Jasa Makan Minuman', 'Penyediaan Jasa Transportasi', 'Penyediaan Jasa Cinderamata', 'Penyediaan Jasa Perjalanan Wisata', 'Penyediaan Jasa Persewaan Alat'] as $index => $jenisPerizinan)
+                                        <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
+                                            <input type="radio" name="jenis_perizinan_pbp" value="{{ $jenisPerizinan }}" x-bind:required="adaPenerbitanIzinPbp === 'ya' && {{ $index === 0 ? 'true' : 'false' }}" class="text-forest-600 focus:ring-forest-600">
+                                            <span>{{ $jenisPerizinan }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Pemegang Izin Berusaha: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="pemegang_izin_berusaha_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan nama pemegang izin.." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Induk Berusaha (NIB): <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nib_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan Nomor Induk Berusaha (NIB).." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Sertifikat Standar: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nomor_sertifikat_standar_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan Nomor Sertifikat Standar.." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label>
+                                <select name="zona_blok_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                    <option value="">Pilih Zona/Blok</option>
+                                    <option value="Inti">Inti</option>
+                                    <option value="Rimba">Rimba</option>
+                                    <option value="Pemanfaatan">Pemanfaatan</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Tenaga Kerja: <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <input type="number" min="0" name="jumlah_tenaga_kerja_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">org</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Perkiraan Omset Per Tahun (Rp): <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span>
+                                        <input type="number" min="0" step="0.01" name="perkiraan_omset_per_tahun_pbp" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                <textarea name="keterangan_pbp" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.06: Pemanfaatan Jasa Lingkungan PBP Jasa Lainnya -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.06'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Tahun: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="tahun_d06" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">
+                            Kawasan Konservasi: <span class="text-rose-500">*</span>
+                        </label>
+                        <select name="kawasan_nama_d06" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Penerbitan Izin Pemanfaatan Jasa Lingkungan PBP pada periode tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih ya jika ada penerbitan izin pemanfaatan jasa lingkungan</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_penerbitan_izin_pbp_d06" value="ya" x-model="adaPenerbitanIzinPbp" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, ada</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_penerbitan_izin_pbp_d06" value="tidak" x-model="adaPenerbitanIzinPbp" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaPenerbitanIzinPbp === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div class="pt-2">
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Ruang Usaha: <span class="text-rose-500">*</span></label>
+                                <input type="text" name="nama_ruang_usaha_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Nama ruang usaha" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                                <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-4">INFORMASI PEMEGANG IZIN USAHA</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Nama Pemegang Izin: <span class="text-rose-500">*</span></label>
+                                        <input type="text" name="nama_pemegang_izin_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Nama pemegang izin usaha" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Induk Berusaha (NIB): <span class="text-rose-500">*</span></label>
+                                            <input type="text" name="nib_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan nomor induk berusaha..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Perizinan: <span class="text-rose-500">*</span></label>
+                                            <input type="text" name="nomor_perizinan_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Nomor surat" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Perizinan: <span class="text-rose-500">*</span></label>
+                                            <input type="date" name="tanggal_perizinan_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Luas Area Perizinan: <span class="text-rose-500">*</span></label>
+                                            <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                                <input type="number" min="0" step="0.01" name="luas_area_perizinan_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                                <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Ha</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label>
+                                            <input type="text" name="zona_blok_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" placeholder="Masukan zona/blok" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Provinsi: <span class="text-rose-500">*</span></label>
+                                            <select name="provinsi_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                                <option value="">Pilih provinsi</option>
+                                                <option value="Sulawesi Tengah">Sulawesi Tengah</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Tenaga Kerja: <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <input type="number" min="0" name="jumlah_tenaga_kerja_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">org</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nilai Investasi (Rp): <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span>
+                                        <input type="number" min="0" step="0.01" name="nilai_investasi_pbp_d06" x-bind:required="adaPenerbitanIzinPbp === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Dokumen Perizinan (pdf):</label>
+                                <div class="w-full max-w-none rounded-xl border border-slate-300 bg-slate-50 p-0 overflow-hidden">
+                                    <label class="flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer text-xs text-slate-600 hover:bg-slate-100">
+                                        <span class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-slate-700">Pilih File</span>
+                                        <span class="text-slate-500">Tidak ada file yang dipilih</span>
+                                        <input type="file" name="dokumen_perizinan_pbp_d06" accept=".pdf" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                                <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI GEOGRAFIS AREAL IZIN</h4>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Unggah Polygon Area (shapefile):</label>
+                                    <p class="text-[11px] text-slate-500 mb-2">ESRI Shapefile terdiri dari file dengan ekstensi .shp, .dbf, .prj, .shx, dan .cpg yang dikompres menjadi ekstensi .Zip</p>
+                                    <div class="w-full max-w-none rounded-xl border border-slate-300 bg-slate-50 p-0 overflow-hidden">
+                                        <label class="flex items-center justify-between gap-3 px-3 py-2.5 cursor-pointer text-xs text-slate-600 hover:bg-slate-100">
+                                            <span class="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 font-bold text-slate-700">Pilih File</span>
+                                            <span class="text-slate-500">Tidak ada file yang dipilih</span>
+                                            <input type="file" name="shapefile_pbp_d06" accept=".zip" class="hidden">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                <textarea name="keterangan_pbp_d06" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.07: Sarana dan Prasarana Wisata Alam -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.07'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                        <select name="tahun_d07" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                        <select name="kawasan_nama_d07" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Data Sarana dan Prasarana Wisata Alam yang belum terdata pada Periode tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih tidak ada jika tidak ada penambahan sarana dan prasarana wisata alam</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_sarana_prasarana_d07" value="ya" x-model="adaSaranaPrasaranaD07" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, ada</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_sarana_prasarana_d07" value="tidak" x-model="adaSaranaPrasaranaD07" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaSaranaPrasaranaD07 === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Sarpras Wisata Alam: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="nama_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" placeholder="Pintu loket masuk kawasan" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Tahun Pembangunan: <span class="text-rose-500">*</span></label>
+                                    <select name="tahun_pembangunan_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
+                                        <option value="">Pilih tahun</option>
+                                        @for ($year = 2026; $year >= 1945; $year--)
+                                            <option value="{{ $year }}">{{ $year }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Luas (m<sup>2</sup>):</label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                        <input type="number" min="0" step="0.01" name="luas_sarana_prasarana_d07" placeholder="23.12" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                        <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">m<sup>2</sup></span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-2">Kondisi Sarpras: <span class="text-rose-500">*</span></label>
+                                    <div class="flex flex-wrap items-center gap-5 pt-2">
+                                        <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-700"><input type="radio" name="kondisi_sarana_prasarana_d07" value="Baik" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="text-forest-600 focus:ring-forest-600"><span>Baik</span></label>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-700"><input type="radio" name="kondisi_sarana_prasarana_d07" value="Rusak" class="text-forest-600 focus:ring-forest-600"><span>Rusak</span></label>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-700"><input type="radio" name="kondisi_sarana_prasarana_d07" value="Rusak Berat" class="text-forest-600 focus:ring-forest-600"><span>Rusak Berat</span></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nilai Investasi: <span class="text-rose-500">*</span></label>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_investasi_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span></div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Sumber Dana: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="sumber_dana_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                                <h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI/TITIK GEOGRAFIS SARANA &amp; PRASARANA (XY): <span class="text-rose-500">*</span></h4>
+                                <div class="rounded-2xl overflow-hidden border border-slate-300 bg-cover bg-center h-64 relative" style="background-image: linear-gradient(180deg, rgba(7,21,39,0.35), rgba(7,21,39,0.55)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80');"><div class="absolute top-3 right-3 w-3 h-3 rounded-full bg-white shadow-md border border-slate-400"></div><div class="absolute bottom-5 right-5 bg-white/80 border border-slate-300 text-[10px] font-bold text-slate-700 px-3 py-1 rounded-md shadow-sm">3.000 km</div></div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">X</span><input type="text" name="longitude_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" placeholder="101.23234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div>
+                                    <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Y</span><input type="text" name="latitude_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" placeholder="1.234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div>
+                                </div>
+                                <div class="mt-4"><label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label><select name="zona_blok_sarana_prasarana_d07" x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none"><option value="">Pilih zona/blok</option><option value="Inti">Inti</option><option value="Rimba">Rimba</option><option value="Pemanfaatan">Pemanfaatan</option><option value="Lainnya">Lainnya</option></select></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Foto Sarana &amp; Prasarana (JPG/PNG): <span class="text-rose-500">*</span></label>
+                                <p class="text-[11px] text-slate-500 mb-2">Maksimal 3 foto dengan ukuran maksimal 1 Mb</p>
+                                <div class="flex flex-col md:flex-row gap-4 items-start"><input type="file" name="foto_sarana_prasarana_d07[]" accept="image/png,image/jpeg" multiple x-bind:required="adaSaranaPrasaranaD07 === 'ya'" class="w-full md:w-1/2 h-12 rounded-xl border border-slate-300 bg-slate-50 text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"><div class="grid grid-cols-3 gap-3 w-full md:w-1/2">@foreach (range(1, 3) as $photoNumber)<div class="h-28 rounded-xl border border-slate-300 bg-white flex items-start p-2 text-xs font-bold text-slate-800">{{ $photoNumber }}</div>@endforeach</div></div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                <textarea name="keterangan_sarana_prasarana_d07" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.08: Dampak Aktivitas Wisata Alam -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.08'" x-transition class="space-y-6 pt-2">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                            <select name="tahun_d08" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                <option value="">Pilih tahun</option>
+                                @for ($year = 2026; $year >= 1945; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Periode Bulan: <span class="text-rose-500">*</span></label>
+                            <select name="periode_bulan_d08" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                <option value="">Pilih periode</option>
+                                @foreach (['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'] as $bulan)
+                                    <option value="{{ $bulan }}">{{ $bulan }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                        <select name="kawasan_nama_d08" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Data Tersedia pada Periode tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih tidak ada jika data belum tersedia pada periode tersebut</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="data_tersedia_d08" value="ya" x-model="dataTersediaD08" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, data tersedia</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="data_tersedia_d08" value="tidak" x-model="dataTersediaD08" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="dataTersediaD08 === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">ODTWA: <span class="text-rose-500">*</span></label>
+                                <select name="odtwa_d08" x-bind:required="dataTersediaD08 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
+                                    <option value="">Pilih ODTWA</option>
+                                    <option value="ODTWA 1">ODTWA 1</option>
+                                    <option value="ODTWA 2">ODTWA 2</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">DIPA (Komponen Kegiatan Wisata Alam): <span class="text-rose-500">*</span></label>
+                                <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden max-w-md">
+                                    <span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span>
+                                    <input type="number" min="0" step="0.01" name="dipa_d08" x-bind:required="dataTersediaD08 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                    <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span>
+                                </div>
+                            </div>
+
+                            @foreach ([
+                                'pemandu' => 'PELAKU USAHA PEMANDU WISATA',
+                                'ojek' => 'PELAKU USAHA OJEK WISATA',
+                                'porter' => 'PELAKU USAHA PORTER WISATA',
+                                'makanan_minuman' => 'PELAKU USAHA PENYEDIA MAKANAN & MINUMAN',
+                                'homestay' => 'PELAKU USAHA HOMESTAY'
+                            ] as $jenisPelaku => $judulPelaku)
+                                <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 pb-5 pt-2">
+                                    <legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">{{ $judulPelaku }}</legend>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Pelaku Usaha: <span class="text-rose-500">*</span></label>
+                                            <div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden">
+                                                <input type="number" min="0" name="jumlah_pelaku_{{ $jenisPelaku }}_d08" x-bind:required="dataTersediaD08 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                                <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Orang</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-bold text-slate-700 mb-1">Perkiraan Omset (Rp): <span class="text-rose-500">*</span></label>
+                                            <div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden">
+                                                <span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span>
+                                                <input type="number" min="0" step="0.01" name="omset_{{ $jenisPelaku }}_d08" x-bind:required="dataTersediaD08 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                                <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            @endforeach
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Perkiraan Nilai Ekonomi yang terdampak disekitar ODTWA: <span class="text-rose-500">*</span></label>
+                                <div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden">
+                                    <span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Rp</span>
+                                    <input type="number" min="0" step="0.01" name="nilai_ekonomi_terdampak_d08" x-bind:required="dataTersediaD08 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none">
+                                    <span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">,00</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
+                                <textarea name="keterangan_d08" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM DINAMIS SUB-BIDANG D.09: Potensi Pemanfaatan Air dan Energi Air -->
+                <div x-cloak x-show="selectedSubBidangKode === 'D.09'" x-transition class="space-y-6 pt-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                        <select name="tahun_d09" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih tahun</option>
+                            @for ($year = 2026; $year >= 1945; $year--)
+                                <option value="{{ $year }}">{{ $year }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                        <select name="kawasan_nama_d09" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                            <option value="">Pilih kawasan konservasi</option>
+                            @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700">Ada Potensi Air dan Energi Air yang belum terdata di kawasan tersebut?</label>
+                                <p class="text-[11px] text-slate-500">Pilih tidak jika tidak ada/nihil</p>
+                            </div>
+                            <div class="flex items-center gap-6 shrink-0">
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_potensi_air_d09" value="ya" x-model="adaPotensiAirD09" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Ya, ada</span>
+                                </label>
+                                <label class="inline-flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="ada_potensi_air_d09" value="tidak" x-model="adaPotensiAirD09" class="text-forest-600 focus:ring-forest-600">
+                                    <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div x-show="adaPotensiAirD09 === 'ya'" x-transition class="mt-5 space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Sumber Air: <span class="text-rose-500">*</span></label><input type="text" name="sumber_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Jenis Sumber Air: <span class="text-rose-500">*</span></label><select name="jenis_sumber_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none"><option value="">Pilih jenis sumber air</option><option value="Sungai">Sungai</option><option value="Mata Air">Mata Air</option><option value="Danau">Danau</option><option value="Lainnya">Lainnya</option></select></div>
+                            </div>
+                            <div><h4 class="font-bold text-sm text-slate-800 mb-3">Potensi Sumber Air</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Debit: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="debit_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Liter/Detik</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Potensi energi air: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="potensi_energi_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Kw</span></div></div></div></div>
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"><h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI TITIK GEOGRAFIS (XY): <span class="text-rose-500">*</span></h4><div class="rounded-2xl overflow-hidden border border-slate-300 bg-cover bg-center h-64" style="background-image: linear-gradient(180deg, rgba(7,21,39,0.35), rgba(7,21,39,0.55)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80');"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Longitude: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">X</span><input type="text" name="longitude_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" placeholder="101.23234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Latitude: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs font-semibold text-slate-500 border-r border-slate-300">Y</span><input type="text" name="latitude_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" placeholder="1.234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div></div></div><div class="mt-4"><label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label><select name="zona_blok_air_d09" x-bind:required="adaPotensiAirD09 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none"><option value="">Pilih zona/blok</option><option value="Inti">Inti</option><option value="Rimba">Rimba</option><option value="Pemanfaatan">Pemanfaatan</option><option value="Lainnya">Lainnya</option></select></div><div class="mt-4"><label class="block text-xs font-bold text-slate-700 mb-1">Wilayah Daerah Aliran Sungai:</label><input type="text" name="wilayah_das_d09" placeholder="Sebutkan wilayah aliran DAS.." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div><div class="mt-4"><label class="block text-xs font-bold text-slate-700 mb-2">Sudah Ditetapkan sbg Areal Pemanfaatan?: <span class="text-rose-500">*</span></label><div class="flex items-center gap-6"><label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-700"><input type="radio" name="status_areal_pemanfaatan_d09" value="sudah" x-bind:required="adaPotensiAirD09 === 'ya'" class="text-forest-600 focus:ring-forest-600"><span>Sudah Ditetapkan</span></label><label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-700"><input type="radio" name="status_areal_pemanfaatan_d09" value="belum" class="text-forest-600 focus:ring-forest-600"><span>Belum Ditetapkan</span></label></div></div></div>
+                            <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_air_d09" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+
+                @foreach ([
+                    'D.10' => 'Areal Pemanfaatan Air dan Energi Air di Kawasan Konservasi',
+                    'D.11' => 'Pemanfaatan Air dan Energi Air di Kawasan Konservasi',
+                    'D.12' => 'Potensi Pemanfaatan Karbon di Kawasan Konservasi',
+                    'D.13' => 'Potensi Pemanfaatan Energi Panas Bumi di Kawasan Konservasi',
+                    'D.14' => 'Pemanfaatan Jasa Lingkungan Panas Bumi di Kawasan Konservasi',
+                    'D.15' => 'Kejadian Kecelakaan di dalam Kawasan Konservasi',
+                    'D.16' => 'Promosi dan Publikasi Jasa Lingkungan Kawasan Konservasi'
+                ] as $kodeSubBidang => $namaSubBidang)
+                    @php($kodeForm = str_replace('.', '_', strtolower($kodeSubBidang)))
+                    <div x-cloak x-show="selectedSubBidangKode === '{{ $kodeSubBidang }}'" x-transition class="space-y-6 pt-2">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tahun: <span class="text-rose-500">*</span></label>
+                            <select name="tahun_{{ $kodeForm }}" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                <option value="">Pilih tahun</option>
+                                @for ($year = 2026; $year >= 1945; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        @if ($kodeSubBidang === 'D.16')
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Periode Semester: <span class="text-rose-500">*</span></label>
+                                    <select name="periode_semester_d16" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                        <option value="">Pilih periode</option>
+                                        <option value="Semester I">Semester I</option>
+                                        <option value="Semester II">Semester II</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Satuan Kerja: <span class="text-rose-500">*</span></label>
+                                    <select name="satuan_kerja_d16" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                        <option value="">Pilih satuan kerja</option>
+                                        <option value="Balai KSDA Sulawesi Tengah">Balai KSDA Sulawesi Tengah</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @else
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Kawasan Konservasi: <span class="text-rose-500">*</span></label>
+                                <select name="kawasan_nama_{{ $kodeForm }}" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none" required>
+                                    <option value="">Pilih kawasan konservasi</option>
+                                    @foreach ($kawasanKonservasi ?? [] as $kawasan)
+                                        <option value="{{ $kawasan['nama'] ?? $kawasan }}">{{ $kawasan['nama'] ?? $kawasan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+
+                        <div class="pt-2">
+                            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                                <div>
+                                    @if ($kodeSubBidang === 'D.10')
+                                        <label class="block text-xs font-bold text-slate-700">Ada Pembaruan Data Areal Pemanfaatan Air &amp; Energi Air yang belum terdata pada kawasan tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada jika tidak ada</p>
+                                    @elseif ($kodeSubBidang === 'D.11')
+                                        <label class="block text-xs font-bold text-slate-700">Ada Data Pemanfaatan Air dan Energi Air yang belum terdata di kawasan tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak jika tidak ada/nihil</p>
+                                    @elseif ($kodeSubBidang === 'D.12')
+                                        <label class="block text-xs font-bold text-slate-700">Tersedia data potensi pemanfaatan karbon untuk kawasan di periode tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada jika data belum tersedia atau tidak ada perubahan dari data sebelumnya</p>
+                                    @elseif ($kodeSubBidang === 'D.13')
+                                        <label class="block text-xs font-bold text-slate-700">Ada Data Potensi Panas Bumi yang belum terdaftar?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih ya jika terdapat potensi panas bumi baru yang belum terdaftar</p>
+                                    @elseif ($kodeSubBidang === 'D.14')
+                                        <label class="block text-xs font-bold text-slate-700">Ada data Pemanfaatan Panas Bumi yang belum masuk pada periode tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada jika tidak ada penerbitan izin pemanfaatan panas bumi pada periode tersebut</p>
+                                    @elseif ($kodeSubBidang === 'D.15')
+                                        <label class="block text-xs font-bold text-slate-700">Ada Kejadian Kecelakaan Wisata Alam pada Periode tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada jika tidak ditemukan gangguan kawasan</p>
+                                    @elseif ($kodeSubBidang === 'D.16')
+                                        <label class="block text-xs font-bold text-slate-700">Ada kegiatan promosi/publikasi jasa lingkungan pada periode tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada, jika tidak ada kegiatan publikasi/promosi</p>
+                                    @else
+                                        <label class="block text-xs font-bold text-slate-700">Data Tersedia pada Periode tersebut?</label>
+                                        <p class="text-[11px] text-slate-500">Pilih tidak ada jika data belum tersedia pada periode tersebut</p>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-6 shrink-0">
+                                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="data_tersedia_{{ $kodeForm }}" value="ya" x-model="dataTersediaD10D16" class="text-forest-600 focus:ring-forest-600">
+                                        <span class="text-xs font-medium text-slate-700">{{ $kodeSubBidang === 'D.15' ? 'Ya, ada kejadian' : ($kodeSubBidang === 'D.13' ? 'Ya, tambah data' : ($kodeSubBidang === 'D.16' ? 'Ya, ada' : 'Ya, data tersedia')) }}</span>
+                                    </label>
+                                    <label class="inline-flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="data_tersedia_{{ $kodeForm }}" value="tidak" x-model="dataTersediaD10D16" class="text-forest-600 focus:ring-forest-600">
+                                        <span class="text-xs font-medium text-slate-700">Tidak ada (Nihil)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if ($kodeSubBidang === 'D.10')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Zonasi/Blok: <span class="text-rose-500">*</span></label>
+                                    <div x-data="{ open: false, search: '', selected: '', options: ['Zona Inti', 'Blok Perlindungan', 'Zona Rimba', 'Blok Koleksi', 'Zona Pemanfaatan', 'Blok Pemanfaatan', 'Zona Perlindungan Bahari', 'Blok Perlindungan Bahari', 'Zona Tradisional', 'Blok Tradisional', 'Zona Rehabilitasi', 'Blok Rehabilitasi', 'Zona Khusus', 'Blok Khusus', 'Zona Religi, Budaya dan Sejarah', 'Blok Religi, Budaya dan Sejarah', 'Zona Lainnya', 'Blok Lainnya'] }" @click.outside="open = false; search = ''" class="relative">
+                                        <input type="text" name="zonasi_blok_d10" x-model="selected" x-bind:required="dataTersediaD10D16 === 'ya'" x-bind:aria-expanded="open" aria-haspopup="listbox" readonly placeholder="Pilih Zona/Blok" @click="open = !open; if (open) $nextTick(() => $refs.zoneSearch.focus())" @keydown.escape="open = false" class="w-full p-3 pr-10 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white cursor-pointer">
+                                        <span class="pointer-events-none absolute right-4 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-slate-400"></span>
+                                        <div x-cloak x-show="open" x-transition class="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-slate-300 bg-white shadow-lg">
+                                            <input type="search" x-ref="zoneSearch" x-model="search" placeholder="Cari zona/blok..." class="w-full border-0 border-b border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:ring-0">
+                                            <div role="listbox" class="max-h-64 overflow-y-auto">
+                                                <template x-for="option in options.filter((item) => item.toLowerCase().includes(search.toLowerCase()))" :key="option">
+                                                    <button type="button" role="option" @click="selected = option; open = false; search = ''" class="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs text-slate-800 hover:bg-blue-600 hover:text-white" x-text="option"></button>
+                                                </template>
+                                                <p x-show="options.filter((item) => item.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-3 py-3 text-xs text-slate-500">Zona/Blok tidak ditemukan.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Bidang/Seksi Pengelolaan Wilayah: <span class="text-rose-500">*</span></label>
+                                    <input type="text" name="bidang_seksi_pengelolaan_wilayah_d10" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Lokasi Bidang/Seksi Pengelolaan Wilayah" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white">
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Sumber Air: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" name="jumlah_sumber_air_d10" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Titik</span></div></div>
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Total Debit Air: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="total_debit_air_d10" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Liter/detik</span></div></div>
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Luas Areal Pemanfaatan: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="luas_areal_pemanfaatan_d10" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs font-semibold text-slate-500 border-l border-slate-300">Ha</span></div></div>
+                                </div>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"><h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI GEOGRAFIS AREAL PEMANFAATAN AIR &amp; ENERGI AIR</h4><label class="block text-xs font-bold text-slate-700 mb-1">Unggah Polygon Area (shapefile):</label><p class="text-[11px] text-slate-500 mb-2">ESRI Shapefile terdiri dari file dengan ekstensi .shp, .dbf, .prj, .shx, dan .cpg yang dikompres menjadi ekstensi .Zip</p><input type="file" name="shapefile_d10" accept=".zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-slate-300 bg-white rounded-xl"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d10" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.11')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Sumber Air: <span class="text-rose-500">*</span></label><select name="sumber_air_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full md:w-2/3 p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none"><option value="">Pilih Sumber Air</option><option value="Sungai">Sungai</option><option value="Mata Air">Mata Air</option><option value="Danau">Danau</option><option value="Lainnya">Lainnya</option></select></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-2">Jenis Perizinan: <span class="text-rose-500">*</span></label><div class="flex flex-wrap gap-6"><label class="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700"><input type="checkbox" name="jenis_perizinan_d11[]" value="Pemanfaatan Air" x-bind:required="dataTersediaD10D16 === 'ya'" class="rounded text-forest-600 focus:ring-forest-600"><span>Pemanfaatan Air</span></label><label class="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700"><input type="checkbox" name="jenis_perizinan_d11[]" value="Pemanfaatan Energi Air" class="rounded text-forest-600 focus:ring-forest-600"><span>Pemanfaatan Energi Air</span></label></div></div>
+                                <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-4"><legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">INFORMASI PEMEGANG IZIN</legend><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Pemegang Izin: <span class="text-rose-500">*</span></label><input type="text" name="nama_pemegang_izin_d11" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Nama pemegang izin" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-2">Komersil?: <span class="text-rose-500">*</span></label><div class="flex items-center gap-6 pt-2"><label class="inline-flex items-center gap-2 cursor-pointer text-xs"><input type="radio" name="komersil_d11" value="komersil" x-bind:required="dataTersediaD10D16 === 'ya'" class="text-forest-600 focus:ring-forest-600"><span>Komersil</span></label><label class="inline-flex items-center gap-2 cursor-pointer text-xs"><input type="radio" name="komersil_d11" value="non_komersil" class="text-forest-600 focus:ring-forest-600"><span>Non Komersil</span></label></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">No Surat Keputusan: <span class="text-rose-500">*</span></label><input type="text" name="no_surat_keputusan_d11" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="No surat keputusan" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Tanggal SK: <span class="text-rose-500">*</span></label><input type="date" name="tanggal_sk_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Luas Areal: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="luas_areal_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Ha</span></div></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Dokumen SK (pdf):</label><input type="file" name="dokumen_sk_d11" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 border border-slate-300 bg-white rounded-xl"></div></fieldset>
+                                <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-4"><legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">INFORMASI PENERIMA MANFAAT</legend><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Kabupaten/Kota: <span class="text-rose-500">*</span></label><input type="text" name="kabupaten_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan: <span class="text-rose-500">*</span></label><input type="text" name="kecamatan_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Kelurahan/Desa: <span class="text-rose-500">*</span></label><input type="text" name="kelurahan_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Jumlah KK yang dilayani: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" name="jumlah_kk_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">KK</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Jumlah Tenaga Kerja: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" name="jumlah_tenaga_kerja_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Orang</span></div></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Nilai Investasi: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden max-w-md"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_investasi_d11" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">,00</span></div></div></fieldset>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5"><h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI GEOGRAFIS AREAL IZIN PEMANFAATAN</h4><label class="block text-xs font-bold text-slate-700 mb-1">Unggah Polygon Area (shapefile):</label><p class="text-[11px] text-slate-500 mb-2">ESRI Shapefile terdiri dari file .shp, .dbf, .prj, .shx, dan .cpg yang dikompres menjadi .Zip</p><input type="file" name="shapefile_d11" accept=".zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 border border-slate-300 bg-white rounded-xl"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d11" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.12')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Potensi Karbon Per Ha: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="potensi_karbon_per_ha_d12" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Ton C/Ha</span></div></div>
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Total Stok Karbon: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="total_stok_karbon_d12" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Ton C</span></div></div>
+                                </div>
+                                @foreach ([
+                                    'flora' => 'Nilai Flora',
+                                    'satwa' => 'Nilai Satwa',
+                                    'jasa_air' => 'Nilai Jasa Air',
+                                    'jasa_wisata_alam' => 'Nilai Jasa Wisata Alam',
+                                    'jasa_lingkungan_total' => 'Nilai Jasa Lingkungan Total'
+                                ] as $nilaiKode => $nilaiLabel)
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">{{ $nilaiLabel }}: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden max-w-md"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_{{ $nilaiKode }}_d12" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">,00</span></div><div class="mt-2 rounded-lg border border-blue-500 bg-blue-100 px-4 py-5 text-sm italic text-slate-700"><span class="block -mt-8 mb-3 w-fit rounded border border-blue-500 bg-white px-2 py-1 not-italic font-bold text-slate-800">Terbilang:</span>Nol Rupiah</div></div>
+                                @endforeach
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Nilai Kualitas Karbon: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_kualitas_karbon_d12" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">/ Ton C</span></div><div class="mt-2 rounded-lg border border-blue-500 bg-blue-100 px-4 py-5 text-sm italic text-slate-700"><span class="block -mt-8 mb-3 w-fit rounded border border-blue-500 bg-white px-2 py-1 not-italic font-bold text-slate-800">Terbilang:</span>Nol Rupiah</div></div>
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Nilai Ekosistem: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_ekosistem_d12" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">/ ha.thn</span></div><div class="mt-2 rounded-lg border border-blue-500 bg-blue-100 px-4 py-5 text-sm italic text-slate-700"><span class="block -mt-8 mb-3 w-fit rounded border border-blue-500 bg-white px-2 py-1 not-italic font-bold text-slate-800">Terbilang:</span>Nol Rupiah</div></div>
+                                </div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d12" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.13')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Manifestasi: <span class="text-rose-500">*</span></label><input type="text" name="nama_manifestasi_d13" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Manifestasi: <span class="text-rose-500">*</span></label>
+                                        <div x-data="{ open: false, search: '', selected: '', options: ['Mata Air Panas', 'Geiser', 'Fumarol', 'Solfatara', 'Kawah Geotermal', 'Panas Tanah', 'Panas Bumi Tersembunyi'] }" @click.outside="open = false; search = ''" class="relative">
+                                            <input type="text" name="jenis_manifestasi_d13" x-model="selected" x-bind:required="dataTersediaD10D16 === 'ya'" x-bind:aria-expanded="open" aria-haspopup="listbox" readonly placeholder="Pilih jenis manifestasi" @click="open = !open; if (open) $nextTick(() => $refs.manifestationSearch.focus())" @keydown.escape="open = false" class="w-full p-3 pr-10 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white cursor-pointer">
+                                            <span class="pointer-events-none absolute right-4 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-slate-400"></span>
+                                            <div x-cloak x-show="open" x-transition class="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-slate-300 bg-white shadow-lg">
+                                                <input type="search" x-ref="manifestationSearch" x-model="search" placeholder="Cari jenis manifestasi..." class="w-full border-0 border-b border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:ring-0">
+                                                <div role="listbox" class="max-h-64 overflow-y-auto">
+                                                    <template x-for="option in options.filter((item) => item.toLowerCase().includes(search.toLowerCase()))" :key="option">
+                                                        <button type="button" role="option" @click="selected = option; open = false; search = ''" class="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs text-slate-800 hover:bg-blue-600 hover:text-white" x-text="option"></button>
+                                                    </template>
+                                                    <p x-show="options.filter((item) => item.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-3 py-3 text-xs text-slate-500">Jenis manifestasi tidak ditemukan.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4"><h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI TITIK GEOGRAFIS (XY): <span class="text-rose-500">*</span></h4><div class="rounded-2xl overflow-hidden border border-slate-300 bg-cover bg-center h-64" style="background-image: linear-gradient(180deg, rgba(7,21,39,0.35), rgba(7,21,39,0.55)), url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=1200&q=80');"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Longitude: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">X</span><input type="text" name="longitude_manifestasi_d13" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="101.23234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Latitude: <span class="text-rose-500">*</span></label><div class="flex items-center bg-slate-50 border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Y</span><input type="text" name="latitude_manifestasi_d13" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="1.234525" class="w-full p-3 bg-transparent text-xs text-slate-800 focus:outline-none"></div></div></div><div class="mt-4"><label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label><input type="text" name="zona_blok_manifestasi_d13" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d13" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.14')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-700 mb-2">Jenis Perizinan Berusaha: <span class="text-rose-500">*</span></label><div class="flex flex-wrap gap-6"><label class="inline-flex items-center gap-2 cursor-pointer text-xs"><input type="radio" name="jenis_perizinan_d14" value="eksplorasi" x-bind:required="dataTersediaD10D16 === 'ya'" class="text-forest-600 focus:ring-forest-600"><span>PB-PJLPB Tahap Eksplorasi</span></label><label class="inline-flex items-center gap-2 cursor-pointer text-xs"><input type="radio" name="jenis_perizinan_d14" value="eksploitasi" class="text-forest-600 focus:ring-forest-600"><span>PB-PJLPB Tahap Eksploitasi dan Pemanfaatan</span></label></div></div>
+                                <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 space-y-4"><legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">INFORMASI PEMEGANG IZIN USAHA</legend><div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Pemegang Izin: <span class="text-rose-500">*</span></label><input type="text" name="nama_pemegang_izin_d14" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Nama pemegang izin usaha" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Nomor Induk Berusaha (NIB): <span class="text-rose-500">*</span></label><input type="text" name="nib_d14" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Masukan nomor induk berusaha.." class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Nomor Perizinan: <span class="text-rose-500">*</span></label><input type="text" name="nomor_perizinan_d14" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Nomor surat" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Perizinan: <span class="text-rose-500">*</span></label><input type="date" name="tanggal_perizinan_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Luas Area Perizinan: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="luas_area_perizinan_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Ha</span></div></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Dokumen Perizinan (pdf):</label><input type="file" name="dokumen_perizinan_d14" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 border border-slate-300 bg-white rounded-xl"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Zona/Blok: <span class="text-rose-500">*</span></label><input type="text" name="zona_blok_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">SPTN/SKW: <span class="text-rose-500">*</span></label><input type="text" name="sptn_skw_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Nama Wilayah Kerja: <span class="text-rose-500">*</span></label><input type="text" name="nama_wilayah_kerja_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-white border border-slate-300 rounded-xl text-xs"></div></div><div><label class="block text-xs font-bold text-slate-700 mb-2">Status Wilayah Kerja: <span class="text-rose-500">*</span></label><div class="space-y-2"><label class="block text-xs"><input type="radio" name="status_wilayah_kerja_d14" value="panas_bumi" x-bind:required="dataTersediaD10D16 === 'ya'" class="mr-2 text-forest-600">Wilayah Kerja Panas Bumi</label><label class="block text-xs"><input type="radio" name="status_wilayah_kerja_d14" value="penugasan" class="mr-2 text-forest-600">Wilayah Penugasan Survei Pendahuluan dan Eksplorasi</label></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Luas Wilayah Kerja: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="luas_wilayah_kerja_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Ha</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Kapasitas Terbangkit: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" step="0.01" name="kapasitas_terbangkit_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">MW</span></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Jml KK Terlayani: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" name="jumlah_kk_terlayani_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">KK</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Jml Tenaga Kerja: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><input type="number" min="0" name="jumlah_tenaga_kerja_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">org</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Nilai Investasi (Rp): <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Rp</span><input type="number" min="0" step="0.01" name="nilai_investasi_d14" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">,00</span></div></div></div></fieldset>
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5"><h4 class="font-extrabold text-xs text-slate-800 uppercase tracking-wider mb-3">LOKASI GEOGRAFIS AREAL IZIN</h4><label class="block text-xs font-bold text-slate-700 mb-1">Unggah Polygon Area (shapefile):</label><p class="text-[11px] text-slate-500 mb-2">ESRI Shapefile terdiri dari file .shp, .dbf, .prj, .shx, dan .cpg yang dikompres menjadi ekstensi .Zip</p><input type="file" name="shapefile_d14" accept=".zip" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 border border-slate-300 bg-white rounded-xl"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d14" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.15')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Jenis Kecelakaan: <span class="text-rose-500">*</span></label>
+                                    <div x-data="{ open: false, search: '', selected: '', options: ['Jatuh', 'Terpeleset', 'Hipotermia', 'Edema', 'Tertimpa Batu/Longsoran', 'Tertimpa Bangunan', 'Tertimpa Pohon', 'Lainnya'] }" @click.outside="open = false; search = ''" class="relative w-full md:w-1/2">
+                                        <input type="text" name="jenis_kecelakaan_d15" x-model="selected" x-bind:required="dataTersediaD10D16 === 'ya'" x-bind:aria-expanded="open" aria-haspopup="listbox" readonly placeholder="Pilih jenis kecelakaan" @click="open = !open; if (open) $nextTick(() => $refs.accidentSearch.focus())" @keydown.escape="open = false" class="w-full p-3 pr-10 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white cursor-pointer">
+                                        <span class="pointer-events-none absolute right-4 top-1/2 h-2 w-2 -translate-y-1/2 rotate-45 border-b-2 border-r-2 border-slate-400"></span>
+                                        <div x-cloak x-show="open" x-transition class="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-slate-300 bg-white shadow-lg">
+                                            <input type="search" x-ref="accidentSearch" x-model="search" placeholder="Cari jenis kecelakaan..." class="w-full border-0 border-b border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:ring-0">
+                                            <div role="listbox" class="max-h-64 overflow-y-auto">
+                                                <template x-for="option in options.filter((item) => item.toLowerCase().includes(search.toLowerCase()))" :key="option">
+                                                    <button type="button" role="option" @click="selected = option; open = false; search = ''" class="block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs text-slate-800 hover:bg-blue-600 hover:text-white" x-text="option"></button>
+                                                </template>
+                                                <p x-show="options.filter((item) => item.toLowerCase().includes(search.toLowerCase())).length === 0" class="px-3 py-3 text-xs text-slate-500">Jenis kecelakaan tidak ditemukan.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Lokasi Kejadian: <span class="text-rose-500">*</span></label><textarea name="lokasi_kejadian_d15" rows="3" x-bind:required="dataTersediaD10D16 === 'ya'" placeholder="Masukan lokasi kejadian kecelakaan wisata alam.." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                                <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5"><legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">JUMLAH KORBAN</legend><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label class="block text-xs font-bold text-slate-700 mb-1">Dalam Negeri: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Jumlah</span><input type="number" min="0" name="korban_dalam_negeri_d15" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Orang</span></div></div><div><label class="block text-xs font-bold text-slate-700 mb-1">Luar Negeri: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Jumlah</span><input type="number" min="0" name="korban_luar_negeri_d15" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Orang</span></div></div></div></fieldset>
+                                @foreach ([['kategori', 'KATEGORI KECELAKAAN', ['Ringan', 'Sedang', 'Berat']], ['luka_ringan', 'KORBAN LUKA RINGAN', ['Dalam Negeri', 'Luar Negeri']], ['luka_berat', 'KORBAN LUKA BERAT', ['Dalam Negeri', 'Luar Negeri']], ['meninggal', 'KORBAN MENINGGAL', ['Dalam Negeri', 'Luar Negeri']]] as $kelompokKorban)
+                                    <fieldset class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5"><legend class="px-2 font-extrabold text-xs text-slate-800 uppercase">{{ $kelompokKorban[1] }}</legend><div class="grid grid-cols-1 {{ count($kelompokKorban[2]) === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2' }} gap-4">@foreach ($kelompokKorban[2] as $jenisKorban)@php($fieldKorban = strtolower(str_replace(' ', '_', $jenisKorban)))<div><label class="block text-xs font-bold text-slate-700 mb-1">{{ $jenisKorban }}: <span class="text-rose-500">*</span></label><div class="flex items-center bg-white border border-slate-300 rounded-xl overflow-hidden"><span class="px-3 text-xs text-slate-500 border-r border-slate-300">Jumlah</span><input type="number" min="0" name="{{ $kelompokKorban[0] }}_{{ $fieldKorban }}_d15" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-transparent text-xs"><span class="px-3 text-xs text-slate-500 border-l border-slate-300">Orang</span></div></div>@endforeach</div></fieldset>
+                                @endforeach
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d15" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+
+                        @if ($kodeSubBidang === 'D.16')
+                            <div x-show="dataTersediaD10D16 === 'ya'" x-transition class="mt-5 space-y-5">
+                                <div><label class="block text-xs font-bold text-slate-700 mb-2">Jenis Publikasi:</label><div class="space-y-3">@foreach (['Publikasi Elektronik/Digital', 'Publikasi Cetak', 'Pameran', 'Kampanye', 'Lain-lain'] as $jenisPublikasi)<label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700"><input type="radio" name="jenis_publikasi_d16" value="{{ $jenisPublikasi }}" x-bind:required="dataTersediaD10D16 === 'ya'" class="text-forest-600 focus:ring-forest-600"><span>{{ $jenisPublikasi }}</span></label>@endforeach</div></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Judul Publikasi: <span class="text-rose-500">*</span></label><input type="text" name="judul_publikasi_d16" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Penyelenggara Kegiatan: <span class="text-rose-500">*</span></label><input type="text" name="penyelenggara_kegiatan_d16" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Sumber Pembiayaan: <span class="text-rose-500">*</span></label><input type="text" name="sumber_pembiayaan_d16" x-bind:required="dataTersediaD10D16 === 'ya'" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></div>
+                                <div><label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label><textarea name="keterangan_d16" rows="4" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white"></textarea></div>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG B.01: Kelompok Binaan                             -->
                 <!-- ========================================================================= -->
-                <div x-show="selectedSubBidangKode === 'B.01'" x-transition class="space-y-6 pt-2">
+                <div x-cloak x-show="selectedSubBidangKode === 'B.01'" x-transition class="space-y-6 pt-2">
                     
                     <!-- 1. TAHUN & PERIODE SEMESTER -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -956,10 +2086,9 @@
                                 Tahun: <span class="text-rose-500">*</span>
                             </label>
                             <select name="tahun_b01" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
-                                <option value="2026">2026</option>
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
+                                @for ($year = 2026; $year >= 1945; $year--)
+                                    <option value="{{ $year }}">{{ $year }}</option>
+                                @endfor
                             </select>
                         </div>
                         <div>
@@ -980,24 +2109,9 @@
                         </label>
                         <select name="kawasan_nama_b01" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanKonservasi as $kawasan)
+                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -1260,15 +2374,10 @@
 
                 </div>
 
-                <!-- KETERANGAN GLOBAL -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
-                    <textarea name="keterangan" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white text-xs font-medium shadow-xs"></textarea>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Keterangan:</label>
+                    <textarea name="keterangan" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-forest-600 outline-none text-xs font-medium"></textarea>
                 </div>
-
-                
-
-                
 
                 <!-- Action Button -->
                 <div class="pt-4 border-t border-slate-200/80 flex justify-end">
@@ -1283,7 +2392,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="mt-12 border-t border-slate-200 bg-white/80 backdrop-blur-md py-6 text-center text-xs text-slate-500">
+    <footer class="mt-auto border-t border-slate-200 bg-white/80 backdrop-blur-md py-6 text-center text-xs text-slate-500">
         <p>&copy; 2026 <strong>SIDAK BKSDA Sulawesi Tengah</strong>. All rights reserved.</p>
     </footer>
 
@@ -1298,7 +2407,6 @@
             if (alpineComponent) {
                 alpineComponent.selectedSubBidangKode = '';
             }
-
             subSelect.innerHTML = '<option value="">Memuat sub-bidang...</option>';
             subSelect.disabled = true;
 
@@ -1327,12 +2435,24 @@
         document.getElementById('sub_bidang_select').addEventListener('change', function() {
             let selectedOption = this.options[this.selectedIndex];
             let kodeSub = selectedOption.getAttribute('data-kode') || '';
-            
+            const normalizedKodeSub = kodeSub.trim().toUpperCase();
+
             let alpineComponent = Alpine.$data(document.querySelector('[x-data]'));
             if (alpineComponent) {
-                alpineComponent.selectedSubBidangKode = kodeSub.trim().toUpperCase();
+                alpineComponent.selectedSubBidangKode = normalizedKodeSub;
             }
         });
+
+        // Sinkronkan pilihan sub-bidang yang sudah terpilih saat halaman dibuka.
+        const selectedSubBidang = document.getElementById('sub_bidang_select');
+        const selectedSubOption = selectedSubBidang.options[selectedSubBidang.selectedIndex];
+        const initialSubText = selectedSubOption?.textContent?.trim().toUpperCase() || '';
+        const initialSubKode = selectedSubOption?.getAttribute('data-kode')?.trim().toUpperCase()
+            || (initialSubText.startsWith('D.03.') ? 'D.03' : '');
+        const initialAlpineComponent = Alpine.$data(document.querySelector('[x-data]'));
+        if (initialAlpineComponent && initialSubKode) {
+            initialAlpineComponent.selectedSubBidangKode = initialSubKode;
+        }
 
         // --- 2. SCRIPT FOR DROPDOWN WILAYAH INDONESIA (BERTINGKAT) ---
         const provSelect = document.getElementById('provinsi_select');
