@@ -416,79 +416,8 @@ class KonservasiController extends Controller
                 continue;
             }
 
-<<<<<<< HEAD
-        // SUB-BIDANG: Pengunjung Kawasan Konservasi (D.01)
-        if ($request->filled('kawasan_nama_d01')) {
-            $details[] = "Kawasan Pengunjung: " . $request->kawasan_nama_d01;
-            $kategoriPengunjung = [
-                'penelitian' => 'Penelitian & Pengembangan',
-                'pendidikan' => 'Pendidikan & Ilmu Pengetahuan',
-                'foto_video' => 'Pengambilan Foto & Video',
-                'wisata_alam' => 'Wisata Alam',
-                'lain_lain' => 'Lain-lain',
-            ];
-
-            foreach ($kategoriPengunjung as $kodeKategori => $labelKategori) {
-                $dalamNegeri = (int) $request->input($kodeKategori . '_dalam_negeri', 0);
-                $luarNegeri = (int) $request->input($kodeKategori . '_luar_negeri', 0);
-                $jumlah += $dalamNegeri + $luarNegeri;
-                $details[] = "[$labelKategori] Dalam Negeri: $dalamNegeri, Luar Negeri: $luarNegeri orang";
-            }
-        }
-
-        // SUB-BIDANG: PNBP Wisata Alam di Kawasan Konservasi (D.02)
-        if ($request->filled('kawasan_nama_d02')) {
-            $details[] = "Kawasan PNBP Wisata Alam: " . $request->kawasan_nama_d02;
-            foreach ($request->all() as $field => $value) {
-                if (!str_starts_with($field, 'd02_') || $value === null || $value === '') {
-                    continue;
-                }
-
-                if (str_ends_with($field, '_jumlah') && is_numeric($value)) {
-                    $jumlah += (int) $value;
-                }
-
-                if ($value !== '0' && !str_ends_with($field, '_keterangan')) {
-                    $details[] = strtoupper(str_replace('_', ' ', $field)) . ": " . $value;
-                } elseif (str_ends_with($field, '_keterangan') && trim((string) $value) !== '') {
-                    $details[] = "Keterangan " . str_replace('_', ' ', $field) . ": " . $value;
-                }
-            }
-        }
-
-        // SUB-BIDANG: Desain Tapak Pemanfaatan Jasa Lingkungan Wisata Alam (D.03)
-        if ($request->filled('kawasan_nama_d03')) {
-            $details[] = "Kawasan Desain Tapak: " . $request->kawasan_nama_d03;
-            if ($request->ada_pengesahan_d03 === 'ya') {
-                $details[] = "[Desain Tapak] Zonasi/Blok: " . ($request->zonasi_blok_d03 ?? '-') . ", Bidang/Seksi: " . ($request->bidang_seksi_d03 ?? '-');
-                $details[] = "[Desain Tapak] No SK: " . ($request->nomor_dokumen_d03 ?? '-') . ", Tanggal: " . ($request->tanggal_pengesahan_d03 ?? '-') . ", Judul: " . ($request->judul_sk_d03 ?? '-') . ", Luas: " . ($request->luas_zona_d03 ?? '0') . " Ha";
-                if ($request->filled('keterangan_d03')) {
-                    $details[] = "[Desain Tapak] Keterangan: " . $request->keterangan_d03;
-                }
-            } elseif ($request->ada_pengesahan_d03 === 'tidak') {
-                $details[] = '[Desain Tapak] Status: Tidak ada (Nihil)';
-            }
-        }
-
-        // 1. SUB-BIDANG: Kawasan Konservasi (A.01)
-        if ($request->filled('kawasan_nama')) {
-            $details[] = "Kawasan: " . $request->kawasan_nama;
-            if ($request->ada_perubahan === 'ya') {
-                $details[] = "[SK Parsial] No: " . ($request->sk_parsial_nomor ?? '-') . ", Tgl: " . ($request->sk_parsial_tanggal ?? '-') . ", Luas: " . ($request->sk_parsial_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_parsial_luas ?? $jumlah;
-            }
-            if ($request->sk_provinsi_tersedia === 'ya') {
-                $details[] = "[SK Provinsi] No: " . ($request->sk_provinsi_nomor ?? '-') . ", Tgl: " . ($request->sk_provinsi_tanggal ?? '-') . ", Luas: " . ($request->sk_provinsi_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_provinsi_luas ?? $jumlah;
-            }
-            if ($request->sk_penetapan_tersedia === 'ya') {
-                $details[] = "[SK Penetapan] No: " . ($request->sk_penetapan_nomor ?? '-') . ", Tgl: " . ($request->sk_penetapan_tanggal ?? '-') . ", Luas: " . ($request->sk_penetapan_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_penetapan_luas ?? $jumlah;
-            }
-=======
             $label = $this->formFieldLabel($field);
             $details[] = $label . ': ' . ($value === 'on' ? 'Ya' : $value);
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
         }
 
         $fileInputs = [

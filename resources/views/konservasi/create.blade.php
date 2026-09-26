@@ -226,13 +226,8 @@
                         </label>
                         <select name="kawasan_nama" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -424,13 +419,8 @@
                         </label>
                         <select name="kawasan_nama_rpjp" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -513,13 +503,8 @@
                         </label>
                         <select name="kawasan_nama_monitoring" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -673,13 +658,8 @@
                         </label>
                         <select name="kawasan_nama_evaluasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -765,13 +745,8 @@
                         </label>
                         <select name="kawasan_nama_ekosistem" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -836,13 +811,8 @@
                         </label>
                         <select name="kawasan_nama_zonasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
@@ -2163,13 +2133,8 @@
                         </label>
                         <select name="kawasan_nama_b01" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-<<<<<<< HEAD
-                            @foreach ($kawasanKonservasi as $kawasan)
-                                <option value="{{ $kawasan['nama'] }}">{{ $kawasan['nama'] }}</option>
-=======
                             @foreach ($kawasanList as $kawasan)
                                 <option value="{{ $kawasan }}">{{ $kawasan }}</option>
->>>>>>> 79e2c11bd231fb26f8dae3b3888a3ab282356258
                             @endforeach
                         </select>
                     </div>
