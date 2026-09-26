@@ -162,18 +162,43 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Kolom Kiri: Visualisasi Grafik Dinamis Chart.js -->
-            <div class="lg:col-span-2 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 class="font-bold text-lg text-slate-900">Visualisasi Sebaran Data Konservasi</h3>
-                            <p class="text-xs text-slate-500">Akumulasi real-time berdasarkan bidang data konservasi yang diinput</p>
+            <div class="lg:col-span-2 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2 text-emerald-700 mb-1">
+                            <i class="fa-solid fa-chart-pie text-sm"></i>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider">Komposisi Data</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900">Sebaran Data per Bidang</h3>
+                        <p class="text-xs text-slate-500 mt-1">Perbandingan nilai rekap pada setiap bidang konservasi.</p>
+                    </div>
+                    <span class="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px] font-semibold text-slate-600">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        {{ count($chartLabels ?? []) }} bidang terdata
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(220px,0.9fr)] gap-6 items-center">
+                    <div class="relative h-64 sm:h-72 min-w-0 flex items-center justify-center">
+                        <canvas id="konservasiChart" aria-label="Grafik sebaran nilai data konservasi per bidang" role="img"></canvas>
+                        <div id="chartEmpty" class="hidden absolute inset-0 flex-col items-center justify-center text-center px-6">
+                            <span class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </span>
+                            <p class="text-sm font-semibold text-slate-600">Belum ada data untuk divisualisasikan</p>
+                            <p class="text-xs text-slate-400 mt-1">Data akan muncul setelah entri konservasi ditambahkan.</p>
                         </div>
                     </div>
 
-                    <!-- Canvas Chart.js Dinamis -->
-                    <div class="relative w-full h-72">
-                        <canvas id="konservasiChart"></canvas>
+                    <div class="lg:border-l lg:border-slate-100 lg:pl-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800">Rincian per bidang</h4>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Urut dari nilai rekap terbesar</p>
+                            </div>
+                            <i class="fa-solid fa-arrow-down-wide-short text-slate-400"></i>
+                        </div>
+                        <div id="chartBreakdown" class="space-y-4 max-h-64 overflow-y-auto pr-1"></div>
                     </div>
                 </div>
             </div>
@@ -218,77 +243,120 @@
         <p>&copy; 2026 <strong>SIDAK BKSDA Sulawesi Tengah</strong>. All rights reserved.</p>
     </footer>
 
-    <!-- SCRIPT RENDER GRAFIK CHART.JS DINAMIS -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const labels = <?php echo json_encode($chartLabels ?? []); ?>;
-            const dataValues = <?php echo json_encode($chartData ?? []); ?>;
+            const labels = @js($chartLabels ?? []);
+            const dataValues = @js($chartData ?? []);
+            const canvas = document.getElementById('konservasiChart');
+            const emptyState = document.getElementById('chartEmpty');
+            const breakdown = document.getElementById('chartBreakdown');
+            const palette = ['#047857', '#eab308', '#0284c7', '#f97316', '#be123c', '#14b8a6', '#64748b', '#84cc16'];
+            const numberFormat = new Intl.NumberFormat('id-ID');
+            const totalValue = dataValues.reduce((sum, value) => sum + (Number(value) || 0), 0);
 
-            const ctx = document.getElementById('konservasiChart').getContext('2d');
-
-            if (labels.length === 0 || dataValues.length === 0) {
-                // Tampilan fallback jika belum ada data di database
-                ctx.font = '14px Plus Jakarta Sans, sans-serif';
-                ctx.fillStyle = '#94a3b8';
-                ctx.textAlign = 'center';
-                ctx.fillText('Belum ada data konservasi yang diinputkan ke sistem.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            if (!labels.length || !dataValues.length || totalValue <= 0) {
+                canvas.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
                 return;
             }
 
-            new Chart(ctx, {
-                type: 'bar',
+            const chartColors = labels.map((_, index) => palette[index % palette.length]);
+            const centerLabel = {
+                id: 'centerLabel',
+                afterDraw(chart) {
+                    const { ctx, chartArea } = chart;
+                    if (!chartArea) return;
+
+                    const centerX = (chartArea.left + chartArea.right) / 2;
+                    const centerY = (chartArea.top + chartArea.bottom) / 2;
+                    ctx.save();
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = '700 10px sans-serif';
+                    ctx.fillText('BIDANG AKTIF', centerX, centerY - 11);
+                    ctx.fillStyle = '#0f172a';
+                    ctx.font = '800 25px sans-serif';
+                    ctx.fillText(numberFormat.format(labels.length), centerX, centerY + 13);
+                    ctx.restore();
+                }
+            };
+
+            new Chart(canvas, {
+                type: 'doughnut',
                 data: {
-                    labels: labels,
+                    labels,
                     datasets: [{
-                        label: 'Total Volume / Rekap Data',
                         data: dataValues,
-                        backgroundColor: [
-                            '#16a34a', // Emerald Green
-                            '#f43f5e', // Rose
-                            '#f59e0b', // Amber
-                            '#2563eb', // Blue
-                            '#0d9488', // Teal
-                            '#8b5cf6'  // Purple
-                        ],
-                        borderRadius: 8,
-                        borderSkipped: false,
+                        backgroundColor: chartColors,
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                        hoverOffset: 8,
+                        spacing: 2,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '72%',
+                    animation: { duration: 800, animateRotate: true, animateScale: true },
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             backgroundColor: '#0f172a',
                             padding: 12,
                             titleFont: { size: 12, weight: 'bold' },
                             bodyFont: { size: 12 },
-                            cornerRadius: 8
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: {
-                                font: { size: 11, family: 'Plus Jakarta Sans' },
-                                color: '#64748b'
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f5f9' },
-                            ticks: {
-                                precision: 0,
-                                font: { size: 11, family: 'Plus Jakarta Sans' },
-                                color: '#64748b'
+                            cornerRadius: 8,
+                            callbacks: {
+                                label(context) {
+                                    const share = totalValue ? (context.raw / totalValue) * 100 : 0;
+                                    return ` ${numberFormat.format(context.raw)} · ${share.toFixed(1)}%`;
+                                }
                             }
                         }
                     }
-                }
+                },
+                plugins: [centerLabel]
             });
+
+            labels.map((label, index) => ({ label, value: Number(dataValues[index]) || 0, color: chartColors[index] }))
+                .sort((first, second) => second.value - first.value)
+                .forEach((item) => {
+                    const share = (item.value / totalValue) * 100;
+                    const row = document.createElement('div');
+                    row.className = 'space-y-2';
+
+                    const heading = document.createElement('div');
+                    heading.className = 'flex items-center justify-between gap-3';
+
+                    const name = document.createElement('div');
+                    name.className = 'flex items-center gap-2 min-w-0';
+                    const marker = document.createElement('span');
+                    marker.className = 'w-2.5 h-2.5 rounded-sm shrink-0';
+                    marker.style.backgroundColor = item.color;
+                    const labelText = document.createElement('span');
+                    labelText.className = 'text-[11px] font-medium text-slate-600 truncate';
+                    labelText.textContent = item.label;
+                    name.append(marker, labelText);
+
+                    const value = document.createElement('span');
+                    value.className = 'text-[11px] font-bold text-slate-800 shrink-0';
+                    value.textContent = numberFormat.format(item.value);
+                    heading.append(name, value);
+
+                    const track = document.createElement('div');
+                    track.className = 'h-1.5 rounded-full bg-slate-100 overflow-hidden';
+                    const fill = document.createElement('div');
+                    fill.className = 'h-full rounded-full';
+                    fill.style.width = `${share}%`;
+                    fill.style.backgroundColor = item.color;
+                    track.appendChild(fill);
+
+                    row.append(heading, track);
+                    breakdown.appendChild(row);
+                });
         });
     </script>
 </body>
