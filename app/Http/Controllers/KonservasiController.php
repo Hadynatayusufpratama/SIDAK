@@ -49,6 +49,7 @@ class KonservasiController extends Controller
 
                 $q->orWhereHas('subBidang', function ($subQ) use ($search) {
                     $subQ->where('nama_sub_bidang', 'like', "%{$search}%")
+                         ->orWhere('kode_sub', 'like', "%{$search}%")
                          ->orWhereHas('bidang', function ($bidangQ) use ($search) {
                              $bidangQ->where('nama_bidang', 'like', "%{$search}%");
                          });
@@ -62,16 +63,139 @@ class KonservasiController extends Controller
     // Halaman Rekapitulasi Data
     public function index(Request $request)
     {
+        // 1. Array Master Bidang A-F Lengkap untuk Form Dropdown Filter Bertingkat
+        $masterBidang = [
+            'perencanaan_konservasi' => [
+                'nama' => 'Perencanaan Konservasi',
+                'subs' => [
+                    'A.01' => 'A.01. Kawasan Konservasi',
+                    'A.02' => 'A.02. Perencanaan Pengelolaan Kawasan Konservasi',
+                    'A.03' => 'A.03. Monitoring Batas Kawasan Konservasi',
+                    'A.04' => 'A.04. Hasil Evaluasi Kesesuaian Fungsi Kawasan Konservasi',
+                    'A.05' => 'A.05. Ekosistem Kawasan Konservasi',
+                    'A.06' => 'A.06. Penataan Kawasan Konservasi',
+                    'A.07' => 'A.07. Kerja Sama Penyelenggaraan KSA dan KPA',
+                ]
+            ],
+            'konservasi_kawasan' => [
+                'nama' => 'Konservasi Kawasan',
+                'subs' => [
+                    'B.01' => 'B.01. Kelompok Binaan UPT dalam rangka Pemberdayaan Masyarakat',
+                    'B.02' => 'B.02. Pemberian Akses Pemanfaatan Tradisional dan Kemitraan Konservasi',
+                    'B.03' => 'B.03. Permasalahan Strategis Kawasan Konservasi',
+                    'B.04' => 'B.04. Gangguan Kawasan Konservasi',
+                    'B.06' => 'B.06. Penanganan Perkara Tindak Pidana',
+                    'B.07' => 'B.07. Tenaga Pengamanan Hutan Per Satuan Kerja',
+                    'B.08' => 'B.08. Tenaga Pengamanan Hutan Per Resor',
+                    'B.09' => 'B.09. Sarana Pengamanan Hutan',
+                    'B.10' => 'B.10. Kebakaran Hutan dan Lahan di Kawasan Konservasi',
+                    'B.11' => 'B.11. Tenaga Pengendalian Kebakaran Hutan',
+                    'B.12' => 'B.12. Peralatan Tangan Pengendalian Kebakaran Hutan',
+                    'B.13' => 'B.13. Peralatan Lainnya untuk Kebutuhan Pengendalian Kebakaran Hutan',
+                    'B.14' => 'B.14. Rekapitulasi Kader Bina Cinta Alam',
+                ]
+            ],
+            'konservasi_spesies' => [
+                'nama' => 'Konservasi Spesies dan Genetik',
+                'subs' => [
+                    'C.01' => 'C.01. Perjumpaan Spesies di dalam dan luar Kawasan Konservasi',
+                    'C.02' => 'C.02. Lembaga Konservasi Umum dan Khusus',
+                    'C.03' => 'C.03. Koleksi TSL di Lembaga Konservasi',
+                    'C.04' => 'C.04. Penangkaran Tumbuhan dan Satwa Liar',
+                    'C.05' => 'C.05. Jenis TSL yang ditangkarkan di Penangkaran',
+                    'C.06' => 'C.06. Pengedar Tumbuhan dan Satwa Liar (Dalam dan Luar Negeri)',
+                    'C.07' => 'C.07. Kuota Pemanfaatan Tumbuhan dan Satwa Liar',
+                    'C.08' => 'C.08. Realisasi Penangkapan/ Pengambilan Tumbuhan dan Satwa Liar',
+                    'C.09' => 'C.09. Realisasi Ekspor Tumbuhan dan Satwa Liar Hasil Penangkaran',
+                    'C.10' => 'C.10. Realisasi Ekspor Tumbuhan dan Satwa Liar Pengambilan dari Alam',
+                    'C.11' => 'C.11. Rekapitulasi Sitaan/ Penyerahan/ Penyelamatkan Satwa',
+                    'C.12' => 'C.12. PNBP dari kegiatan Pemanfaatan Tumbuhan dan Satwa Liar',
+                    'C.14' => 'C.14. Interaksi Negatif Satwa Liar dan Manusia',
+                    'C.15' => 'C.15. Rekapitulasi Pelepasliaran Kembali Satwa',
+                    'C.16' => 'C.16. Rekapitulasi Kelahiran Satwa',
+                    'C.17' => 'C.17. Rekapitulasi Kematian Satwa Liar',
+                ]
+            ],
+            'pemanfaatan_jasling' => [
+                'nama' => 'Pemanfaatan Jasa Lingkungan',
+                'subs' => [
+                    'D.01' => 'D.01. Pengunjung Kawasan Konservasi',
+                    'D.02' => 'D.02. PNBP Wisata Alam di Kawasan Konservasi',
+                    'D.03' => 'D.03. Desain Tapak Pemanfaatan Jasa Lingkungan Wisata Alam',
+                    'D.04' => 'D.04. Potensi Wisata Alam di Kawasan Konservasi',
+                    'D.05' => 'D.05. Pemanfaatan Jasa Lingkungan Penyediaan Jasa Wisata Alam (PBPJWA)',
+                    'D.06' => 'D.06. Pengusahaan Sarana Jasa Lingkungan Wisata Alam (PBPSWA)',
+                    'D.07' => 'D.07. Sarana dan Prasarana Wisata Alam di Kawasan Konservasi',
+                    'D.08' => 'D.08. Dampak Aktivitas Wisata Alam',
+                    'D.09' => 'D.09. Potensi Pemanfaatan Air dan Energi Air di Kawasan Konservasi',
+                    'D.10' => 'D.10. Areal Pemanfaatan Air dan Energi Air di Kawasan Konservasi',
+                    'D.11' => 'D.11. Pemanfaatan Air dan Energi Air di Kawasan Konservasi',
+                    'D.12' => 'D.12. Potensi Pemanfaatan Karbon di Kawasan Konservasi',
+                    'D.13' => 'D.13. Potensi Pemanfaatan Energi Panas Bumi di Kawasan Konservasi',
+                    'D.14' => 'D.14. Pemanfaatan Jasa Lingkungan Panas Bumi di Kawasan Konservasi',
+                    'D.15' => 'D.15. Kejadian Kecelakaan di dalam Kawasan Konservasi',
+                    'D.16' => 'D.16. Promosi dan Publikasi Jasa Lingkungan Kawasan Konservasi',
+                ]
+            ],
+            'pemulihan_ekosistem' => [
+                'nama' => 'Pemulihan Ekosistem dan Bina Area Preservasi',
+                'subs' => [
+                    'E.01' => 'E.01. Perencanaan Pemulihan Ekosistem',
+                    'E.02' => 'E.02. Realisasi Pemulihan Ekosistem',
+                    'E.03' => 'E.03. Hasil Inventarisasi Area dengan Potensi Kehati Tinggi di Luar Kawasan Konservasi',
+                    'E.04' => 'E.04. Kawasan Ekosistem Esensial',
+                    'E.05' => 'E.05. Perencanaan Kawasan Ekosistem Esensial',
+                    'E.06' => 'E.06. Penilaian Efektivitas Pengelolaan KEE',
+                    'E.07' => 'E.07. Situs Ramsar',
+                ]
+            ],
+            'kesekretariatan' => [
+                'nama' => 'Kesekretariatan',
+                'subs' => [
+                    'F.01' => 'F.01. Sebaran PNS/CPNS Menurut Jabatan dan Jenis Kelamin',
+                    'F.02' => 'F.02. Sebaran PNS/CPNS Menurut Tingkat Pendidikan dan Jenis Kelamin',
+                    'F.03' => 'F.03. Sebaran PNS/CPNS Menurut Golongan dan Jenis Kelamin',
+                    'F.04' => 'F.04. Sebaran Pejabat Fungsional Tertentu Menurut Fungsi dan Jenis Kelamin',
+                    'F.05' => 'F.05. Sebaran Pejabat Fungsional Tertentu Menurut Fungsi, Tingkat Pendidikan dan Jenis Kelamin',
+                    'F.06' => 'F.06. Sebaran ASN P3K menurut Tingkat Pendidikan dan Jenis Kelamin',
+                    'F.07' => 'F.07. Kerja Sama Teknik Bidang KSDAE',
+                    'F.08' => 'F.08. Perijinan Masuk Kawasan Konservasi',
+                ]
+            ]
+        ];
+
+        // 2. Ambil parameter filter input
+        $selectedBidang = $request->get('bidang');
+        $selectedSub = $request->get('sub_bidang');
+
+        // 3. Query utama data konservasi
         $query = DataKonservasi::with('subBidang.bidang')->latest();
 
         if (Schema::hasColumn('data_konservasi', 'user_id')) {
             $query->where('user_id', auth()->id());
         }
 
+        // Filter berdasarkan Bidang Utama jika dipilih
+        if ($selectedBidang && isset($masterBidang[$selectedBidang])) {
+            $namaBidangSearch = $masterBidang[$selectedBidang]['nama'];
+            $query->whereHas('subBidang.bidang', function ($q) use ($namaBidangSearch) {
+                $q->where('nama_bidang', 'like', "%{$namaBidangSearch}%");
+            });
+        }
+
+        // Filter jika user telah memilih sub_bidang tertentu
+        if ($selectedSub) {
+            $query->whereHas('subBidang', function ($q) use ($selectedSub) {
+                $q->where('kode_sub', $selectedSub)
+                  ->orWhere('id', $selectedSub);
+            });
+        }
+
         $query = $this->applySearchFilter($query, $request);
         $data = $query->paginate(10)->withQueryString();
         
-        return view('konservasi.index', compact('data'));
+        // 4. Return view dengan menyertakan data pendukung
+        return view('konservasi.index', compact('data', 'masterBidang', 'selectedBidang', 'selectedSub'));
     }
 
     // Fitur Unduh PDF
@@ -139,20 +263,86 @@ class KonservasiController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    // Halaman Form Input Data
+    // Halaman Form Input Data (Sudah terhubung dengan model Bidang)
     public function create()
     {
         $bidang = Bidang::all();
         return view('konservasi.create', compact('bidang'));
     }
 
+    // Mengambil Sub-Bidang Berdasarkan Bidang ID untuk Dropdown Dinamis
     public function getSubBidang($bidang_id)
     {
         $subBidang = SubBidang::where('bidang_id', $bidang_id)->get();
         return response()->json($subBidang);
     }
 
-    // Proses Simpan Data (Sudah diperbarui penuh sesuai Form Sub-Bidang 1 s/d 6)
+    private function fieldsBySubBidang(): array
+    {
+        return [
+            'A.01' => ['tahun', 'kawasan_nama', 'ada_perubahan', 'sk_parsial_nomor', 'sk_parsial_tanggal', 'sk_parsial_luas', 'sk_parsial_file', 'sk_provinsi_tersedia', 'sk_provinsi_nomor', 'sk_provinsi_tanggal', 'sk_provinsi_luas', 'sk_provinsi_file', 'sk_penetapan_tersedia', 'sk_penetapan_nomor', 'sk_penetapan_tanggal', 'sk_penetapan_luas', 'sk_penetapan_file', 'shapefile_zip'],
+            'A.02' => ['tahun_rpjp', 'kawasan_nama_rpjp', 'ketersediaan_rpjp', 'sk_rpjp_nomor', 'sk_rpjp_tanggal_pengesahan', 'sk_rpjp_periode_berakhir', 'sk_rpjp_file'],
+            'A.03' => ['tahun_monitoring', 'kawasan_nama_monitoring', 'ada_kegiatan_monitoring', 'jenis_kegiatan', 'nomor_batb', 'tanggal_batb', 'pal_baik', 'pal_rusak', 'pal_hilang', 'pal_total', 'panjang_pal_km', 'dokumen_batb', 'shapefile_monitoring_zip'],
+            'A.04' => ['tahun_evaluasi', 'kawasan_nama_evaluasi', 'ketersediaan_evaluasi', 'tanggal_pelaksanaan_evaluasi', 'rekomendasi_evaluasi', 'tindak_lanjut_evaluasi', 'file_dokumen_evaluasi'],
+            'A.05' => ['tahun_ekosistem', 'kawasan_nama_ekosistem', 'ketersediaan_ekosistem', 'shapefile_ekosistem_zip'],
+            'A.06' => ['tahun_zonasi', 'kawasan_nama_zonasi', 'ketersediaan_zonasi', 'nomor_sk_zonasi', 'tanggal_sk_zonasi', 'file_sk_zonasi', 'shapefile_zonasi_zip'],
+            'B.01' => ['tahun_b01', 'periode_semester', 'kawasan_nama_b01', 'ada_kegiatan_b01', 'nama_kelompok', 'jumlah_laki', 'jumlah_perempuan', 'provinsi', 'kabupaten', 'kecamatan', 'desa', 'hhbk_nihil', 'jenis_hhbk', 'pertanian_nihil', 'jenis_pertanian', 'perkebunan_nihil', 'jenis_perkebunan', 'peternakan_nihil', 'jenis_peternakan', 'perikanan_nihil', 'jenis_perikanan', 'wisata_nihil', 'jenis_wisata', 'produk_nihil', 'jenis_produk', 'pembibitan_nihil', 'jenis_pembibitan', 'lainnya_nihil', 'jenis_lainnya', 'jenis_bantuan', 'jumlah_bantuan', 'sumber_dana'],
+        ];
+    }
+
+    private function formFieldLabel(string $field): string
+    {
+        $labels = [
+            'tahun' => 'Tahun', 'tahun_rpjp' => 'Tahun', 'tahun_monitoring' => 'Tahun',
+            'tahun_evaluasi' => 'Tahun', 'tahun_ekosistem' => 'Tahun', 'tahun_zonasi' => 'Tahun', 'tahun_b01' => 'Tahun',
+            'kawasan_nama' => 'Kawasan Konservasi', 'kawasan_nama_rpjp' => 'Kawasan Konservasi',
+            'kawasan_nama_monitoring' => 'Kawasan Konservasi', 'kawasan_nama_evaluasi' => 'Kawasan Konservasi',
+            'kawasan_nama_ekosistem' => 'Kawasan Konservasi', 'kawasan_nama_zonasi' => 'Kawasan Konservasi',
+            'kawasan_nama_b01' => 'Kawasan Konservasi', 'jumlah_laki' => 'Jumlah Laki-laki',
+            'jumlah_perempuan' => 'Jumlah Perempuan', 'jenis_hhbk' => 'Pemungutan HHBK',
+            'jenis_pertanian' => 'Pertanian', 'jenis_perkebunan' => 'Perkebunan',
+            'jenis_peternakan' => 'Peternakan', 'jenis_perikanan' => 'Perikanan',
+            'jenis_wisata' => 'Jasa Wisata', 'jenis_produk' => 'Usaha Penghasil Produk',
+            'jenis_pembibitan' => 'Pembibitan', 'jenis_lainnya' => 'Jenis Usaha Lainnya',
+        ];
+        $label = $labels[$field] ?? ucwords(str_replace('_', ' ', $field));
+
+        return str_replace(
+            ['Sk ', 'Rpjp', 'Batb', 'Hhbk', 'Zip'],
+            ['SK ', 'RPJP', 'BATB', 'HHBK', 'ZIP'],
+            $label
+        );
+    }
+
+    private function parseDetailValues(?string $keterangan, array $fields): array
+    {
+        $values = [];
+
+        foreach (explode(' | ', $keterangan ?? '') as $detail) {
+            $separator = strpos($detail, ': ');
+            if ($separator === false) {
+                continue;
+            }
+
+            $label = trim(substr($detail, 0, $separator));
+            $value = trim(substr($detail, $separator + 2));
+
+            foreach ($fields as $field) {
+                if (strcasecmp($label, $this->formFieldLabel($field)) === 0) {
+                    $values[$field] = $value;
+                    break;
+                }
+            }
+        }
+
+        if ($values === [] && filled($keterangan) && !str_contains($keterangan, ': ')) {
+            $values['keterangan'] = $keterangan;
+        }
+
+        return $values;
+    }
+
+    // Proses Simpan Data
     public function store(Request $request)
     {
         $request->validate([
@@ -170,78 +360,41 @@ class KonservasiController extends Controller
             'shapefile_zonasi_zip'      => 'nullable|mimes:zip|max:10240',
         ]);
 
+        $subBidang = SubBidang::findOrFail($request->sub_bidang_id);
+        $yearFields = [
+            'A.01' => 'tahun',
+            'A.02' => 'tahun_rpjp',
+            'A.03' => 'tahun_monitoring',
+            'A.04' => 'tahun_evaluasi',
+            'A.05' => 'tahun_ekosistem',
+            'A.06' => 'tahun_zonasi',
+            'B.01' => 'tahun_b01',
+        ];
+        $tahun = $request->input($yearFields[$subBidang->kode_sub] ?? '', date('Y'));
+
+        $jumlah = match ($subBidang->kode_sub) {
+            'A.03' => $request->filled('pal_baik') || $request->filled('pal_rusak') || $request->filled('pal_hilang')
+                ? (int) $request->input('pal_baik', 0) + (int) $request->input('pal_rusak', 0) + (int) $request->input('pal_hilang', 0)
+                : null,
+            'B.01' => $request->filled('jumlah_laki') || $request->filled('jumlah_perempuan')
+                ? (int) $request->input('jumlah_laki', 0) + (int) $request->input('jumlah_perempuan', 0)
+                : null,
+            default => null,
+        };
+
+        $fieldsBySubBidang = $this->fieldsBySubBidang();
+
         $details = [];
-        $tahun = $request->tahun ?? $request->tahun_rpjp ?? $request->tahun_monitoring ?? $request->tahun_evaluasi ?? $request->tahun_ekosistem ?? $request->tahun_zonasi ?? date('Y');
-        $jumlah = 0;
+        $activeFields = array_merge($fieldsBySubBidang[$subBidang->kode_sub] ?? [], ['keterangan']);
+        foreach ($request->only($activeFields) as $field => $value) {
+            if (!is_scalar($value) || $value === '') {
+                continue;
+            }
 
-        // 1. SUB-BIDANG: Kawasan Konservasi (A.01)
-        if ($request->filled('kawasan_nama')) {
-            $details[] = "Kawasan: " . $request->kawasan_nama;
-            if ($request->ada_perubahan === 'ya') {
-                $details[] = "[SK Parsial] No: " . ($request->sk_parsial_nomor ?? '-') . ", Tgl: " . ($request->sk_parsial_tanggal ?? '-') . ", Luas: " . ($request->sk_parsial_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_parsial_luas ?? $jumlah;
-            }
-            if ($request->sk_provinsi_tersedia === 'ya') {
-                $details[] = "[SK Provinsi] No: " . ($request->sk_provinsi_nomor ?? '-') . ", Tgl: " . ($request->sk_provinsi_tanggal ?? '-') . ", Luas: " . ($request->sk_provinsi_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_provinsi_luas ?? $jumlah;
-            }
-            if ($request->sk_penetapan_tersedia === 'ya') {
-                $details[] = "[SK Penetapan] No: " . ($request->sk_penetapan_nomor ?? '-') . ", Tgl: " . ($request->sk_penetapan_tanggal ?? '-') . ", Luas: " . ($request->sk_penetapan_luas ?? '0') . " Ha";
-                $jumlah = $request->sk_penetapan_luas ?? $jumlah;
-            }
+            $label = $this->formFieldLabel($field);
+            $details[] = $label . ': ' . ($value === 'on' ? 'Ya' : $value);
         }
 
-        // 2. SUB-BIDANG: Perencanaan Pengelolaan (A.02)
-        if ($request->filled('kawasan_nama_rpjp')) {
-            $details[] = "Kawasan RPJP: " . $request->kawasan_nama_rpjp;
-            if ($request->ketersediaan_rpjp === 'ya') {
-                $details[] = "[RPJP] No SK: " . ($request->sk_rpjp_nomor ?? '-') . ", Tgl Pengesahan: " . ($request->sk_rpjp_tanggal_pengesahan ?? '-') . ", Periode Berakhir: " . ($request->sk_rpjp_periode_berakhir ?? '-');
-            } else {
-                $details[] = "[RPJP] Status: Tidak tersedia (Nihil)";
-            }
-        }
-
-        // 3. SUB-BIDANG: Monitoring Batas Kawasan (A.03)
-        if ($request->filled('kawasan_nama_monitoring')) {
-            $details[] = "Kawasan Monitoring: " . $request->kawasan_nama_monitoring;
-            if ($request->ada_kegiatan_monitoring === 'ya') {
-                $details[] = "[Monitoring BATB] Jenis: " . ($request->jenis_kegiatan ?? '-') . ", No BATB: " . ($request->nomor_batb ?? '-') . ", Tgl BATB: " . ($request->tanggal_batb ?? '-');
-                $details[] = "[Pal Batas] Baik: " . ($request->pal_baik ?? 0) . ", Rusak: " . ($request->pal_rusak ?? 0) . ", Hilang: " . ($request->pal_hilang ?? 0) . ", Panjang: " . ($request->panjang_pal_km ?? 0) . " Km";
-                $jumlah = $request->panjang_pal_km ?? $jumlah;
-            } else {
-                $details[] = "[Monitoring BATB] Status: Tidak ada (Nihil)";
-            }
-        }
-
-        // 4. SUB-BIDANG: Evaluasi Kesesuaian Fungsi (A.04)
-        if ($request->filled('kawasan_nama_evaluasi')) {
-            $details[] = "Kawasan Evaluasi: " . $request->kawasan_nama_evaluasi;
-            if ($request->ketersediaan_evaluasi === 'ya') {
-                $details[] = "[Evaluasi] Tgl Pelaksanaan: " . ($request->tanggal_pelaksanaan_evaluasi ?? '-');
-                $details[] = "Rekomendasi: " . ($request->rekomendasi_evaluasi ?? '-');
-                $details[] = "Tindak Lanjut: " . ($request->tindak_lanjut_evaluasi ?? '-');
-            } else {
-                $details[] = "[Evaluasi] Status: Tidak tersedia (Nihil)";
-            }
-        }
-
-        // 5. SUB-BIDANG: Ekosistem Kawasan (A.05)
-        if ($request->filled('kawasan_nama_ekosistem')) {
-            $details[] = "Kawasan Ekosistem: " . $request->kawasan_nama_ekosistem;
-            $details[] = "[Ekosistem] Status Data: " . ($request->ketersediaan_ekosistem === 'ya' ? 'Tersedia' : 'Tidak tersedia (Nihil)');
-        }
-
-        // 6. SUB-BIDANG: Penataan Zonasi/Blok (A.06)
-        if ($request->filled('kawasan_nama_zonasi')) {
-            $details[] = "Kawasan Zonasi: " . $request->kawasan_nama_zonasi;
-            if ($request->ketersediaan_zonasi === 'sudah') {
-                $details[] = "[Zonasi] No SK: " . ($request->nomor_sk_zonasi ?? '-') . ", Tgl SK: " . ($request->tanggal_sk_zonasi ?? '-');
-            } else {
-                $details[] = "[Zonasi] Status: Tidak/Belum Penataan";
-            }
-        }
-
-        // Unggah Dokumen Berkas & Shapefile
         $fileInputs = [
             'sk_parsial_file'           => 'dokumen_sk',
             'sk_provinsi_file'          => 'dokumen_sk',
@@ -257,17 +410,13 @@ class KonservasiController extends Controller
         ];
 
         foreach ($fileInputs as $inputName => $folderPath) {
-            if ($request->hasFile($inputName)) {
-                $request->file($inputName)->store($folderPath, 'public');
+            if (in_array($inputName, $fieldsBySubBidang[$subBidang->kode_sub] ?? [], true) && $request->hasFile($inputName)) {
+                $storedPath = $request->file($inputName)->store($folderPath, 'public');
+                $details[] = ucwords(str_replace('_', ' ', $inputName)) . ': ' . $storedPath;
             }
         }
 
-        // Gabungkan Keterangan Detail
-        if ($request->filled('keterangan')) {
-            $details[] = "Keterangan Tambahan: " . $request->keterangan;
-        }
-
-        $keteranganFinal = count($details) > 0 ? implode(" | ", $details) : ($request->keterangan ?? '-');
+        $keteranganFinal = count($details) > 0 ? implode(' | ', $details) : '-';
 
         $payload = [
             'sub_bidang_id' => $request->sub_bidang_id,
@@ -376,19 +525,52 @@ class KonservasiController extends Controller
 
         $item = $query->findOrFail($id);
         $bidangs = \App\Models\Bidang::all();
-        
+
         $currentBidangId = $item->subBidang ? $item->subBidang->bidang_id : null;
         $subBidangs = \App\Models\SubBidang::where('bidang_id', $currentBidangId)->get();
+        $fieldsBySubBidang = $this->fieldsBySubBidang();
+        $currentKode = $item->subBidang->kode_sub ?? '';
+        $currentFields = array_merge($fieldsBySubBidang[$currentKode] ?? [], ['keterangan']);
+        $detailValues = $this->parseDetailValues($item->keterangan, $currentFields);
+        $editFieldsBySubBidang = [];
 
-        return view('konservasi.edit', compact('item', 'bidangs', 'subBidangs', 'currentBidangId'));
+        foreach ($fieldsBySubBidang as $kode => $fields) {
+            $editFieldsBySubBidang[$kode] = array_map(fn ($field) => [
+                'name' => $field,
+                'label' => $this->formFieldLabel($field),
+            ], $fields);
+        }
+
+        return view('konservasi.edit', compact(
+            'item', 'bidangs', 'subBidangs', 'currentBidangId', 'currentKode',
+            'detailValues', 'editFieldsBySubBidang'
+        ));
     }
 
     // Proses Update Data
     public function update(Request $request, $id)
     {
         $request->validate([
-            'sub_bidang_id' => 'required',
-            'tahun'         => 'required|numeric',
+            'bidang_id'     => 'required|exists:ref_bidang,id',
+            'sub_bidang_id' => 'required|exists:ref_sub_bidang,id',
+            'tahun'         => 'nullable|numeric',
+            'tahun_rpjp'    => 'nullable|numeric',
+            'tahun_monitoring' => 'nullable|numeric',
+            'tahun_evaluasi' => 'nullable|numeric',
+            'tahun_ekosistem' => 'nullable|numeric',
+            'tahun_zonasi'  => 'nullable|numeric',
+            'tahun_b01'     => 'nullable|numeric',
+            'sk_parsial_file' => 'nullable|mimes:pdf|max:2048',
+            'sk_provinsi_file' => 'nullable|mimes:pdf|max:2048',
+            'sk_penetapan_file' => 'nullable|mimes:pdf|max:2048',
+            'shapefile_zip' => 'nullable|mimes:zip|max:10240',
+            'sk_rpjp_file'  => 'nullable|mimes:pdf|max:20480',
+            'dokumen_batb'  => 'nullable|mimes:pdf|max:20480',
+            'shapefile_monitoring_zip' => 'nullable|mimes:zip|max:10240',
+            'file_dokumen_evaluasi' => 'nullable|mimes:pdf|max:20480',
+            'shapefile_ekosistem_zip' => 'nullable|mimes:zip|max:10240',
+            'file_sk_zonasi' => 'nullable|mimes:pdf|max:2048',
+            'shapefile_zonasi_zip' => 'nullable|mimes:zip|max:10240',
         ]);
 
         $query = DataKonservasi::query();
@@ -399,14 +581,82 @@ class KonservasiController extends Controller
 
         $item = $query->findOrFail($id);
 
+        $subBidang = SubBidang::findOrFail($request->sub_bidang_id);
+        if ((int) $subBidang->bidang_id !== (int) $request->bidang_id) {
+            return back()->withErrors(['sub_bidang_id' => 'Sub-bidang tidak sesuai dengan bidang yang dipilih.'])->withInput();
+        }
+
+        $fieldsBySubBidang = $this->fieldsBySubBidang();
+        $fields = $fieldsBySubBidang[$subBidang->kode_sub] ?? [];
+        $existingCode = $item->subBidang->kode_sub ?? '';
+        $detailValues = $existingCode === $subBidang->kode_sub
+            ? $this->parseDetailValues($item->keterangan, $fields)
+            : [];
+        $details = [];
+
+        foreach ($request->only(array_merge($fields, ['keterangan'])) as $field => $value) {
+            if (!is_scalar($value) || $value === '') {
+                continue;
+            }
+
+            $details[] = $this->formFieldLabel($field) . ': ' . ($value === 'on' ? 'Ya' : $value);
+        }
+
+        $fileInputs = [
+            'sk_parsial_file' => 'dokumen_sk',
+            'sk_provinsi_file' => 'dokumen_sk',
+            'sk_penetapan_file' => 'dokumen_sk',
+            'shapefile_zip' => 'shapefiles',
+            'sk_rpjp_file' => 'dokumen_rpjp',
+            'dokumen_batb' => 'dokumen_batb',
+            'shapefile_monitoring_zip' => 'shapefiles',
+            'file_dokumen_evaluasi' => 'dokumen_evaluasi',
+            'shapefile_ekosistem_zip' => 'shapefiles',
+            'file_sk_zonasi' => 'dokumen_zonasi',
+            'shapefile_zonasi_zip' => 'shapefiles',
+        ];
+
+        foreach ($fileInputs as $field => $folder) {
+            if (!in_array($field, $fields, true)) {
+                continue;
+            }
+
+            if ($request->hasFile($field)) {
+                $detailValues[$field] = $request->file($field)->store($folder, 'public');
+            }
+
+            if (!empty($detailValues[$field])) {
+                $details[] = $this->formFieldLabel($field) . ': ' . $detailValues[$field];
+            }
+        }
+
+        $yearFields = [
+            'A.01' => 'tahun', 'A.02' => 'tahun_rpjp', 'A.03' => 'tahun_monitoring',
+            'A.04' => 'tahun_evaluasi', 'A.05' => 'tahun_ekosistem', 'A.06' => 'tahun_zonasi',
+            'B.01' => 'tahun_b01',
+        ];
+        $yearField = $yearFields[$subBidang->kode_sub] ?? null;
+        $year = $yearField && $request->filled($yearField)
+            ? $request->input($yearField)
+            : ($request->filled('tahun') ? $request->input('tahun') : $item->tahun);
+        $jumlah = match ($subBidang->kode_sub) {
+            'A.03' => $request->filled('pal_baik') || $request->filled('pal_rusak') || $request->filled('pal_hilang')
+                ? (int) $request->input('pal_baik', 0) + (int) $request->input('pal_rusak', 0) + (int) $request->input('pal_hilang', 0)
+                : null,
+            'B.01' => $request->filled('jumlah_laki') || $request->filled('jumlah_perempuan')
+                ? (int) $request->input('jumlah_laki', 0) + (int) $request->input('jumlah_perempuan', 0)
+                : null,
+            default => $request->input('jumlah'),
+        };
+
         $item->update([
-            'sub_bidang_id' => $request->sub_bidang_id,
-            'tahun'         => $request->tahun,
+            'sub_bidang_id' => $subBidang->id,
+            'tahun'         => $year,
             'bulan'         => $request->bulan,
             'latitude'      => $request->latitude,
             'longitude'     => $request->longitude,
-            'jumlah'        => $request->jumlah ?? 0,
-            'keterangan'    => $request->keterangan,
+            'jumlah'        => $jumlah,
+            'keterangan'    => count($details) ? implode(' | ', $details) : '-',
         ]);
 
         return redirect()->route('konservasi.index')->with('success', 'Data konservasi berhasil diperbarui!');

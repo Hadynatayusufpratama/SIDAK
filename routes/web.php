@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KonservasiController;
 use App\Http\Controllers\RekapController;
 
-Route::get('/sub-bidang/{kode}', [RekapController::class, 'index'])->name('rekap.index');
-
 // Pengunjung dialihkan ke Landing Page SIDAK BKSDA
 Route::get('/', function () {
     return view('landing');
@@ -13,14 +11,17 @@ Route::get('/', function () {
 
 // ROUTE SIDAK BKSDA (Wajib Login)
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Berikan SATU nama route saja di sini:
     Route::get('/dashboard', [KonservasiController::class, 'dashboard'])->name('konservasi.dashboard');
     
     Route::get('/konservasi', [KonservasiController::class, 'index'])->name('konservasi.index');
     Route::get('/konservasi/create', [KonservasiController::class, 'create'])->name('konservasi.create');
     
-    // ROUTE STORE (Disesuaikan agar mendukung nama 'sub-bidang.store' dan 'konservasi.store')
+    // ROUTE REKAPITULASI (Mendukung Form Filter Query String)
+    Route::get('/rekapitulasi', [RekapController::class, 'index'])->name('rekap.index');
+    
+    // ROUTE STORE
     Route::post('/konservasi', [KonservasiController::class, 'store'])->name('konservasi.store');
+    Route::post('/sidak', [KonservasiController::class, 'store'])->name('sidak.store'); // Alias tambahan untuk form SIDAK
     Route::post('/sub-bidang/store', [KonservasiController::class, 'store'])->name('sub-bidang.store');
     
     // ROUTE TAMBAHAN UNTUK EDIT & UPDATE DATA

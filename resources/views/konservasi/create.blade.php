@@ -28,6 +28,30 @@
 </head>
 <body class="bg-slate-100/90 font-sans text-slate-800 antialiased min-h-screen relative">
 
+    @php
+        // Array Daftar 18 Kawasan Konservasi BKSDA Sulteng
+        $kawasanList = [
+            'TWA Wera (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)',
+            'TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)',
+            'TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Pamona (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Morowali (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)',
+            'TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)',
+            'CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)',
+            'TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)',
+            'SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)',
+        ];
+    @endphp
+
     <!-- BACKGROUND GLOBAL KAWASAN KONSERVASI -->
     <div class="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
         <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1920&auto=format&fit=crop" alt="Background Konservasi" class="w-full h-full object-cover opacity-15">
@@ -83,7 +107,7 @@
         <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
                 <h2 class="font-extrabold text-2xl text-slate-900 tracking-tight">
-                    FORMULIR ENTRI DATA
+                    FORMULIR INPUT DATA KONSERVASI
                 </h2>
                 <p class="text-xs text-slate-500 mt-1">
                     Sistem pencatatan terpadu capaian kinerja dan inventarisasi Balai KSDA Sulawesi Tengah
@@ -185,31 +209,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN) -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -394,31 +403,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN) -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_rpjp" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -494,31 +488,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN) -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_monitoring" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -665,31 +644,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN) -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_evaluasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -768,31 +732,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_ekosistem" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -850,31 +799,16 @@
                         </select>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_zonasi" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -973,31 +907,16 @@
                         </div>
                     </div>
 
-                    <!-- 2. KAWASAN KONSERVASI -->
+                    <!-- 2. KAWASAN KONSERVASI (18 KAWASAN PERULANGAN) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">
                             Kawasan Konservasi: <span class="text-rose-500">*</span>
                         </label>
                         <select name="kawasan_nama_b01" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-forest-600 focus:bg-white focus:outline-none">
                             <option value="">-- Pilih Kawasan Konservasi --</option>
-                            <option value="TWA Wera (Satker: Balai KSDA Sulawesi Tengah)">TWA Wera (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)">SM Tanjung Santigi (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)">CA Tanjung Api (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Tokobae (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)">TWA Pulau Pasoso (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)">SM Pulau Dolangan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)">SM Pinjan Tanjung Matop (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)">SM Pati-Pati (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)">CA Pangi Binangga (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Pamona (Satker: Balai KSDA Sulawesi Tengah)">CA Pamona (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Morowali (Satker: Balai KSDA Sulawesi Tengah)">CA Morowali (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)">SM Lombuyan (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)">TB Landusa Tomata (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Tinombala (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Sojol (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)">CA Gunung Dako (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)">TWA Bancea (Satker: Balai KSDA Sulawesi Tengah)</option>
-                            <option value="SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)">SM Bakiriang (Satker: Balai KSDA Sulawesi Tengah)</option>
+                            @foreach ($kawasanList as $kawasan)
+                                <option value="{{ $kawasan }}">{{ $kawasan }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -1265,10 +1184,6 @@
                     <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan:</label>
                     <textarea name="keterangan" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white text-xs font-medium shadow-xs"></textarea>
                 </div>
-
-                
-
-                
 
                 <!-- Action Button -->
                 <div class="pt-4 border-t border-slate-200/80 flex justify-end">

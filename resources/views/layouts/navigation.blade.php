@@ -32,16 +32,28 @@
                             </svg>
                         </button>
 
-                        <div x-show="openSub" x-transition class="absolute left-0 mt-2 w-56 rounded-xl shadow-lg bg-white border border-slate-100 py-2 z-50">
+                        <div x-show="openSub" x-transition class="absolute left-0 mt-2 w-72 max-h-96 overflow-y-auto rounded-xl shadow-lg bg-white border border-slate-100 py-2 z-50">
                             <div class="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pilih Sub-Bidang</div>
-                            <a href="{{ route('rekap.index', 'A01') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.01']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
                                 A.01 Kawasan Konservasi
                             </a>
-                            <a href="{{ route('rekap.index', 'A02') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.02']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
                                 A.02 Perencanaan Pengelolaan
                             </a>
-                            <a href="{{ route('rekap.index', 'A03') }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.03']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
                                 A.03 Monitoring Batas
+                            </a>
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.04']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.04 Evaluasi Kesesuaian Fungsi
+                            </a>
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.05']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.05 Ekosistem Kawasan
+                            </a>
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'A.06']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                A.06 Penataan Zonasi/Blok
+                            </a>
+                            <a href="{{ route('rekap.index', ['sub_bidang' => 'B.01']) }}" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                B.01 Kelompok Binaan
                             </a>
                         </div>
                     </div>
@@ -120,14 +132,26 @@
             <!-- Menu Sub-Bidang Mobile -->
             <div class="pt-2 pb-1 border-t border-slate-100">
                 <div class="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rekap Sub-Bidang</div>
-                <x-responsive-nav-link :href="route('rekap.index', 'A01')" class="rounded-xl pl-4">
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.01'])" class="rounded-xl pl-4">
                     <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.01 Kawasan Konservasi
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('rekap.index', 'A02')" class="rounded-xl pl-4">
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.02'])" class="rounded-xl pl-4">
                     <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.02 Perencanaan Pengelolaan
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('rekap.index', 'A03')" class="rounded-xl pl-4">
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.03'])" class="rounded-xl pl-4">
                     <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.03 Monitoring Batas
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.04'])" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.04 Evaluasi Kesesuaian Fungsi
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.05'])" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.05 Ekosistem Kawasan
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'A.06'])" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> A.06 Penataan Zonasi/Blok
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rekap.index', ['sub_bidang' => 'B.01'])" class="rounded-xl pl-4">
+                    <i class="fas fa-file-lines mr-2 text-slate-400"></i> B.01 Kelompok Binaan
                 </x-responsive-nav-link>
             </div>
 
