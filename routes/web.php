@@ -2,12 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KonservasiController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RekapController;
 
 // Pengunjung dialihkan ke Landing Page SIDAK BKSDA
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
 // ROUTE SIDAK BKSDA (Wajib Login)
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -32,6 +39,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/konservasi/{id}', [KonservasiController::class, 'destroy'])->name('konservasi.destroy');
 
     Route::get('/peta', [KonservasiController::class, 'peta'])->name('konservasi.peta');
+
+    Route::get('/sekretariat', [RekapController::class, 'sekretariat'])->name('sekretariat.index');
+    Route::post('/sekretariat', [RekapController::class, 'storeSekretariat'])->name('sekretariat.store');
+    Route::get('/sekretariat/{rekap}/edit', [RekapController::class, 'editSekretariat'])->name('sekretariat.edit');
+    Route::put('/sekretariat/{rekap}', [RekapController::class, 'updateSekretariat'])->name('sekretariat.update');
+    Route::delete('/sekretariat/{rekap}', [RekapController::class, 'destroySekretariat'])->name('sekretariat.destroy');
 
     // Route AJAX untuk memuat Sub-Bidang
     Route::get('/get-sub-bidang/{bidang_id}', [KonservasiController::class, 'getSubBidang']);

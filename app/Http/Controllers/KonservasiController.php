@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bidang;
+use App\Models\Rekap;
 use App\Models\SubBidang;
 use App\Models\DataKonservasi;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -192,87 +194,106 @@ class KonservasiController extends Controller
         }
 
         $query = $this->applySearchFilter($query, $request);
-        $data = $query->paginate(10)->withQueryString();
-        
-        // 4. Return view dengan menyertakan data pendukung
-        return view('konservasi.index', compact('data', 'masterBidang', 'selectedBidang', 'selectedSub'));
-    }
+        $conservationRecords = $query->get();
 
-    // Fitur Unduh PDF
-    public function exportPdf(Request $request)
-    {
-        $query = DataKonservasi::with('subBidang.bidang')->latest();
+        $secretariatQuery = Rekap::where('kode_sub_bidang', 'like', 'F.%');
 
-        if (Schema::hasColumn('data_konservasi', 'user_id')) {
-            $query->where('user_id', auth()->id());
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $matchingCodes = SubBidang::where('nama_sub_bidang', 'like', "%{$search}%")
+                ->pluck('kode_sub');
+
+            $secretariatQuery->where(function ($recapQuery) use ($search, $matchingCodes) {
+                $recapQuery->where('kode_sub_bidang', 'like', "%{$search}%")
+                    ->orWhere('tahun', 'like', "%{$search}%")
+                    ->orWhere('kawasan', 'like', "%{$search}%")
+                    ->orWhereIn('kode_sub_bidang', $matchingCodes);
+            });
         }
 
-        $query = $this->applySearchFilter($query, $request);
-        $datas = $query->get();
+        $secretariatRecords = $secretariatQuery->latest()->get();
 
-        $pdf = Pdf::loadView('konservasi.pdf', compact('datas'));
-        return $pdf->download('Data_Konservasi_SIDAK_BKSDA_' . date('Y-m-d') . '.pdf');
+        $secretariatNames = SubBidang::whereIn(
+    'kode_sub',
+    $secretariatRecords->pluck('kode_sub_bidang')->unique()
+)->pluck('nama_sub_bidang', 'kode_sub');
+
+        $conservationRecords->each(function ($record) {
+            $record->history_type = 'conservation';
+        });
+
+        $secretariatRecords->each(function ($record) use ($secretariatNames) {
+            $record->history_type = 'secretariat';
+            $record->history_sub_bidang =
+                $secretariatNames[$record->kode_sub_bidang] ?? 'Data Sekretariat';
+            $record->history_total =
+                $this->sumSecretariatCounts($record->data_kustom ?? []);
+        });
+
+        $allRecords = $conservationRecords
+            ->concat($secretariatRecords)
+            ->sortByDesc('created_at')
+            ->values();
+
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+        $data = new LengthAwarePaginator(
+            $allRecords->forPage($currentPage, $perPage)->values(),
+            $allRecords->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query()
+            ]
+        );
+
+        $totalRecords = $allRecords->count();
+
+           return view('konservasi.index', compact(
+            'data',
+            'totalRecords',
+            'masterBidang',
+            'selectedBidang',
+            'selectedSub'
+        ));
     }
+    private function sumSecretariatCounts(array $values): int
+{
+    $total = 0;
 
-    // Fitur Unduh Excel (CSV)
-    public function exportExcel(Request $request)
-    {
-        $query = DataKonservasi::with('subBidang.bidang')->latest();
-
-        if (Schema::hasColumn('data_konservasi', 'user_id')) {
-            $query->where('user_id', auth()->id());
+    foreach ($values as $key => $value) {
+        if (
+            in_array(
+                $key,
+                ['laki_laki', 'perempuan', 'dalam_negeri', 'luar_negeri'],
+                true
+            ) && is_numeric($value)
+        ) {
+            $total += (int) $value;
+        } elseif (is_array($value)) {
+            $total += $this->sumSecretariatCounts($value);
         }
-
-        $query = $this->applySearchFilter($query, $request);
-        $datas = $query->get();
-
-        $filename = 'Data_Konservasi_SIDAK_BKSDA_' . date('Y-m-d') . '.csv';
-
-        $headers = [
-            "Content-type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
-
-        $callback = function() use ($datas) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            fputcsv($file, ['No', 'Bidang Utama', 'Sub-Bidang / Kategori', 'Bulan', 'Tahun', 'Jumlah / Vol', 'Latitude', 'Longitude', 'Keterangan']);
-
-            $no = 1;
-            foreach ($datas as $item) {
-                fputcsv($file, [
-                    $no++,
-                    $item->subBidang->bidang->nama_bidang ?? '-',
-                    $item->subBidang->nama_sub_bidang ?? '-',
-                    $item->bulan ?? '-',
-                    $item->tahun ?? '-',
-                    $item->jumlah ?? 0,
-                    $item->latitude ?? '-',
-                    $item->longitude ?? '-',
-                    $item->keterangan ?? '-'
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 
-    // Halaman Form Input Data (Sudah terhubung dengan model Bidang)
+    return $total;
+}
+
+    // Halaman Form Input Data
     public function create(Request $request)
     {
         $bidang = Bidang::all();
+
         $selectedSubBidang = $request->filled('sub_bidang')
             ? SubBidang::where('kode_sub', $request->query('sub_bidang'))->first()
             : null;
 
         if (!$selectedSubBidang && $request->session()->getOldInput('sub_bidang_id')) {
-            $selectedSubBidang = SubBidang::find($request->session()->getOldInput('sub_bidang_id'));
+            $selectedSubBidang = SubBidang::find(
+                $request->session()->getOldInput('sub_bidang_id')
+            );
         }
 
         $kawasanKonservasi = collect([
@@ -298,8 +319,39 @@ class KonservasiController extends Controller
             'nama' => $nama . ' (Satker: Balai KSDA Sulawesi Tengah)',
         ])->all();
 
-        return view('konservasi.create', compact('bidang', 'kawasanKonservasi', 'selectedSubBidang'));
+        // Jika sedang mengedit data kesekretariatan
+        $editRecord = null;
+
+        if ($request->filled('edit_record')) {
+            abort_unless($selectedSubBidang, 404);
+
+            $editRecord = Rekap::where(
+                'kode_sub_bidang',
+                $selectedSubBidang->kode_sub
+            )->findOrFail(
+                $request->integer('edit_record')
+            );
+        }
+
+        return view('konservasi.create', [
+            'bidang' => $bidang,
+            'kawasanKonservasi' => $kawasanKonservasi,
+            'selectedSubBidang' => $selectedSubBidang,
+            'editRecord' => $editRecord,
+
+            // Data untuk form Kesekretariatan
+            'struktural' => RekapController::STRUKTURAL,
+            'fungsional' => RekapController::FUNGSIONAL,
+            'pendidikan' => RekapController::PENDIDIKAN,
+            'pendidikanP3K' => RekapController::PENDIDIKAN_P3K,
+            'perijinan' => RekapController::PERIJINAN,
+            'tipeMitra' => RekapController::TIPE_MITRA,
+            'dukunganKinerja' => RekapController::DUKUNGAN_KINERJA,
+            'golongan' => RekapController::GOLONGAN,
+            'jabatanFungsional' => RekapController::JABATAN_FUNGSIONAL,
+        ]);
     }
+
 
     // Mengambil Sub-Bidang Berdasarkan Bidang ID untuk Dropdown Dinamis
     public function getSubBidang($bidang_id)
@@ -625,17 +677,25 @@ class KonservasiController extends Controller
             $userQuery->where('user_id', auth()->id());
         }
 
-        $totalData = (clone $userQuery)->count(); 
-        $totalVolume = (clone $userQuery)->sum('jumlah'); 
+        $allData = (clone $userQuery)->with('subBidang.bidang')->get();
+        $secretariatRecords = Rekap::where('kode_sub_bidang', 'like', 'F.%')->get();
+        $secretariatSubBidangs = SubBidang::with('bidang')
+            ->whereIn('kode_sub', $secretariatRecords->pluck('kode_sub_bidang')->unique())
+            ->get()
+            ->keyBy('kode_sub');
+
+        $totalData = $allData->count() + $secretariatRecords->count();
+        $totalVolume = (int) $allData->sum('jumlah') + $secretariatRecords->sum(
+            fn ($record) => $this->sumSecretariatCounts($record->data_kustom ?? [])
+        );
         $totalLokasi = (clone $userQuery)->whereNotNull('latitude')
                                          ->whereNotNull('longitude')
                                          ->where('latitude', '!=', '')
                                          ->where('longitude', '!=', '')
                                          ->count();
 
-        $totalKawasan = (clone $userQuery)->distinct('sub_bidang_id')->count('sub_bidang_id');
-
-        $allData = (clone $userQuery)->with('subBidang.bidang')->get();
+        $totalKawasan = (clone $userQuery)->distinct('sub_bidang_id')->count('sub_bidang_id')
+            + $secretariatRecords->pluck('kode_sub_bidang')->unique()->count();
 
         $statsVolume = [];
         foreach ($allData as $item) {
@@ -644,6 +704,12 @@ class KonservasiController extends Controller
                 $statsVolume[$namaBidang] = 0;
             }
             $statsVolume[$namaBidang] += ($item->jumlah > 0 ? $item->jumlah : 1);
+        }
+
+        foreach ($secretariatRecords as $record) {
+            $namaBidang = $secretariatSubBidangs->get($record->kode_sub_bidang)?->bidang->nama_bidang ?? 'Kesekretariatan';
+            $jumlah = $this->sumSecretariatCounts($record->data_kustom ?? []);
+            $statsVolume[$namaBidang] = ($statsVolume[$namaBidang] ?? 0) + ($jumlah > 0 ? $jumlah : 1);
         }
 
         $chartLabels = array_keys($statsVolume);

@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Alpine.js untuk Modal Pop-Up -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @include('components.theme-global')
 </head>
 <body class="bg-slate-100/90 font-sans text-slate-800 antialiased min-h-screen relative" x-data="{
     openModal: false,
@@ -54,8 +55,8 @@
             
             <!-- Logo & Title Instansi -->
             <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-xl bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-1.5 shadow-xs overflow-hidden">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full object-contain">
+                <div class="w-11 h-11 rounded-full bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-0.5 shadow-xs overflow-hidden">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full rounded-full object-contain">
                 </div>
                 <div class="flex flex-col">
                     <span class="font-bold text-sm tracking-tight text-slate-900 leading-tight">SIDAK BKSDA SULTENG</span>
@@ -68,23 +69,25 @@
                 <a href="{{ route('konservasi.dashboard') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
                 <a href="{{ route('konservasi.index') }}" class="px-4 py-2 rounded-lg text-xs font-semibold bg-white text-forest-700 shadow-xs">Rekapitulasi</a>
                 <a href="{{ route('konservasi.create') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Tambah Data</a>
-                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Peta GIS</a>
+                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">GIS</a>
             </nav>
 
             <!-- Status & User Profile -->
             <div class="flex items-center space-x-4">
+                @include('components.theme-toggle')
                 <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                     <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Sistem Aktif
                 </span>
-                <div class="flex items-center space-x-2.5 border-l pl-4 border-slate-200">
+                <a href="{{ route('profile.edit') }}" aria-label="Buka profil pengguna" title="Buka profil pengguna" class="group flex items-center space-x-2.5 border-l border-slate-200 pl-4 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600">
                     <div class="w-9 h-9 rounded-full bg-forest-700 text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase">
                         {{ strtoupper(substr(Auth::user()->name ?? 'User', 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
-                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name ?? 'Pengguna' }}</p>
+                        <p class="text-xs font-bold text-slate-800 leading-tight group-hover:text-emerald-700">{{ Auth::user()->name ?? 'Pengguna' }}</p>
                         <p class="text-[10px] text-slate-500">{{ Auth::user()->role ?? 'Operator' }}</p>
                     </div>
-                </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-emerald-700" aria-hidden="true"></i>
+                </a>
             </div>
 
         </div>
@@ -130,7 +133,7 @@
             <div class="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition flex items-center justify-between">
                 <div>
                     <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Total Baris Data</p>
-                    <h3 class="text-3xl font-extrabold text-slate-900 mt-1">{{ method_exists($data, 'total') ? $data->total() : count($data) }}</h3>
+                    <h3 class="text-3xl font-extrabold text-slate-900 mt-1">{{ $totalRecords }}</h3>
                     <p class="text-[11px] text-emerald-600 font-semibold mt-1.5 flex items-center gap-1">
                         <i class="fa-solid fa-layer-group text-[10px]"></i> Database Tersimpan
                     </p>
@@ -999,34 +1002,60 @@
                                 </td>
                                 <td class="py-4 px-5">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-50 text-forest-700 border border-emerald-200/80">
-                                        {{ $item->subBidang->bidang->nama_bidang ?? 'Konservasi' }}
+                                        {{ $item->history_type === 'secretariat' ? 'Sekretariat' : ($item->subBidang->bidang->nama_bidang ?? 'Konservasi') }}
                                     </span>
                                 </td>
-                                
-                                <!-- KOLOM SUB-BIDANG & DETAIL LENGKAP -->
-                                <td class="py-4 px-5 max-w-md">
-                                    <p class="font-bold text-slate-800 text-sm">
-                                        {{ $item->subBidang->kode_sub ?? '' }}. {{ $item->subBidang->nama_sub_bidang ?? '-' }}
-                                    </p>
+<!-- KOLOM SUB-BIDANG & DETAIL LENGKAP -->
+<td class="py-4 px-5 max-w-md">
+    <p class="font-bold text-slate-800 text-sm">
+        @if ($item->history_type === 'secretariat')
+            {{ $item->kode_sub_bidang }} · {{ $item->history_sub_bidang }}
+        @else
+            {{ $item->subBidang->kode_sub ?? '' }}. {{ $item->subBidang->nama_sub_bidang ?? '-' }}
+        @endif
+    </p>
 
-                                    <!-- DETAIL LENGKAP KETERANGAN & PARAMETER SK -->
-                                    @if($item->keterangan)
-                                        <div class="mt-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70 text-[11px] text-slate-600 leading-relaxed font-sans whitespace-pre-line">
-                                            @php
-                                                // Memisah separator '|' menjadi baris-baris terpisah agar mudah dibaca
-                                                $formattedKet = str_replace(' | ', "\n• ", $item->keterangan);
-                                                if (strpos($formattedKet, '• ') !== 0) {
-                                                    $formattedKet = '• ' . $formattedKet;
-                                                }
-                                            @endphp
-                                            {{ $formattedKet }}
-                                        </div>
-                                    @else
-                                        <span class="text-slate-400 italic text-[11px] mt-1 block">Tidak ada rincian data</span>
+    @if ($item->history_type === 'secretariat')
+        @if (!empty($item->data_kustom['keterangan']))
+            <div class="mt-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70 text-[11px] text-slate-600 leading-relaxed font-sans whitespace-pre-line">
+                {{ $item->data_kustom['keterangan'] }}
+            </div>
+        @endif
+    @elseif($item->keterangan)
+        <div class="mt-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200/70 text-[11px] text-slate-600 leading-relaxed font-sans whitespace-pre-line">
+            @php
+                // Memisah separator '|' menjadi baris-baris terpisah agar mudah dibaca
+                $formattedKet = str_replace(' | ', "\n• ", $item->keterangan);
+                if (strpos($formattedKet, '• ') !== 0) {
+                    $formattedKet = '• ' . $formattedKet;
+                }
+            @endphp
+            {{ $formattedKet }}
+        </div>
+    @else
+        <span class="text-slate-400 italic text-[11px] mt-1 block">
+            Tidak ada rincian data
+        </span>
+    @endif
+</td>
                                     @endif
                                 </td>
 
                                 <td class="py-4 px-5 whitespace-nowrap text-slate-600 font-semibold">
+                                    @if ($item->history_type === 'secretariat')
+                                        @php
+                                            $customData = $item->data_kustom ?? [];
+                                            $historyMonth = $customData['bulan'] ?? null;
+                                            $historySemester = $customData['semester'] ?? null;
+                                            $historyMonths = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+                                        @endphp
+                                        {{ $item->tahun }}
+                                        @if ($historyMonth)
+                                            · {{ $historyMonths[(int) $historyMonth] ?? $historyMonth }}
+                                        @elseif ($historySemester)
+                                            · Semester {{ $historySemester }}
+                                        @endif
+                                    @else
                                     @php
                                         $months = [
                                             '01'=>'Januari', '02'=>'Februari', '03'=>'Maret', '04'=>'April',
@@ -1038,14 +1067,15 @@
                                         $namaBulan = $months[$item->bulan] ?? $item->bulan;
                                     @endphp
                                     {{ $namaBulan }} {{ $item->tahun }}
+                                    @endif
                                 </td>
                                 <td class="py-4 px-5">
                                     <span class="px-2.5 py-1 bg-slate-100 text-slate-800 font-extrabold rounded-lg border border-slate-200">
-                                        {{ $item->jumlah ?? '-' }}
+                                        {{ $item->history_type === 'secretariat' ? ($item->history_total ?: '-') : ($item->jumlah ?? '-') }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-5 text-[11px] font-mono text-slate-500 whitespace-nowrap">
-                                    @if($item->latitude && $item->longitude)
+                                    @if($item->history_type === 'conservation' && $item->latitude && $item->longitude)
                                         <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold bg-emerald-50/80 border border-emerald-200 px-2 py-0.5 rounded-md">
                                             <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
                                             {{ $item->latitude }}, {{ $item->longitude }}
@@ -1056,15 +1086,57 @@
                                 </td>
                                 <td class="py-4 px-5 text-center whitespace-nowrap">
                                     <div class="flex items-center justify-center gap-2">
-                                        
-                                        <!-- Tombol Pop-up Detail Modal -->
-                                        <button type="button" 
-                                                @click="openModal = true; modalTitle = '{{ addslashes($item->subBidang->nama_sub_bidang ?? 'Detail Data') }}'; modalContent = '{{ addslashes($item->keterangan ?? 'Tidak ada rincian') }}'"
-                                                class="w-8 h-8 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition border border-blue-200/80 shadow-xs" 
-                                                title="Lihat Detail Lengkap">
-                                            <i class="fa-solid fa-eye text-xs"></i>
-                                        </button>
+@if ($item->history_type === 'secretariat')
+    <a href="{{ route('rekap.index', ['kode' => $item->kode_sub_bidang, 'record' => $item->id]) }}"
+       class="w-8 h-8 flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl transition border border-emerald-200 shadow-xs"
+       title="Lihat detail data">
+        <i class="fa-solid fa-eye text-xs"></i>
+    </a>
 
+    <a href="{{ route('sekretariat.edit', $item->id) }}"
+       class="w-8 h-8 flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition border border-amber-200/80 shadow-xs"
+       title="Edit Data">
+        <i class="fa-solid fa-pen-to-square text-xs"></i>
+    </a>
+
+    <form action="{{ route('sekretariat.destroy', $item->id) }}"
+          method="POST"
+          onsubmit="return confirm('Apakah Anda yakin ingin menghapus data Sekretariat ini?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+                class="w-8 h-8 flex items-center justify-center bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-200/80 shadow-xs"
+                title="Hapus Data">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+        </button>
+    </form>
+@else
+    <!-- Tombol Pop-up Detail Modal -->
+    <button type="button"
+            @click="openModal = true; modalTitle = '{{ addslashes($item->subBidang->nama_sub_bidang ?? 'Detail Data') }}'; modalContent = '{{ addslashes($item->keterangan ?? 'Tidak ada rincian') }}'"
+            class="w-8 h-8 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition border border-blue-200/80 shadow-xs"
+            title="Lihat Detail Lengkap">
+        <i class="fa-solid fa-eye text-xs"></i>
+    </button>
+
+    <a href="{{ route('konservasi.edit', $item->id) }}"
+       class="w-8 h-8 flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition border border-amber-200/80 shadow-xs"
+       title="Edit Data">
+        <i class="fa-solid fa-pen-to-square text-xs"></i>
+    </a>
+
+    <form action="{{ route('konservasi.destroy', $item->id) }}"
+          method="POST"
+          onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+        @csrf
+        @method('DELETE')
+        <button type="submit"
+                class="w-8 h-8 flex items-center justify-center bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-200/80 shadow-xs"
+                title="Hapus Data">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+        </button>
+    </form>
+@endif
                                         <a href="{{ route('konservasi.edit', $item->id) }}" 
                                            class="w-8 h-8 flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition border border-amber-200/80 shadow-xs" 
                                            title="Edit Data">
@@ -1080,6 +1152,7 @@
                                                 <i class="fa-solid fa-trash-can text-xs"></i>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

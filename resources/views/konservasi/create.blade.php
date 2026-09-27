@@ -29,6 +29,7 @@
     </script>
     <!-- FontAwesome untuk Ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @include('components.theme-global')
 </head>
 <body class="bg-slate-100/90 text-slate-800 antialiased min-h-screen flex flex-col relative" style="font-family: 'Plus Jakarta Sans', sans-serif;">
 
@@ -68,8 +69,8 @@
             
             <!-- Logo & Title Instansi -->
             <div class="flex items-center space-x-3">
-                <div class="w-11 h-11 rounded-xl bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-1.5 shadow-xs overflow-hidden">
-                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full object-contain">
+                <div class="w-11 h-11 rounded-full bg-forest-700/10 border border-forest-700/20 flex items-center justify-center p-0.5 shadow-xs overflow-hidden">
+                    <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK" class="w-full h-full rounded-full object-contain">
                 </div>
                 <div class="flex flex-col">
                     <span class="font-bold text-sm tracking-tight text-slate-900 leading-tight">SIDAK BKSDA SULTENG</span>
@@ -82,23 +83,25 @@
                 <a href="{{ route('konservasi.dashboard') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Dashboard</a>
                 <a href="{{ route('konservasi.index') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Rekapitulasi</a>
                 <a href="{{ route('konservasi.create') }}" class="px-4 py-2 rounded-lg text-xs font-semibold bg-white text-forest-700 shadow-xs">Tambah Data</a>
-                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">Peta GIS</a>
+                <a href="{{ route('konservasi.peta') }}" class="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-white/50 transition">GIS</a>
             </nav>
 
             <!-- Status & User Profile -->
             <div class="flex items-center space-x-4">
+                @include('components.theme-toggle')
                 <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
                     <span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Sistem Aktif
                 </span>
-                <div class="flex items-center space-x-2.5 border-l pl-4 border-slate-200">
+                <a href="{{ route('profile.edit') }}" aria-label="Buka profil pengguna" title="Buka profil pengguna" class="group flex items-center space-x-2.5 border-l border-slate-200 pl-4 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-emerald-600">
                     <div class="w-9 h-9 rounded-full bg-forest-700 text-white flex items-center justify-center font-bold text-xs shadow-sm uppercase">
                         {{ strtoupper(substr(Auth::user()->name ?? 'User', 0, 2)) }}
                     </div>
                     <div class="hidden sm:block text-left">
-                        <p class="text-xs font-bold text-slate-800 leading-tight">{{ Auth::user()->name ?? 'Pengguna' }}</p>
+                        <p class="text-xs font-bold text-slate-800 leading-tight group-hover:text-emerald-700">{{ Auth::user()->name ?? 'Pengguna' }}</p>
                         <p class="text-[10px] text-slate-500">{{ Auth::user()->role ?? 'Operator' }}</p>
                     </div>
-                </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400 group-hover:text-emerald-700" aria-hidden="true"></i>
+                </a>
             </div>
 
         </div>
@@ -132,6 +135,11 @@
                         <i class="fa-solid fa-circle-check"></i>
                     </div>
                     <span class="text-xs font-bold">{{ session('success') }}</span>
+                    @if (session('recap_url'))
+                        <a href="{{ session('recap_url') }}" class="ml-3 inline-flex items-center gap-1 text-xs font-bold underline underline-offset-2">
+                            Lihat rekap data <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                        </a>
+                    @endif
                 </div>
                 <button onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-800 text-sm">
                     <i class="fa-solid fa-xmark"></i>
@@ -143,6 +151,9 @@
             <div role="alert" class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
                 <p class="text-sm font-bold">Data belum tersimpan. Periksa kembali isian berikut:</p>
                 <ul class="mt-2 list-inside list-disc text-xs">
+            <div role="alert" class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800 shadow-sm">
+                <p class="text-sm font-bold">Data belum tersimpan. Periksa bagian berikut:</p>
+                <ul class="mt-2 list-inside list-disc space-y-1 text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -153,7 +164,7 @@
         <!-- CARD CONTAINER FORM -->
         <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm"
              x-data="{ 
-                 selectedSubBidangKode: '', 
+                 selectedSubBidangKode: @js($selectedSubBidang?->kode_sub ?? ''),
                  adaPerubahan: 'tidak', 
                  skProvinsiTersedia: 'tidak',
                  skPenetapanTersedia: 'tidak',
@@ -177,8 +188,14 @@
                      return (Number(this.palBaik) || 0) + (Number(this.palRusak) || 0) + (Number(this.palHilang) || 0);
                  }
              }">
+
             <form id="konservasi-create-form" action="{{ route('konservasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+
+            <form action="{{ $editRecord ? route('sekretariat.update', $editRecord) : route('konservasi.store') }}" @if (!$editRecord) x-bind:action="['F.01', 'F.02', 'F.03', 'F.04', 'F.05', 'F.06', 'F.07', 'F.08'].includes(selectedSubBidangKode) ? '{{ route('sekretariat.store') }}' : '{{ route('konservasi.store') }}'" @endif method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
+                @if ($editRecord)
+                    @method('PUT')
+                @endif
 
                 <!-- SECTION: KLASIFIKASI DATA -->
                 <div class="space-y-4">
@@ -215,6 +232,157 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.01 -->
+                <section x-show="selectedSubBidangKode === 'F.01'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jumlah dan data yang ditandai.</div>
+                    @endif
+                    @include('sekretariat._form-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-sekretariat" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-sekretariat" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.01'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.02 -->
+                <section x-show="selectedSubBidangKode === 'F.02'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jumlah dan data yang ditandai.</div>
+                    @endif
+                    @include('sekretariat._pendidikan-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-pendidikan" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-pendidikan" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.02'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.03 -->
+                <section x-show="selectedSubBidangKode === 'F.03'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jumlah dan data yang ditandai.</div>
+                    @endif
+                    @include('sekretariat._golongan-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-golongan" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-golongan" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.03'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.04 -->
+                <section x-show="selectedSubBidangKode === 'F.04'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jabatan dan jumlah pegawai.</div>
+                    @endif
+                    @include('sekretariat._jabatan-fungsional-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-jabatan-fungsional" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-jabatan-fungsional" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.04'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.05 -->
+                <section x-show="selectedSubBidangKode === 'F.05'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jabatan dan jumlah pada tingkat pendidikan.</div>
+                    @endif
+                    @include('sekretariat._jabatan-fungsional-pendidikan-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-fungsional-pendidikan" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-fungsional-pendidikan" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.05'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.06 -->
+                <section x-show="selectedSubBidangKode === 'F.06'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali jumlah berdasarkan tingkat pendidikan.</div>
+                    @endif
+                    @include('sekretariat._pendidikan-fields', ['embedded' => true, 'activeCode' => 'F.06', 'idPrefix' => 'create-f06-', 'pendidikan' => $pendidikanP3K])
+                    <div>
+                        <label for="create-keterangan-p3k" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-p3k" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.06'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.08 -->
+                <section x-show="selectedSubBidangKode === 'F.08'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali periode dan jumlah perizinan.</div>
+                    @endif
+                    @include('sekretariat._perijinan-fields', ['embedded' => true])
+                    <div>
+                        <label for="create-keterangan-perijinan" class="mb-1.5 block text-xs font-semibold text-slate-700">Keterangan</label>
+                        <textarea id="create-keterangan-perijinan" name="keterangan" rows="3" maxlength="2000" placeholder="Masukan disini untuk informasi lainnya" :disabled="selectedSubBidangKode !== 'F.08'" class="w-full rounded border border-slate-300 px-3 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"></textarea>
+                    </div>
+                    <div class="flex justify-end border-t border-slate-200 pt-4">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-xl bg-amber-400 px-6 py-3 text-xs font-bold text-slate-950 shadow-md transition hover:bg-amber-300">
+                            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Simpan Data Sekretariat
+                        </button>
+                    </div>
+                </section>
+
+                <!-- FORM DINAMIS SEKRETARIAT F.07 -->
+                <section x-show="selectedSubBidangKode === 'F.07'" x-transition class="space-y-6 pt-6">
+                    @if (session('success'))
+                        <div role="status" class="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800">{{ session('success') }}</div>
+                    @endif
+                    @if ($errors->any())
+                        <div role="alert" class="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">Periksa kembali periode dan informasi kerja sama.</div>
+                    @endif
+                    @include('sekretariat._kerja-sama-fields', ['embedded' => true])
+                </section>
 
                 <!-- ========================================================================= -->
                 <!-- FORM DINAMIS SUB-BIDANG 1: A.01 / Kawasan Konservasi                      -->
@@ -2412,16 +2580,24 @@
 
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">Keterangan:</label>
-                    <textarea name="keterangan" rows="3" placeholder="Masukan disini untuk informasi lainnya" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-forest-600 outline-none text-xs font-medium"></textarea>
+<!-- KETERANGAN GLOBAL -->
+<div x-show="!['F.01', 'F.02', 'F.03', 'F.04', 'F.05', 'F.06', 'F.07', 'F.08'].includes(selectedSubBidangKode)">
+    <label class="block text-xs font-bold text-slate-700 mb-2">Keterangan:</label>
+    <textarea
+        name="keterangan"
+        :disabled="['F.01', 'F.02', 'F.03', 'F.04', 'F.05', 'F.06', 'F.07', 'F.08'].includes(selectedSubBidangKode)"
+        rows="3"
+        placeholder="Masukan disini untuk informasi lainnya"
+        class="w-full p-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:ring-2 focus:ring-forest-600 outline-none text-xs font-medium"
+    ></textarea>
+</div>
                 </div>
 
                 <!-- Action Button -->
-                <div class="pt-4 border-t border-slate-200/80 flex justify-end">
+                <div x-show="!['F.01', 'F.02', 'F.03', 'F.04', 'F.05', 'F.06', 'F.07', 'F.08'].includes(selectedSubBidangKode)" class="pt-4 border-t border-slate-200/80 flex justify-end">
                     <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 shadow-md transition duration-200 flex items-center justify-center gap-2">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Simpan Data Konservasi</span>
+                        <span x-text="selectedSubBidangKode === 'F.01' ? 'Simpan Data Sekretariat' : 'Simpan Data Konservasi'">Simpan Data Konservasi</span>
                     </button>
                 </div>
             </form>
