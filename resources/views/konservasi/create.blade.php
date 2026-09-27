@@ -139,6 +139,17 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div role="alert" class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-rose-800">
+                <p class="text-sm font-bold">Data belum tersimpan. Periksa kembali isian berikut:</p>
+                <ul class="mt-2 list-inside list-disc text-xs">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- CARD CONTAINER FORM -->
         <div class="bg-white/90 backdrop-blur-md border border-slate-200/80 rounded-2xl p-6 md:p-8 shadow-sm"
              x-data="{ 
@@ -166,7 +177,7 @@
                      return (Number(this.palBaik) || 0) + (Number(this.palRusak) || 0) + (Number(this.palHilang) || 0);
                  }
              }">
-            <form action="{{ route('konservasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form id="konservasi-create-form" action="{{ route('konservasi.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
                 <!-- SECTION: KLASIFIKASI DATA -->
@@ -185,7 +196,7 @@
                             <select id="bidang_select" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white text-xs font-medium transition shadow-xs">
                                 <option value="">-- Pilih Bidang Utama --</option>
                                 @foreach ($bidang as $b)
-                                    <option value="{{ $b->id }}">{{ $b->nama_bidang }}</option>
+                                    <option value="{{ $b->id }}" @selected($selectedSubBidang && $selectedSubBidang->bidang_id === $b->id)>{{ $b->nama_bidang }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -195,8 +206,11 @@
                             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                                 Sub-Bidang Kategori <span class="text-rose-500">*</span>
                             </label>
-                            <select name="sub_bidang_id" id="sub_bidang_select" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white text-xs font-medium transition shadow-xs disabled:opacity-50 disabled:cursor-not-allowed" disabled required>
+                            <select name="sub_bidang_id" id="sub_bidang_select" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white text-xs font-medium transition shadow-xs disabled:opacity-50 disabled:cursor-not-allowed" @disabled(!$selectedSubBidang) required>
                                 <option value="">-- Pilih Bidang Terlebih Dahulu --</option>
+                                @if ($selectedSubBidang)
+                                    <option value="{{ $selectedSubBidang->id }}" data-kode="{{ $selectedSubBidang->kode_sub }}" data-nama="{{ $selectedSubBidang->nama_sub_bidang }}" selected>{{ $selectedSubBidang->kode_sub }}. {{ $selectedSubBidang->nama_sub_bidang }}</option>
+                                @endif
                             </select>
                         </div>
                     </div>
@@ -2423,14 +2437,34 @@
     <!-- Script AJAX Sub-Bidang & Wilayah Indonesia -->
     <script>
         // --- 1. SCRIPT FOR SUB-BIDANG ---
+        function syncInactiveCategoryControls(activeCode) {
+            const form = document.getElementById('konservasi-create-form');
+            if (!form) return;
+
+            form.querySelectorAll('[x-show]').forEach(section => {
+                const condition = section.getAttribute('x-show') || '';
+                const match = condition.match(/^selectedSubBidangKode\s*===\s*['"]([^'"]+)['"]$/);
+                if (!match) return;
+
+                const isInactive = match[1] !== activeCode;
+                section.querySelectorAll('input, select, textarea, button').forEach(control => {
+                    if (control.dataset.categoryInitiallyDisabled === undefined) {
+                        control.dataset.categoryInitiallyDisabled = String(control.disabled);
+                    }
+                    control.disabled = isInactive || control.dataset.categoryInitiallyDisabled === 'true';
+                });
+            });
+        }
+
         document.getElementById('bidang_select').addEventListener('change', function() {
             let bidangId = this.value;
             let subSelect = document.getElementById('sub_bidang_select');
             
-            let alpineComponent = Alpine.$data(document.querySelector('[x-data]'));
+            let alpineComponent = window.Alpine?.$data(document.querySelector('[x-data]'));
             if (alpineComponent) {
                 alpineComponent.selectedSubBidangKode = '';
             }
+            syncInactiveCategoryControls('');
             subSelect.innerHTML = '<option value="">Memuat sub-bidang...</option>';
             subSelect.disabled = true;
 
@@ -2461,22 +2495,24 @@
             let kodeSub = selectedOption.getAttribute('data-kode') || '';
             const normalizedKodeSub = kodeSub.trim().toUpperCase();
 
-            let alpineComponent = Alpine.$data(document.querySelector('[x-data]'));
+            let alpineComponent = window.Alpine?.$data(document.querySelector('[x-data]'));
             if (alpineComponent) {
                 alpineComponent.selectedSubBidangKode = normalizedKodeSub;
             }
+            syncInactiveCategoryControls(normalizedKodeSub);
         });
 
         // Sinkronkan pilihan sub-bidang yang sudah terpilih saat halaman dibuka.
-        const selectedSubBidang = document.getElementById('sub_bidang_select');
-        const selectedSubOption = selectedSubBidang.options[selectedSubBidang.selectedIndex];
-        const initialSubText = selectedSubOption?.textContent?.trim().toUpperCase() || '';
-        const initialSubKode = selectedSubOption?.getAttribute('data-kode')?.trim().toUpperCase()
-            || (initialSubText.startsWith('D.03.') ? 'D.03' : '');
-        const initialAlpineComponent = Alpine.$data(document.querySelector('[x-data]'));
-        if (initialAlpineComponent && initialSubKode) {
-            initialAlpineComponent.selectedSubBidangKode = initialSubKode;
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectedSubBidang = document.getElementById('sub_bidang_select');
+            const selectedSubOption = selectedSubBidang.options[selectedSubBidang.selectedIndex];
+            const initialSubKode = selectedSubOption?.getAttribute('data-kode')?.trim().toUpperCase() || '';
+            const initialAlpineComponent = window.Alpine?.$data(document.querySelector('[x-data]'));
+            if (initialAlpineComponent && initialSubKode) {
+                initialAlpineComponent.selectedSubBidangKode = initialSubKode;
+            }
+            syncInactiveCategoryControls(initialSubKode);
+        }, { once: true });
 
         // --- 2. SCRIPT FOR DROPDOWN WILAYAH INDONESIA (BERTINGKAT) ---
         const provSelect = document.getElementById('provinsi_select');

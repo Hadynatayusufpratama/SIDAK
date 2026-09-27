@@ -277,7 +277,182 @@
 
             <!-- Tabel Data -->
             <div class="overflow-x-auto">
-                @if($selectedBidang === 'perencanaan_konservasi' && $selectedSub === 'A.01')
+                @if($selectedBidang === 'pemanfaatan_jasling' && $selectedSub === 'D.02')
+                    @php($visitorMonths = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'])
+                    <table class="min-w-[1200px] w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                <th class="py-3 px-4">No</th>
+                                <th class="py-3 px-4">Tahun</th>
+                                <th class="py-3 px-4">Periode Bulan</th>
+                                <th class="py-3 px-4">Kawasan Konservasi</th>
+                                <th class="py-3 px-4">Total PNBP</th>
+                                <th class="py-3 px-4">Total Unit / Pengunjung</th>
+                                <th class="py-3 px-4">Rincian Kolom Input</th>
+                                <th class="py-3 px-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                            @forelse($data as $index => $item)
+                                @php
+                                    $detailFields = [];
+                                    $totalPnbp = 0;
+                                    foreach (explode(' | ', (string) $item->keterangan) as $detailLine) {
+                                        if (!str_contains($detailLine, ': ')) {
+                                            continue;
+                                        }
+                                        [$detailLabel, $detailValue] = explode(': ', $detailLine, 2);
+                                        $detailLabel = trim($detailLabel);
+                                        $detailValue = trim($detailValue);
+                                        $detailFields[$detailLabel] = $detailValue;
+                                        if (str_ends_with($detailLabel, ' - Jumlah PNBP') && is_numeric($detailValue)) {
+                                            $totalPnbp += (float) $detailValue;
+                                        }
+                                    }
+                                @endphp
+                                <tr class="align-top hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-4 px-4 font-bold text-slate-400">{{ method_exists($data, 'firstItem') ? $data->firstItem() + $index : $index + 1 }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ $item->tahun }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ $visitorMonths[(int) $item->bulan] ?? '-' }}</td>
+                                    <td class="py-4 px-4 min-w-56">{{ $detailFields['Kawasan Konservasi'] ?? '-' }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap font-bold">Rp {{ number_format($totalPnbp, 0, ',', '.') }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ number_format($item->jumlah ?? 0, 0, ',', '.') }}</td>
+                                    <td class="py-4 px-4 min-w-64">
+                                        @if ($detailFields)
+                                            <details class="group">
+                                                <summary class="cursor-pointer font-bold text-emerald-700 hover:text-emerald-900">Lihat {{ count($detailFields) }} nilai input</summary>
+                                                <div class="mt-3 max-h-96 overflow-auto rounded-lg border border-slate-200">
+                                                    <table class="w-full text-left">
+                                                        <thead class="sticky top-0 bg-slate-50 text-[10px] uppercase text-slate-500">
+                                                            <tr><th class="px-3 py-2">Kolom Input</th><th class="px-3 py-2">Nilai</th></tr>
+                                                        </thead>
+                                                        <tbody class="divide-y divide-slate-100">
+                                                            @foreach ($detailFields as $detailLabel => $detailValue)
+                                                                <tr>
+                                                                    <td class="px-3 py-2 font-semibold">{{ $detailLabel }}</td>
+                                                                    <td class="px-3 py-2">{{ $detailValue === '' ? '-' : $detailValue }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </details>
+                                        @else
+                                            <span class="text-slate-400">Tidak ada rincian tersimpan</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-4 px-4 text-center whitespace-nowrap">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button type="button" @click="openModal = true; modalTitle = @js($item->subBidang->nama_sub_bidang ?? 'Detail Data'); modalContent = @js($item->keterangan ?? '')" class="w-8 h-8 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition border border-blue-200/80 shadow-xs" title="Lihat Detail Lengkap">
+                                                <i class="fa-solid fa-eye text-xs"></i>
+                                            </button>
+                                            <a href="{{ route('konservasi.edit', $item->id) }}" class="w-8 h-8 flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition border border-amber-200/80 shadow-xs" title="Edit Data">
+                                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                            </a>
+                                            <form action="{{ route('konservasi.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 flex items-center justify-center bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-200/80 shadow-xs" title="Hapus Data">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="8" class="py-12 px-5 text-center text-xs font-bold text-slate-500">Belum ada data D.02 untuk filter ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                @elseif($selectedBidang === 'pemanfaatan_jasling' && $selectedSub === 'D.01')
+                    @php
+                        $visitorColumns = [
+                            'penelitian_dalam_negeri' => 'Penelitian & Pengembangan - Dalam Negeri',
+                            'penelitian_luar_negeri' => 'Penelitian & Pengembangan - Luar Negeri',
+                            'pendidikan_dalam_negeri' => 'Pendidikan & Ilmu Pengetahuan - Dalam Negeri',
+                            'pendidikan_luar_negeri' => 'Pendidikan & Ilmu Pengetahuan - Luar Negeri',
+                            'foto_video_dalam_negeri' => 'Pengambilan Foto & Video - Dalam Negeri',
+                            'foto_video_luar_negeri' => 'Pengambilan Foto & Video - Luar Negeri',
+                            'wisata_alam_dalam_negeri' => 'Wisata Alam - Dalam Negeri',
+                            'wisata_alam_luar_negeri' => 'Wisata Alam - Luar Negeri',
+                            'lain_lain_dalam_negeri' => 'Lain-lain (Keagamaan/Kunjungan Kedinasan) - Dalam Negeri',
+                            'lain_lain_luar_negeri' => 'Lain-lain (Keagamaan/Kunjungan Kedinasan) - Luar Negeri',
+                        ];
+                        $visitorMonths = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+                    @endphp
+                    <table class="min-w-[2400px] w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                                <th rowspan="2" class="py-3 px-4">No</th>
+                                <th rowspan="2" class="py-3 px-4">Tahun</th>
+                                <th rowspan="2" class="py-3 px-4">Periode Bulan</th>
+                                <th rowspan="2" class="py-3 px-4">Kawasan Konservasi</th>
+                                <th colspan="2" class="py-3 px-4 text-center border-l border-slate-200">Penelitian & Pengembangan</th>
+                                <th colspan="2" class="py-3 px-4 text-center border-l border-slate-200">Pendidikan & Ilmu Pengetahuan</th>
+                                <th colspan="2" class="py-3 px-4 text-center border-l border-slate-200">Pengambilan Foto & Video</th>
+                                <th colspan="2" class="py-3 px-4 text-center border-l border-slate-200">Wisata Alam</th>
+                                <th colspan="2" class="py-3 px-4 text-center border-l border-slate-200">Lain-lain (Keagamaan/Kunjungan Kedinasan)</th>
+                                <th rowspan="2" class="py-3 px-4 border-l border-slate-200">Total Pengunjung</th>
+                                <th rowspan="2" class="py-3 px-4">Keterangan</th>
+                                <th rowspan="2" class="py-3 px-4 text-center">Aksi</th>
+                            </tr>
+                            <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-bold uppercase text-slate-400">
+                                @foreach (array_keys($visitorColumns) as $visitorField)
+                                    <th class="py-3 px-4 {{ str_ends_with($visitorField, '_dalam_negeri') ? 'border-l border-slate-200' : '' }}">{{ str_ends_with($visitorField, '_dalam_negeri') ? 'Dalam Negeri' : 'Luar Negeri' }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                            @forelse($data as $index => $item)
+                                @php
+                                    $detailFields = [];
+                                    foreach (explode(' | ', (string) $item->keterangan) as $detailLine) {
+                                        if (str_contains($detailLine, ': ')) {
+                                            [$detailLabel, $detailValue] = explode(': ', $detailLine, 2);
+                                            $detailFields[strtolower(trim($detailLabel))] = trim($detailValue);
+                                        }
+                                    }
+                                    $visitorValues = [];
+                                    foreach ($visitorColumns as $visitorField => $visitorLabel) {
+                                        $visitorValues[$visitorField] = $detailFields[strtolower($visitorLabel)] ?? 0;
+                                    }
+                                @endphp
+                                <tr class="align-top hover:bg-slate-50/80 transition-colors">
+                                    <td class="py-4 px-4 font-bold text-slate-400">{{ method_exists($data, 'firstItem') ? $data->firstItem() + $index : $index + 1 }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ $item->tahun }}</td>
+                                    <td class="py-4 px-4 whitespace-nowrap">{{ $visitorMonths[(int) $item->bulan] ?? '-' }}</td>
+                                    <td class="py-4 px-4 min-w-56">{{ $detailFields['kawasan konservasi'] ?? '-' }}</td>
+                                    @foreach ($visitorValues as $visitorField => $visitorValue)
+                                        <td class="py-4 px-4 {{ str_ends_with($visitorField, '_dalam_negeri') ? 'border-l border-slate-100' : '' }}">{{ $visitorValue }}</td>
+                                    @endforeach
+                                    <td class="py-4 px-4 border-l border-slate-100 font-extrabold">{{ $item->jumlah ?? 0 }}</td>
+                                    <td class="py-4 px-4 min-w-48">{{ $detailFields['keterangan'] ?? '-' }}</td>
+                                    <td class="py-4 px-4 text-center whitespace-nowrap">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <button type="button" @click="openModal = true; modalTitle = @js($item->subBidang->nama_sub_bidang ?? 'Detail Data'); modalContent = @js($item->keterangan ?? '')" class="w-8 h-8 flex items-center justify-center bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition border border-blue-200/80 shadow-xs" title="Lihat Detail Lengkap">
+                                                <i class="fa-solid fa-eye text-xs"></i>
+                                            </button>
+                                            <a href="{{ route('konservasi.edit', $item->id) }}" class="w-8 h-8 flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl transition border border-amber-200/80 shadow-xs" title="Edit Data">
+                                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                            </a>
+                                            <form action="{{ route('konservasi.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="w-8 h-8 flex items-center justify-center bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition border border-rose-200/80 shadow-xs" title="Hapus Data">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="17" class="py-12 px-5 text-center text-xs font-bold text-slate-500">Belum ada data D.01 untuk filter ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                @elseif($selectedBidang === 'perencanaan_konservasi' && $selectedSub === 'A.01')
                     <table class="min-w-[2200px] w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
