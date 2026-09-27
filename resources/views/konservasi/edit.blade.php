@@ -138,8 +138,10 @@
                                             @php
                                                 $name = $field['name'];
                                                 $value = old($name, $detailValues[$name] ?? (str_starts_with($name, 'tahun') ? $item->tahun : ''));
+                                                $isD02Number = str_starts_with($name, 'd02_') && (str_ends_with($name, '_pnbp') || str_ends_with($name, '_jumlah'));
+                                                $isD02Note = str_starts_with($name, 'd02_') && str_ends_with($name, '_keterangan');
                                             @endphp
-                                            <div class="{{ in_array($name, $editTextareaFields, true) ? 'md:col-span-2' : '' }}">
+                                            <div class="{{ in_array($name, $editTextareaFields, true) || $isD02Note ? 'md:col-span-2' : '' }}">
                                                 <label class="block text-xs font-bold text-slate-700 mb-2">{{ $field['label'] }}</label>
                                                 @if(isset($editRadioOptions[$name]))
                                                     <div class="flex flex-wrap gap-x-5 gap-y-3 py-2">
@@ -160,10 +162,10 @@
                                                     @if(!empty($value))
                                                         <p class="mt-1 text-[11px] text-slate-500">Lampiran tersimpan: {{ basename($value) }}. Kosongkan jika tidak ingin mengganti.</p>
                                                     @endif
-                                                @elseif(in_array($name, $editTextareaFields, true))
+                                                @elseif(in_array($name, $editTextareaFields, true) || $isD02Note)
                                                     <textarea name="{{ $name }}" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition text-slate-800">{{ $value }}</textarea>
                                                 @else
-                                                    <input type="{{ in_array($name, $editDateFields, true) ? 'date' : (in_array($name, $editNumberFields, true) || str_starts_with($name, 'tahun') ? 'number' : 'text') }}" name="{{ $name }}" value="{{ $value }}" {{ in_array($name, ['sk_parsial_luas', 'sk_provinsi_luas', 'sk_penetapan_luas', 'panjang_pal_km'], true) ? 'step=0.01' : '' }} class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition font-medium text-slate-800">
+                                                    <input type="{{ in_array($name, $editDateFields, true) ? 'date' : (in_array($name, $editNumberFields, true) || str_starts_with($name, 'tahun') || $isD02Number ? 'number' : 'text') }}" name="{{ $name }}" value="{{ $value }}" min="{{ $isD02Number ? '0' : '' }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition font-medium text-slate-800">
                                                 @endif
                                             </div>
                                         @endforeach
@@ -175,20 +177,12 @@
                         <div class="space-y-4">
                             <div class="flex items-center gap-2.5 pb-3 border-b border-slate-200/80">
                                 <span class="w-7 h-7 rounded-lg bg-emerald-700 text-amber-400 flex items-center justify-center text-xs font-black">3</span>
-                                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Waktu & Koordinat Spasial</h3>
+                                <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Informasi Tambahan</h3>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                                <div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                                <div x-show="selectedSubKode !== 'D.01'">
                                     <label class="block text-xs font-bold text-slate-700 mb-2">Bulan</label>
                                     <input type="text" name="bulan" value="{{ old('bulan', $item->bulan) }}" placeholder="Opsional" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-2">Latitude (LS/LU)</label>
-                                    <input type="text" name="latitude" value="{{ old('latitude', $item->latitude) }}" placeholder="-0.897123" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-700 mb-2">Longitude (BT)</label>
-                                    <input type="text" name="longitude" value="{{ old('longitude', $item->longitude) }}" placeholder="119.87123" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-600 focus:bg-white transition">
                                 </div>
                                 <div class="sm:col-span-2 md:col-span-1">
                                     <label class="block text-xs font-bold text-slate-700 mb-2">Keterangan Tambahan</label>

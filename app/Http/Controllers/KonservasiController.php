@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bidang;
+use App\Models\Rekap;
 use App\Models\SubBidang;
 use App\Models\DataKonservasi;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Schema;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -192,81 +194,110 @@ class KonservasiController extends Controller
         }
 
         $query = $this->applySearchFilter($query, $request);
-        $data = $query->paginate(10)->withQueryString();
-        
-        // 4. Return view dengan menyertakan data pendukung
-        return view('konservasi.index', compact('data', 'masterBidang', 'selectedBidang', 'selectedSub'));
-    }
+        $conservationRecords = $query->get();
 
-    // Fitur Unduh PDF
-    public function exportPdf(Request $request)
-    {
-        $query = DataKonservasi::with('subBidang.bidang')->latest();
+        $secretariatQuery = Rekap::where('kode_sub_bidang', 'like', 'F.%');
 
-        if (Schema::hasColumn('data_konservasi', 'user_id')) {
-            $query->where('user_id', auth()->id());
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $matchingCodes = SubBidang::where('nama_sub_bidang', 'like', "%{$search}%")
+                ->pluck('kode_sub');
+
+            $secretariatQuery->where(function ($recapQuery) use ($search, $matchingCodes) {
+                $recapQuery->where('kode_sub_bidang', 'like', "%{$search}%")
+                    ->orWhere('tahun', 'like', "%{$search}%")
+                    ->orWhere('kawasan', 'like', "%{$search}%")
+                    ->orWhereIn('kode_sub_bidang', $matchingCodes);
+            });
         }
 
-        $query = $this->applySearchFilter($query, $request);
-        $datas = $query->get();
+        $secretariatRecords = $secretariatQuery->latest()->get();
 
-        $pdf = Pdf::loadView('konservasi.pdf', compact('datas'));
-        return $pdf->download('Data_Konservasi_SIDAK_BKSDA_' . date('Y-m-d') . '.pdf');
+        $secretariatNames = SubBidang::whereIn(
+    'kode_sub',
+    $secretariatRecords->pluck('kode_sub_bidang')->unique()
+)->pluck('nama_sub_bidang', 'kode_sub');
+
+        $conservationRecords->each(function ($record) {
+            $record->history_type = 'conservation';
+        });
+
+        $secretariatRecords->each(function ($record) use ($secretariatNames) {
+            $record->history_type = 'secretariat';
+            $record->history_sub_bidang =
+                $secretariatNames[$record->kode_sub_bidang] ?? 'Data Sekretariat';
+            $record->history_total =
+                $this->sumSecretariatCounts($record->data_kustom ?? []);
+        });
+
+        $allRecords = $conservationRecords
+            ->concat($secretariatRecords)
+            ->sortByDesc('created_at')
+            ->values();
+
+        $perPage = 10;
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+
+        $data = new LengthAwarePaginator(
+            $allRecords->forPage($currentPage, $perPage)->values(),
+            $allRecords->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'query' => $request->query()
+            ]
+        );
+
+        $totalRecords = $allRecords->count();
+
+           return view('konservasi.index', compact(
+            'data',
+            'totalRecords',
+            'masterBidang',
+            'selectedBidang',
+            'selectedSub'
+        ));
     }
+    private function sumSecretariatCounts(array $values): int
+{
+    $total = 0;
 
-    // Fitur Unduh Excel (CSV)
-    public function exportExcel(Request $request)
-    {
-        $query = DataKonservasi::with('subBidang.bidang')->latest();
-
-        if (Schema::hasColumn('data_konservasi', 'user_id')) {
-            $query->where('user_id', auth()->id());
+    foreach ($values as $key => $value) {
+        if (
+            in_array(
+                $key,
+                ['laki_laki', 'perempuan', 'dalam_negeri', 'luar_negeri'],
+                true
+            ) && is_numeric($value)
+        ) {
+            $total += (int) $value;
+        } elseif (is_array($value)) {
+            $total += $this->sumSecretariatCounts($value);
         }
-
-        $query = $this->applySearchFilter($query, $request);
-        $datas = $query->get();
-
-        $filename = 'Data_Konservasi_SIDAK_BKSDA_' . date('Y-m-d') . '.csv';
-
-        $headers = [
-            "Content-type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
-
-        $callback = function() use ($datas) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            fputcsv($file, ['No', 'Bidang Utama', 'Sub-Bidang / Kategori', 'Bulan', 'Tahun', 'Jumlah / Vol', 'Latitude', 'Longitude', 'Keterangan']);
-
-            $no = 1;
-            foreach ($datas as $item) {
-                fputcsv($file, [
-                    $no++,
-                    $item->subBidang->bidang->nama_bidang ?? '-',
-                    $item->subBidang->nama_sub_bidang ?? '-',
-                    $item->bulan ?? '-',
-                    $item->tahun ?? '-',
-                    $item->jumlah ?? 0,
-                    $item->latitude ?? '-',
-                    $item->longitude ?? '-',
-                    $item->keterangan ?? '-'
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
     }
 
-    // Halaman Form Input Data (Sudah terhubung dengan model Bidang)
-    public function create()
+    return $total;
+}
+
+    // Halaman Form Input Data
+    public function create(Request $request)
     {
         $bidang = Bidang::all();
+
+
+        $selectedSubBidang = $request->filled('sub_bidang')
+            ? SubBidang::where('kode_sub', $request->query('sub_bidang'))->first()
+            : null;
+
+        if (!$selectedSubBidang && $request->session()->getOldInput('sub_bidang_id')) {
+            $selectedSubBidang = SubBidang::find(
+                $request->session()->getOldInput('sub_bidang_id')
+            );
+        }
+
+
         $fieldsC02 = $this->fieldsBySubBidang()['C.02'];
         $lembagaQuery = DataKonservasi::with('subBidang')
             ->whereHas('subBidang', fn ($query) => $query->where('kode_sub', 'C.02'));
@@ -318,6 +349,7 @@ class KonservasiController extends Controller
             'Australia', 'Belanda', 'Hong Kong', 'Jepang', 'Jerman', 'Korea Selatan',
             'Malaysia', 'Singapura', 'Thailand', 'Tiongkok', 'Amerika Serikat', 'Lainnya',
         ];
+
         $kawasanKonservasi = collect([
             'TWA Wera',
             'SM Tanjung Santigi',
@@ -341,8 +373,48 @@ class KonservasiController extends Controller
             'nama' => $nama . ' (Satker: Balai KSDA Sulawesi Tengah)',
         ])->all();
 
+        // Jika sedang mengedit data kesekretariatan
+        $editRecord = null;
+
+        if ($request->filled('edit_record')) {
+            abort_unless($selectedSubBidang, 404);
+
+            $editRecord = Rekap::where(
+                'kode_sub_bidang',
+                $selectedSubBidang->kode_sub
+            )->findOrFail(
+                $request->integer('edit_record')
+            );
+        }
+
+        return view('konservasi.create', [
+            'bidang' => $bidang,
+            'kawasanKonservasi' => $kawasanKonservasi,
+            'selectedSubBidang' => $selectedSubBidang,
+            'editRecord' => $editRecord,
+
+            // Data untuk form Kesekretariatan 
+            'struktural' => RekapController::STRUKTURAL,
+            'fungsional' => RekapController::FUNGSIONAL,
+            'pendidikan' => RekapController::PENDIDIKAN,
+            'pendidikanP3K' => RekapController::PENDIDIKAN_P3K,
+            'perijinan' => RekapController::PERIJINAN,
+            'tipeMitra' => RekapController::TIPE_MITRA,
+            'dukunganKinerja' => RekapController::DUKUNGAN_KINERJA,
+            'golongan' => RekapController::GOLONGAN,
+            'jabatanFungsional' => RekapController::JABATAN_FUNGSIONAL,
+
+            // Data form Konservasi terbaru
+            'lembagaKonservasiList' => $lembagaKonservasiList,
+            'spesiesKoleksiC03' => $spesiesKoleksiC03,
+            'penangkarList' => $penangkarList,
+            'pengedarList' => $pengedarList,
+            'negaraTujuanC09' => $negaraTujuanC09,
+        ]);
+
         return view('konservasi.create', compact('bidang', 'kawasanKonservasi', 'lembagaKonservasiList', 'spesiesKoleksiC03', 'penangkarList', 'pengedarList', 'negaraTujuanC09'));
     }
+
 
     // Mengambil Sub-Bidang Berdasarkan Bidang ID untuk Dropdown Dinamis
     public function getSubBidang($bidang_id)
@@ -353,6 +425,20 @@ class KonservasiController extends Controller
 
     private function fieldsBySubBidang(): array
     {
+        $d02Definitions = $this->d02Definitions();
+        $d02Fields = ['tahun', 'bulan', 'kawasan_nama_d02'];
+        foreach ($d02Definitions['items'] as $kode => $definition) {
+            $d02Fields[] = "d02_{$kode}_pnbp";
+            $d02Fields[] = "d02_{$kode}_jumlah";
+        }
+        foreach ($d02Definitions['activities'] as $kode => $definition) {
+            foreach (['dalam_negeri', 'luar_negeri'] as $wilayah) {
+                foreach (['pnbp', 'jumlah', 'keterangan'] as $field) {
+                    $d02Fields[] = "d02_{$kode}_{$wilayah}_{$field}";
+                }
+            }
+        }
+
         return [
             'A.01' => ['tahun', 'kawasan_nama', 'ada_perubahan', 'sk_parsial_nomor', 'sk_parsial_tanggal', 'sk_parsial_luas', 'sk_parsial_file', 'sk_provinsi_tersedia', 'sk_provinsi_nomor', 'sk_provinsi_tanggal', 'sk_provinsi_luas', 'sk_provinsi_file', 'sk_penetapan_tersedia', 'sk_penetapan_nomor', 'sk_penetapan_tanggal', 'sk_penetapan_luas', 'sk_penetapan_file', 'shapefile_zip'],
             'A.02' => ['tahun_rpjp', 'kawasan_nama_rpjp', 'ketersediaan_rpjp', 'sk_rpjp_nomor', 'sk_rpjp_tanggal_pengesahan', 'sk_rpjp_periode_berakhir', 'sk_rpjp_file'],
@@ -360,6 +446,15 @@ class KonservasiController extends Controller
             'A.04' => ['tahun_evaluasi', 'kawasan_nama_evaluasi', 'ketersediaan_evaluasi', 'tanggal_pelaksanaan_evaluasi', 'rekomendasi_evaluasi', 'tindak_lanjut_evaluasi', 'file_dokumen_evaluasi'],
             'A.05' => ['tahun_ekosistem', 'kawasan_nama_ekosistem', 'ketersediaan_ekosistem', 'shapefile_ekosistem_zip'],
             'A.06' => ['tahun_zonasi', 'kawasan_nama_zonasi', 'ketersediaan_zonasi', 'nomor_sk_zonasi', 'tanggal_sk_zonasi', 'file_sk_zonasi', 'shapefile_zonasi_zip'],
+            'D.01' => [
+                'tahun', 'bulan', 'kawasan_nama_d01',
+                'penelitian_dalam_negeri', 'penelitian_luar_negeri',
+                'pendidikan_dalam_negeri', 'pendidikan_luar_negeri',
+                'foto_video_dalam_negeri', 'foto_video_luar_negeri',
+                'wisata_alam_dalam_negeri', 'wisata_alam_luar_negeri',
+                'lain_lain_dalam_negeri', 'lain_lain_luar_negeri',
+            ],
+            'D.02' => $d02Fields,
             'B.01' => ['tahun_b01', 'periode_semester', 'kawasan_nama_b01', 'ada_kegiatan_b01', 'nama_kelompok', 'jumlah_laki', 'jumlah_perempuan', 'provinsi', 'kabupaten', 'kecamatan', 'desa', 'hhbk_nihil', 'jenis_hhbk', 'pertanian_nihil', 'jenis_pertanian', 'perkebunan_nihil', 'jenis_perkebunan', 'peternakan_nihil', 'jenis_peternakan', 'perikanan_nihil', 'jenis_perikanan', 'wisata_nihil', 'jenis_wisata', 'produk_nihil', 'jenis_produk', 'pembibitan_nihil', 'jenis_pembibitan', 'lainnya_nihil', 'jenis_lainnya', 'jenis_bantuan', 'jumlah_bantuan', 'sumber_dana'],
             'C.01' => ['satuan_kerja_c01', 'temuan_perjumpaan_spesies_c01', 'tahun_c01', 'bulan_c01', 'spesies_c01', 'spesies_lainnya_c01', 'jumlah_individu_c01', 'tanggal_perjumpaan_c01', 'latitude_c01', 'longitude_c01', 'kategori_perjumpaan_c01', 'keterangan_c01'],
             'C.02' => ['tahun_c02', 'satuan_kerja_c02', 'ada_data_lembaga_c02', 'nama_lembaga_c02', 'bentuk_lembaga_c02', 'latitude_c02', 'longitude_c02', 'alamat_lembaga_c02', 'nomor_dokumen_perizinan_c02', 'luas_areal_c02', 'tanggal_perizinan_c02', 'tanggal_berakhir_izin_c02', 'dokumen_perizinan_c02', 'keterangan_c02'],
@@ -376,15 +471,88 @@ class KonservasiController extends Controller
         ];
     }
 
+    private function d02Definitions(): array
+    {
+        return [
+            'items' => [
+                'dalam_negeri_hari_kerja' => ['group' => 'Tiket Masuk Pengunjung', 'label' => 'Dalam Negeri (Hari Kerja)', 'unit' => 'Orang'],
+                'luar_negeri_hari_kerja' => ['group' => 'Tiket Masuk Pengunjung', 'label' => 'Luar Negeri (Hari Kerja)', 'unit' => 'Orang'],
+                'pelajar_hari_kerja' => ['group' => 'Tiket Masuk Pengunjung', 'label' => 'Pelajar/Mahasiswa (Hari Kerja)', 'unit' => 'Orang'],
+                'dalam_negeri_hari_libur' => ['group' => 'Tiket Masuk Pengunjung', 'label' => 'Dalam Negeri (Hari Libur/Cuti Bersama/Hari Raya)', 'unit' => 'Orang'],
+                'pelajar_hari_libur' => ['group' => 'Tiket Masuk Pengunjung', 'label' => 'Pelajar/Mahasiswa (Hari Libur/Cuti Bersama/Hari Raya)', 'unit' => 'Orang'],
+                'roda_2' => ['group' => 'Tiket Masuk Kendaraan Darat', 'label' => 'Roda 2', 'unit' => 'Unit'],
+                'roda_4' => ['group' => 'Tiket Masuk Kendaraan Darat', 'label' => 'Roda 4', 'unit' => 'Unit'],
+                'roda_6' => ['group' => 'Tiket Masuk Kendaraan Darat', 'label' => 'Roda 6 atau Lebih', 'unit' => 'Unit'],
+                'sepeda' => ['group' => 'Tiket Masuk Kendaraan Darat', 'label' => 'Sepeda', 'unit' => 'Unit'],
+                'kuda' => ['group' => 'Tiket Masuk Kendaraan Darat', 'label' => 'Kuda', 'unit' => 'Ekor'],
+                'kapal_40_100' => ['group' => 'Tiket Masuk Kendaraan Air', 'label' => 'Kapal Motor 40 s.d. 100 PK', 'unit' => 'Unit'],
+                'kapal_101_500' => ['group' => 'Tiket Masuk Kendaraan Air', 'label' => 'Kapal Motor 101 s.d. 500 PK', 'unit' => 'Unit'],
+                'kapal_diatas_500' => ['group' => 'Tiket Masuk Kendaraan Air', 'label' => 'Kapal Motor diatas 500 PK', 'unit' => 'Unit'],
+                'kapal_pesiar' => ['group' => 'Tiket Masuk Kendaraan Air', 'label' => 'Kapal Pesiar/Cruiser Ship', 'unit' => 'Unit'],
+                'transportasi_khusus' => ['group' => 'Tiket Masuk Kendaraan Transportasi Khusus', 'label' => 'Transportasi Khusus', 'unit' => 'Unit'],
+                'berkemah' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Berkemah', 'unit' => 'Orang'],
+                'mendaki' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Mendaki Gunung (Hiking-Climbing)', 'unit' => 'Orang'],
+                'gua' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Penelusuran Gua (Caving)', 'unit' => 'Orang'],
+                'memancing' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Memancing (Sport Fishing)', 'unit' => 'Orang'],
+                'menyelam' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Menyelam (Scuba Diving)', 'unit' => 'Orang'],
+                'arung_jeram' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Arung Jeram (Tubbing)', 'unit' => 'Orang'],
+                'paralayang' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Paralayang', 'unit' => 'Orang'],
+                'balon_udara' => ['group' => 'Kegiatan Wisata Alam', 'label' => 'Balon Udara', 'unit' => 'Orang'],
+            ],
+            'activities' => [
+                'videografi_komersil' => ['group' => 'Pengambilan Gambar Komersil', 'label' => 'Videografi untuk iklan, video clip, film, drama, dan sejenisnya'],
+                'fotografi_komersil' => ['group' => 'Pengambilan Gambar Komersil', 'label' => 'Fotografi untuk paket wisata, majalah, iklan, dan sejenisnya'],
+                'video_foto_pre_wedding' => ['group' => 'Video dan Foto Prewedding', 'label' => 'Video dan Foto Prewedding'],
+                'penggunaan_drone' => ['group' => 'Kegiatan Penggunaan/Menerbangkan Drone', 'label' => 'Penggunaan/Menerbangkan Drone'],
+                'penggunaan_fasilitas_wisata' => ['group' => 'Penggunaan Fasilitas untuk Kegiatan Wisata', 'label' => 'Penggunaan Fasilitas untuk Kegiatan Wisata'],
+                'denda_pengunjung_kendaraan' => ['group' => 'Denda Pengunjung dan Kendaraan Ilegal/Tidak Memiliki Tiket Masuk', 'label' => 'Penunjang Dalam Negeri dan Luar Negeri'],
+            ],
+        ];
+    }
+
     private function formFieldLabel(string $field): string
     {
+        $d02Definitions = $this->d02Definitions();
+        if (preg_match('/^d02_(.+)_(pnbp|jumlah)$/', $field, $match)
+            && isset($d02Definitions['items'][$match[1]])) {
+            $definition = $d02Definitions['items'][$match[1]];
+            $metric = $match[2] === 'pnbp' ? 'Jumlah PNBP' : 'Jumlah ' . $definition['unit'];
+
+            return $definition['group'] . ' - ' . $definition['label'] . ' - ' . $metric;
+        }
+
+        if (preg_match('/^d02_(.+)_(dalam_negeri|luar_negeri)_(pnbp|jumlah|keterangan)$/', $field, $match)
+            && isset($d02Definitions['activities'][$match[1]])) {
+            $definition = $d02Definitions['activities'][$match[1]];
+            $wilayah = $match[2] === 'dalam_negeri' ? 'Dalam Negeri' : 'Luar Negeri';
+            $metric = match ($match[3]) {
+                'pnbp' => 'Jumlah PNBP',
+                'jumlah' => 'Jumlah Orang',
+                default => 'Keterangan',
+            };
+
+            return $definition['group'] . ' - ' . $definition['label'] . ' - ' . $wilayah . ' - ' . $metric;
+        }
+
         $labels = [
             'tahun' => 'Tahun', 'tahun_rpjp' => 'Tahun', 'tahun_monitoring' => 'Tahun',
             'tahun_evaluasi' => 'Tahun', 'tahun_ekosistem' => 'Tahun', 'tahun_zonasi' => 'Tahun', 'tahun_b01' => 'Tahun',
+            'bulan' => 'Periode Bulan',
             'kawasan_nama' => 'Kawasan Konservasi', 'kawasan_nama_rpjp' => 'Kawasan Konservasi',
             'kawasan_nama_monitoring' => 'Kawasan Konservasi', 'kawasan_nama_evaluasi' => 'Kawasan Konservasi',
             'kawasan_nama_ekosistem' => 'Kawasan Konservasi', 'kawasan_nama_zonasi' => 'Kawasan Konservasi',
             'kawasan_nama_b01' => 'Kawasan Konservasi', 'jumlah_laki' => 'Jumlah Laki-laki',
+            'kawasan_nama_d01' => 'Kawasan Konservasi',
+            'penelitian_dalam_negeri' => 'Penelitian & Pengembangan - Dalam Negeri',
+            'penelitian_luar_negeri' => 'Penelitian & Pengembangan - Luar Negeri',
+            'pendidikan_dalam_negeri' => 'Pendidikan & Ilmu Pengetahuan - Dalam Negeri',
+            'pendidikan_luar_negeri' => 'Pendidikan & Ilmu Pengetahuan - Luar Negeri',
+            'foto_video_dalam_negeri' => 'Pengambilan Foto & Video - Dalam Negeri',
+            'foto_video_luar_negeri' => 'Pengambilan Foto & Video - Luar Negeri',
+            'wisata_alam_dalam_negeri' => 'Wisata Alam - Dalam Negeri',
+            'wisata_alam_luar_negeri' => 'Wisata Alam - Luar Negeri',
+            'lain_lain_dalam_negeri' => 'Lain-lain (Keagamaan/Kunjungan Kedinasan) - Dalam Negeri',
+            'lain_lain_luar_negeri' => 'Lain-lain (Keagamaan/Kunjungan Kedinasan) - Luar Negeri',
             'jumlah_perempuan' => 'Jumlah Perempuan', 'jenis_hhbk' => 'Pemungutan HHBK',
             'jenis_pertanian' => 'Pertanian', 'jenis_perkebunan' => 'Perkebunan',
             'jenis_peternakan' => 'Peternakan', 'jenis_perikanan' => 'Perikanan',
@@ -529,6 +697,7 @@ class KonservasiController extends Controller
             'A.04' => 'tahun_evaluasi',
             'A.05' => 'tahun_ekosistem',
             'A.06' => 'tahun_zonasi',
+            'D.02' => 'tahun',
             'B.01' => 'tahun_b01',
             'C.01' => 'tahun_c01',
             'C.02' => 'tahun_c02',
@@ -545,7 +714,18 @@ class KonservasiController extends Controller
         ];
         $tahun = $request->input($yearFields[$subBidang->kode_sub] ?? '', date('Y'));
 
+        $fieldsBySubBidang = $this->fieldsBySubBidang();
         $jumlah = match ($subBidang->kode_sub) {
+            'D.01' => array_sum(array_map(
+                fn ($field) => (int) $request->input($field, 0),
+                [
+                    'penelitian_dalam_negeri', 'penelitian_luar_negeri',
+                    'pendidikan_dalam_negeri', 'pendidikan_luar_negeri',
+                    'foto_video_dalam_negeri', 'foto_video_luar_negeri',
+                    'wisata_alam_dalam_negeri', 'wisata_alam_luar_negeri',
+                    'lain_lain_dalam_negeri', 'lain_lain_luar_negeri',
+                ]
+            )),
             'A.03' => $request->filled('pal_baik') || $request->filled('pal_rusak') || $request->filled('pal_hilang')
                 ? (int) $request->input('pal_baik', 0) + (int) $request->input('pal_rusak', 0) + (int) $request->input('pal_hilang', 0)
                 : null,
@@ -570,7 +750,12 @@ class KonservasiController extends Controller
             default => null,
         };
 
-        $fieldsBySubBidang = $this->fieldsBySubBidang();
+        if ($subBidang->kode_sub === 'D.02') {
+            $jumlah = array_sum(array_map(
+                fn ($field) => (int) $request->input($field, 0),
+                array_filter($fieldsBySubBidang['D.02'], fn ($field) => str_ends_with($field, '_jumlah'))
+            ));
+        }
 
         $details = [];
         $activeFields = array_merge($fieldsBySubBidang[$subBidang->kode_sub] ?? [], ['keterangan']);
@@ -670,17 +855,25 @@ class KonservasiController extends Controller
             $userQuery->where('user_id', auth()->id());
         }
 
-        $totalData = (clone $userQuery)->count(); 
-        $totalVolume = (clone $userQuery)->sum('jumlah'); 
+        $allData = (clone $userQuery)->with('subBidang.bidang')->get();
+        $secretariatRecords = Rekap::where('kode_sub_bidang', 'like', 'F.%')->get();
+        $secretariatSubBidangs = SubBidang::with('bidang')
+            ->whereIn('kode_sub', $secretariatRecords->pluck('kode_sub_bidang')->unique())
+            ->get()
+            ->keyBy('kode_sub');
+
+        $totalData = $allData->count() + $secretariatRecords->count();
+        $totalVolume = (int) $allData->sum('jumlah') + $secretariatRecords->sum(
+            fn ($record) => $this->sumSecretariatCounts($record->data_kustom ?? [])
+        );
         $totalLokasi = (clone $userQuery)->whereNotNull('latitude')
                                          ->whereNotNull('longitude')
                                          ->where('latitude', '!=', '')
                                          ->where('longitude', '!=', '')
                                          ->count();
 
-        $totalKawasan = (clone $userQuery)->distinct('sub_bidang_id')->count('sub_bidang_id');
-
-        $allData = (clone $userQuery)->with('subBidang.bidang')->get();
+        $totalKawasan = (clone $userQuery)->distinct('sub_bidang_id')->count('sub_bidang_id')
+            + $secretariatRecords->pluck('kode_sub_bidang')->unique()->count();
 
         $statsVolume = [];
         foreach ($allData as $item) {
@@ -689,6 +882,12 @@ class KonservasiController extends Controller
                 $statsVolume[$namaBidang] = 0;
             }
             $statsVolume[$namaBidang] += ($item->jumlah > 0 ? $item->jumlah : 1);
+        }
+
+        foreach ($secretariatRecords as $record) {
+            $namaBidang = $secretariatSubBidangs->get($record->kode_sub_bidang)?->bidang->nama_bidang ?? 'Kesekretariatan';
+            $jumlah = $this->sumSecretariatCounts($record->data_kustom ?? []);
+            $statsVolume[$namaBidang] = ($statsVolume[$namaBidang] ?? 0) + ($jumlah > 0 ? $jumlah : 1);
         }
 
         $chartLabels = array_keys($statsVolume);
@@ -728,6 +927,9 @@ class KonservasiController extends Controller
         $editFieldsBySubBidang = [];
 
         foreach ($fieldsBySubBidang as $kode => $fields) {
+            if ($kode === 'D.02') {
+                $fields = array_values(array_diff($fields, ['bulan']));
+            }
             $editFieldsBySubBidang[$kode] = array_map(fn ($field) => [
                 'name' => $field,
                 'label' => $this->formFieldLabel($field),
@@ -826,13 +1028,17 @@ class KonservasiController extends Controller
         $yearFields = [
             'A.01' => 'tahun', 'A.02' => 'tahun_rpjp', 'A.03' => 'tahun_monitoring',
             'A.04' => 'tahun_evaluasi', 'A.05' => 'tahun_ekosistem', 'A.06' => 'tahun_zonasi',
-            'B.01' => 'tahun_b01',
+            'B.01' => 'tahun_b01', 'D.02' => 'tahun',
         ];
         $yearField = $yearFields[$subBidang->kode_sub] ?? null;
         $year = $yearField && $request->filled($yearField)
             ? $request->input($yearField)
             : ($request->filled('tahun') ? $request->input('tahun') : $item->tahun);
         $jumlah = match ($subBidang->kode_sub) {
+            'D.02' => array_sum(array_map(
+                fn ($field) => (int) $request->input($field, 0),
+                array_filter($fields, fn ($field) => str_ends_with($field, '_jumlah'))
+            )),
             'A.03' => $request->filled('pal_baik') || $request->filled('pal_rusak') || $request->filled('pal_hilang')
                 ? (int) $request->input('pal_baik', 0) + (int) $request->input('pal_rusak', 0) + (int) $request->input('pal_hilang', 0)
                 : null,
@@ -846,8 +1052,8 @@ class KonservasiController extends Controller
             'sub_bidang_id' => $subBidang->id,
             'tahun'         => $year,
             'bulan'         => $request->bulan,
-            'latitude'      => $request->latitude,
-            'longitude'     => $request->longitude,
+            'latitude'      => $request->input('latitude', $item->latitude),
+            'longitude'     => $request->input('longitude', $item->longitude),
             'jumlah'        => $jumlah,
             'keterangan'    => count($details) ? implode(' | ', $details) : '-',
         ]);

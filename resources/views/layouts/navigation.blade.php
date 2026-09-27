@@ -6,7 +6,7 @@
                 <!-- Logo SIDAK BKSDA -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ Route::has('konservasi.dashboard') ? route('konservasi.dashboard') : '#' }}" class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo-bksda.jpeg') }}" alt="Logo BKSDA" class="h-9 w-auto object-contain rounded-md" onerror="this.src='https://via.placeholder.com/40?text=BKSDA'">
+                        <img src="{{ asset('images/logo-icon.png') }}" alt="Logo SIDAK BKSDA" class="h-9 w-9 object-contain rounded-full">
                         <div class="hidden md:block">
                             <span class="font-extrabold text-sm text-slate-800 tracking-wide block leading-none">SIDAK BKSDA</span>
                             <span class="text-[10px] font-bold text-emerald-700 tracking-wider">SULAWESI TENGAH</span>
@@ -15,6 +15,7 @@
                 </div>
 
                 <!-- Navigation Links (Desktop) -->
+                @unless (request()->routeIs('profile.*'))
                 <div class="hidden space-x-2 sm:-my-px sm:flex items-center">
                     @if(Route::has('konservasi.dashboard'))
                     <x-nav-link :href="route('konservasi.dashboard')" :active="request()->routeIs('konservasi.dashboard')" class="text-xs font-bold transition">
@@ -60,14 +61,16 @@
 
                     @if(Route::has('konservasi.peta'))
                     <x-nav-link :href="route('konservasi.peta')" :active="request()->routeIs('konservasi.peta')" class="text-xs font-bold transition">
-                        <i class="fas fa-map-location-dot mr-2 text-emerald-600"></i> {{ __('Peta GIS') }}
+                        <i class="fas fa-map-location-dot mr-2 text-emerald-600"></i> {{ __('GIS') }}
                     </x-nav-link>
                     @endif
                 </div>
+                @endunless
             </div>
 
             <!-- Settings Dropdown (Desktop) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @include('components.theme-toggle')
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center gap-2 px-3 py-2 border border-slate-200 text-xs font-bold rounded-xl text-slate-700 bg-slate-50 hover:bg-slate-100 focus:outline-none transition duration-150">
@@ -122,6 +125,7 @@
 
     <!-- Responsive Navigation Menu (Mobile) -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-white border-b border-slate-100">
+        @unless (request()->routeIs('profile.*'))
         <div class="pt-2 pb-3 space-y-1 px-4">
             @if(Route::has('konservasi.dashboard'))
             <x-responsive-nav-link :href="route('konservasi.dashboard')" :active="request()->routeIs('konservasi.dashboard')" class="rounded-xl">
@@ -157,13 +161,17 @@
 
             @if(Route::has('konservasi.peta'))
             <x-responsive-nav-link :href="route('konservasi.peta')" :active="request()->routeIs('konservasi.peta')" class="rounded-xl">
-                <i class="fas fa-map-location-dot mr-2 text-emerald-600"></i> {{ __('Peta GIS') }}
+                <i class="fas fa-map-location-dot mr-2 text-emerald-600"></i> {{ __('GIS') }}
             </x-responsive-nav-link>
             @endif
         </div>
+        @endunless
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-3 border-t border-slate-100 bg-slate-50/50">
+            <div class="px-6 pb-3">
+                @include('components.theme-toggle')
+            </div>
             @auth
                 <div class="px-6 flex items-center gap-3 mb-3">
                     <div class="w-9 h-9 rounded-xl bg-emerald-800 text-white font-bold flex items-center justify-center text-xs uppercase shadow-sm">

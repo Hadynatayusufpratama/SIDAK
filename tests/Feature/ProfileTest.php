@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Bidang;
+use App\Models\DataKonservasi;
+use App\Models\SubBidang;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,6 +22,32 @@ class ProfileTest extends TestCase
             ->get('/profile');
 
         $response->assertOk();
+    }
+
+    public function test_profile_shows_the_users_conservation_activity_and_contribution(): void
+    {
+        $user = User::factory()->create();
+        $bidang = Bidang::create(['nama_bidang' => 'Perlindungan Kawasan']);
+        $subBidang = SubBidang::create([
+            'bidang_id' => $bidang->id,
+            'kode_sub' => 'A.01',
+            'nama_sub_bidang' => 'Kawasan Konservasi',
+        ]);
+
+        DataKonservasi::create([
+            'user_id' => $user->id,
+            'sub_bidang_id' => $subBidang->id,
+            'tahun' => 2026,
+            'jumlah' => 3,
+        ]);
+
+        $this->actingAs($user)
+            ->get('/profile')
+            ->assertOk()
+            ->assertSee('Kawasan Konservasi')
+            ->assertSee('Perlindungan Kawasan')
+            ->assertSee('Kontribusi per bidang')
+            ->assertSee('Total kontribusi');
     }
 
     public function test_profile_information_can_be_updated(): void

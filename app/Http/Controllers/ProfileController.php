@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataKonservasi;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +17,31 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $user = $request->user();
+
+        $records = DataKonservasi::with('subBidang.bidang')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(12)
+            ->get();
+
+        $recordCount = DataKonservasi::where('user_id', $user->id)->count();
+
+        $contributions = DataKonservasi::query()
+            ->where('data_konservasi.user_id', $user->id)
+            ->join('ref_sub_bidang', 'data_konservasi.sub_bidang_id', '=', 'ref_sub_bidang.id')
+            ->join('ref_bidang', 'ref_sub_bidang.bidang_id', '=', 'ref_bidang.id')
+            ->select('ref_bidang.id', 'ref_bidang.nama_bidang')
+            ->selectRaw('COUNT(data_konservasi.id) as total')
+            ->groupBy('ref_bidang.id', 'ref_bidang.nama_bidang')
+            ->orderByDesc('total')
+            ->get();
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'records' => $records,
+            'recordCount' => $recordCount,
+            'contributions' => $contributions,
         ]);
     }
 

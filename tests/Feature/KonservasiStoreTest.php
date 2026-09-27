@@ -68,6 +68,144 @@ class KonservasiStoreTest extends TestCase
             ->assertSee('Pemungutan HHBK: Rotan');
     }
 
+    public function test_d01_visitor_fields_are_saved_and_displayed_in_recap_and_detail(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $bidang = Bidang::create(['nama_bidang' => 'Pemanfaatan Jasa Lingkungan']);
+        $subBidang = SubBidang::create([
+            'bidang_id' => $bidang->id,
+            'kode_sub' => 'D.01',
+            'nama_sub_bidang' => 'Pengunjung Kawasan Konservasi',
+        ]);
+
+        $counts = [
+            'penelitian_dalam_negeri' => 1,
+            'penelitian_luar_negeri' => 2,
+            'pendidikan_dalam_negeri' => 3,
+            'pendidikan_luar_negeri' => 4,
+            'foto_video_dalam_negeri' => 5,
+            'foto_video_luar_negeri' => 6,
+            'wisata_alam_dalam_negeri' => 7,
+            'wisata_alam_luar_negeri' => 8,
+            'lain_lain_dalam_negeri' => 9,
+            'lain_lain_luar_negeri' => 10,
+        ];
+
+        $this->actingAs($user)
+            ->post(route('konservasi.store'), [
+                'sub_bidang_id' => $subBidang->id,
+                'tahun' => '2026',
+                'bulan' => '9',
+                'kawasan_nama_d01' => 'TWA Wera',
+                ...$counts,
+                'keterangan' => 'Rekap uji D.01',
+            ])
+            ->assertRedirect(route('konservasi.index'));
+
+        $record = DataKonservasi::firstOrFail();
+        $this->assertSame(55, $record->jumlah);
+        $this->assertStringContainsString('Penelitian & Pengembangan - Dalam Negeri: 1', $record->keterangan);
+        $this->assertStringContainsString('Lain-lain (Keagamaan/Kunjungan Kedinasan) - Luar Negeri: 10', $record->keterangan);
+
+        $this->actingAs($user)
+            ->get(route('konservasi.index', [
+                'bidang' => 'pemanfaatan_jasling',
+                'sub_bidang' => 'D.01',
+            ]))
+            ->assertOk()
+            ->assertSee('Pengunjung Kawasan Konservasi')
+            ->assertSee('Periode Bulan')
+            ->assertSee('Kawasan Konservasi')
+            ->assertSee('Penelitian & Pengembangan', false)
+            ->assertSee('Lain-lain (Keagamaan/Kunjungan Kedinasan)', false)
+            ->assertSee('TWA Wera')
+            ->assertSee('September')
+            ->assertSee('55')
+            ->assertSee('Rekap uji D.01')
+            ->assertSee('Lihat Detail Lengkap');
+    }
+
+    public function test_d02_pnbp_fields_are_saved_recapitulated_and_editable_without_coordinates(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $bidang = Bidang::create(['nama_bidang' => 'Pemanfaatan Jasa Lingkungan']);
+        $subBidang = SubBidang::create([
+            'bidang_id' => $bidang->id,
+            'kode_sub' => 'D.02',
+            'nama_sub_bidang' => 'PNBP Wisata Alam di Kawasan Konservasi',
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('konservasi.store'), [
+                'sub_bidang_id' => $subBidang->id,
+                'tahun' => '2026',
+                'bulan' => '9',
+                'kawasan_nama_d02' => 'TWA Wera',
+                'd02_dalam_negeri_hari_kerja_pnbp' => '125000',
+                'd02_dalam_negeri_hari_kerja_jumlah' => '5',
+                'd02_roda_2_pnbp' => '20000',
+                'd02_roda_2_jumlah' => '2',
+                'd02_videografi_komersil_dalam_negeri_pnbp' => '300000',
+                'd02_videografi_komersil_dalam_negeri_jumlah' => '1',
+                'd02_videografi_komersil_dalam_negeri_keterangan' => 'Produksi dokumenter',
+                'keterangan' => 'Rekap uji D.02',
+            ])
+            ->assertRedirect(route('konservasi.index'));
+
+        $record = DataKonservasi::firstOrFail();
+        $this->assertSame(2026, $record->tahun);
+        $this->assertSame(8, $record->jumlah);
+        $this->assertStringContainsString('Tiket Masuk Pengunjung - Dalam Negeri (Hari Kerja) - Jumlah PNBP: 125000', $record->keterangan);
+        $this->assertStringContainsString('Pengambilan Gambar Komersil - Videografi untuk iklan, video clip, film, drama, dan sejenisnya - Dalam Negeri - Keterangan: Produksi dokumenter', $record->keterangan);
+
+        $this->actingAs($user)
+            ->get(route('konservasi.index', ['bidang' => 'pemanfaatan_jasling', 'sub_bidang' => 'D.02']))
+            ->assertOk()
+            ->assertSee('Total PNBP')
+            ->assertSee('Total Unit / Pengunjung')
+            ->assertSee('Rp 445.000')
+            ->assertSee('TWA Wera')
+            ->assertSee('Lihat 12 nilai input')
+            ->assertSee('Tiket Masuk Pengunjung - Dalam Negeri (Hari Kerja) - Jumlah PNBP')
+            ->assertSee('Produksi dokumenter');
+
+        $record->update(['latitude' => '-0.897123', 'longitude' => '119.87123']);
+
+        $this->actingAs($user)
+            ->get(route('konservasi.edit', $record->id))
+            ->assertOk()
+            ->assertSee('name="d02_dalam_negeri_hari_kerja_pnbp"', false)
+            ->assertSee('value="125000"', false)
+            ->assertSee('name="bulan"', false)
+            ->assertDontSee('name="latitude"', false)
+            ->assertDontSee('name="longitude"', false);
+
+        $this->actingAs($user)
+            ->put(route('konservasi.update', $record->id), [
+                'bidang_id' => $bidang->id,
+                'sub_bidang_id' => $subBidang->id,
+                'tahun' => '2026',
+                'bulan' => '9',
+                'kawasan_nama_d02' => 'TWA Wera',
+                'd02_dalam_negeri_hari_kerja_pnbp' => '150000',
+                'd02_dalam_negeri_hari_kerja_jumlah' => '5',
+                'd02_roda_2_pnbp' => '20000',
+                'd02_roda_2_jumlah' => '2',
+                'd02_videografi_komersil_dalam_negeri_pnbp' => '300000',
+                'd02_videografi_komersil_dalam_negeri_jumlah' => '1',
+                'd02_videografi_komersil_dalam_negeri_keterangan' => 'Dokumenter diperbarui',
+                'keterangan' => 'Rekap uji D.02',
+            ])
+            ->assertRedirect(route('konservasi.index'));
+
+        $record->refresh();
+        $this->assertSame('150000', $record->latitude);
+        $this->assertSame('119.87123', $record->longitude);
+        $this->assertSame(8, $record->jumlah);
+        $this->assertStringContainsString('Jumlah PNBP: 150000', $record->keterangan);
+        $this->assertStringContainsString('Keterangan: Dokumenter diperbarui', $record->keterangan);
+    }
+
     public function test_a01_rekap_shows_columns_matching_the_kawasan_konservasi_form(): void
     {
         $user = User::factory()->create(['email_verified_at' => now()]);
@@ -359,6 +497,29 @@ class KonservasiStoreTest extends TestCase
         $this->assertStringContainsString('Nama Kelompok: Kelompok Baru', $record->keterangan);
         $this->assertStringContainsString('Periode Semester: Semester II', $record->keterangan);
         $this->assertStringContainsString('Keterangan: Catatan baru', $record->keterangan);
+    }
+
+    public function test_failed_submission_shows_validation_errors_and_restores_the_selected_sub_bidang(): void
+    {
+        $user = User::factory()->create(['email_verified_at' => now()]);
+        $bidang = Bidang::create(['nama_bidang' => 'Konservasi Kawasan']);
+        $subBidang = SubBidang::create([
+            'bidang_id' => $bidang->id,
+            'kode_sub' => 'A.01',
+            'nama_sub_bidang' => 'Kawasan Konservasi',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->from(route('konservasi.create'))
+            ->followingRedirects()
+            ->post(route('konservasi.store'), [
+                'sub_bidang_id' => $subBidang->id,
+                'sk_parsial_file' => UploadedFile::fake()->create('dokumen.txt', 1, 'text/plain'),
+            ]);
+
+        $response->assertOk()
+            ->assertSee('Data belum tersimpan. Periksa kembali isian berikut:')
+            ->assertSee('value="' . $subBidang->id . '" data-kode="A.01" data-nama="Kawasan Konservasi" selected', false);
     }
 
 }
