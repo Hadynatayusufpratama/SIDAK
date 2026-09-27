@@ -281,7 +281,9 @@
             <!-- Tabel Data -->
             <div class="overflow-x-auto">
                 @if($selectedBidang === 'pemanfaatan_jasling' && $selectedSub === 'D.02')
-                    @php($visitorMonths = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'])
+                    @php
+                        $visitorMonths = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
+                    @endphp
                     <table class="min-w-[1200px] w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
@@ -296,7 +298,8 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-xs font-medium text-slate-700">
-                            @forelse($data as $index => $item)
+                            @if($data->count() > 0)
+                                @foreach($data as $index => $item)
                                 @php
                                     $detailFields = [];
                                     $totalPnbp = 0;
@@ -362,9 +365,10 @@
                                         </div>
                                     </td>
                                 </tr>
-                            @empty
+                                @endforeach
+                            @else
                                 <tr><td colspan="8" class="py-12 px-5 text-center text-xs font-bold text-slate-500">Belum ada data D.02 untuk filter ini.</td></tr>
-                            @endforelse
+                            @endif
                         </tbody>
                     </table>
                 @elseif($selectedBidang === 'pemanfaatan_jasling' && $selectedSub === 'D.01')
@@ -1038,7 +1042,6 @@
         </span>
     @endif
 </td>
-                                    @endif
                                 </td>
 
                                 <td class="py-4 px-5 whitespace-nowrap text-slate-600 font-semibold">
@@ -1152,7 +1155,6 @@
                                                 <i class="fa-solid fa-trash-can text-xs"></i>
                                             </button>
                                         </form>
-                                        @endif
                                     </div>
                                 </td>
                             </tr>
